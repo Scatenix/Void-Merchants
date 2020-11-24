@@ -13,16 +13,19 @@ y_down_boundry = 97
 
 initial_draw = true
 
+explosions = {}
+hitmarkers = {}
+
 function _init()
-	clear_all()
+	clear_screen()
 	
 	if show_battle_stats == true then
- 	stars_max_y = 106
- 	enemys_max_y = 100
- else
-  stars_max_y = 127
-  enemys_max_y = 121
- end
+		stars_max_y = 105
+		enemys_max_y = 97
+ 	else
+		stars_max_y = 127
+		enemys_max_y = 119
+ 	end
 	
 	en_ship_t1_1()
 	en_ship_t1_1()
@@ -30,7 +33,7 @@ function _init()
 	en_ship_t1_1()
 	
 	set_pl_ship_t1()
-	add_pl_drone_t1()
+	add_pl_drone(1)
 	
 --	add_pl_drone_t1()
 end
@@ -40,28 +43,27 @@ function _update()
 	ship_ctrl()
 	drone_ctrl()
 	ship_and_drone_shoot()
-	friendly_shots_hit_enemy()
+	friendly_shots_hit_enemy(pl_ship_shots, pl_ship_damage, 1)
+	friendly_shots_hit_enemy(drone_shots, drone_damage, 2)
+	enemy_shots_hit_friendly(pl_ship_x, pl_ship_y, pl_ship_hitbox_skip_pixle, pl_ship_hitbox_width, 1)
+	enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixle, drone_hitbox_width, 2)
 	enemy_shoot()
+	ship_burner_calculation()
 	
+	-- adhs_counter -> used for animations
 	if adhs_counter == 21 then
- 	adhs_counter = 0
- end
+ 		adhs_counter = 0
+ 	end
 	adhs_counter+=1
-	
-	-- ship burner animation
-	
-	if adhs_counter == 10 or adhs_counter == 20 then
-	 pl_ship_sprite += 16
-	end
-	if pl_ship_sprite > 37 then
-	 pl_ship_sprite -= 3*16
-	end
 end
 
 -------------------------------
 
+test_c = 0
+test_t = 0
+exp_s = 139
 function _draw()
-	clear_all()
+	clear_screen()
 	
 		----- debug section
 	
@@ -71,60 +73,53 @@ function _draw()
 	----------------
 	
 	
-	
 	if initial_draw == true then
-	 init_passing_stars()
-	 initial_draw = false
+		init_passing_stars()
+		initial_draw = false
 	end
 	
 	draw_passing_stars()
 	
 	if show_battle_stats then
-	 draw_battle_stats()
+	 	draw_battle_stats()
 	end
 	
 --	spr(6, 10, 50, 4, 4)
 --	sspr(48, 0, 32, 32, 60, 0, 100, 100)
+	
 	draw_enemys()
 	draw_ship()
  draw_drone()
- 
- draw_ship_shots()
- draw_drone_shots()
- draw_enemy_shots()
+
+	draw_friendly_shots(pl_ship_shots, 11)
+	draw_friendly_shots(drone_shots, 12)
+	draw_enemy_shots()
+	
+	draw_hitmarkers()
+	draw_explosions()
 end
 
 function draw_ship()
 	spr(pl_ship_sprite, pl_ship_x, pl_ship_y)
 end
 
-function draw_ship_shots()
- for shot in all(pl_ship_shots) do
-  line(shot[1], shot[2], shot[1]+1, shot[2], 11)
-  shot[1] += 1 * pl_ship_shot_speed * 1.3
- 	if shot[1] > 127 then
- 	 del(pl_ship_shots, shot)
- 	end
- end
-end
-
-function draw_drone_shots()
-	for shot in all(drone_shots) do
-  line(shot[1], shot[2], shot[1]+1, shot[2], 12)
-  shot[1] += 1 * pl_ship_shot_speed * 1.3
- 	if shot[1] > 127 then
- 	 del(drone_shots, shot)
- 	end
- end
+function draw_friendly_shots(array, col)
+	for shot in all(array) do
+	line(shot[1], shot[2], shot[1]+1, shot[2], col)
+	shot[1] += 1 * pl_ship_shot_speed * 1.3
+		if shot[1] > 127 then
+		del(pl_ship_shots, shot)
+		end
+	end
 end
 
 function draw_enemy_shots()
 	for shot in all(enemy_shots) do
-	 line(shot[1], shot[2], shot[1]+1, shot[2], 8)
-	 shot[1] -= 1 * shot[3] * 1.3
-	 if shot[1] < 1 then
-	  del(enemy_shots, shot)
-	 end
+			line(shot[1], shot[2], shot[1]+1, shot[2], 8)
+			shot[1] -= 1 * shot[3] * 1.3
+		if shot[1] < 1 then
+			del(enemy_shots, shot)
+		end
 	end
 end
 
@@ -132,55 +127,69 @@ function draw_drone()
 	spr(drone_sprite, drone_x, drone_y)
 end
 
+enemy_wobble_counter = 0
 function draw_enemys()
  for enemy in all(enemys) do
-  spr(enemy[5], enemy[2], enemy[1])
-  enemy[2] -= 1 * enemy[11]
-  
-  -- make enemy go up and down
---  enemy[1] += flr(rnd(4)-1) * enemy[11]
- end
+		spr(enemy[5], enemy[1], enemy[2])
+		enemy[1] -= 0.1 * enemy[11]
 
+		if enemy[16] >= 20 / enemy[11] then
+			if enemy[2] > 0 and enemy[2] < enemys_max_y + 1 and not enemy_colides_enemy(enemy[1], enemy[2], enemy[17]) then
+				enemy[2] += enemy[14]
+				if enemy[15] + enemy[13] <= enemy[2] or enemy[15] - enemy[13] >= enemy[2] then
+					enemy[14] = enemy[14] - enemy[14] * 2
+				end
+			else
+				enemy[14] = enemy[14] - enemy[14] * 2
+				enemy[2] += enemy[14]
+			end
+			enemy[16] = 0
+		end
+		enemy[16] += 1
+		
+		if enemy[1] <= -7 then
+			del(enemys, enemy)
+		end
+ end
 end
 
-function clear_all()
- rectfill(0, 0, 128, 128, 0)
+function clear_screen()
+ 	rectfill(0, 0, 128, 128, 0)
 end
 
 function draw_battle_stats()
- spr(137, 0, 100, 1, 1, true)
- spr(137, 0, 126, 1, 1, true, true)
- spr(137, 120, 100, 1, 1)
- spr(137, 120, 126, 1, 1, false, true)
- 
- for i = 2, 122, 8 do
-  spr(136, i, 100)
-  spr(136, i, 126, 1, 1, false, true)
- end
- 
- for i = 107, 123, 8 do
-  spr(138, -1, i)
-  spr(138, 126, i)
- end
- 
- -- print stats
- print("hp:", 5, 110, 7)
- print(get_ship_life_as_string(), 16, 110, 8)
- 
- print("sh:", 42, 110, 7)
-	print(get_ship_shields_as_string(), 53, 110, 12)
+	spr(137, 0, 100, 1, 1, true)
+	spr(137, 0, 126, 1, 1, true, true)
+	spr(137, 120, 100, 1, 1)
+	spr(137, 120, 126, 1, 1, false, true)
+	
+	for i = 2, 122, 8 do
+		spr(136, i, 100)
+		spr(136, i, 126, 1, 1, false, true)
+	end
+	
+	for i = 107, 123, 8 do
+		spr(138, -1, i)
+		spr(138, 126, i)
+	end
+	
+	print("hp:", 5, 110, 7)
+	print(get_ship_life_as_string(), 16, 110, 8)
+	
+	print("sh:", 42, 110, 7)
+		print(get_ship_shields_as_string(), 53, 110, 12)
 
- print("dr:", 79, 110, 7)
- print(get_drone_life_as_string(), 90, 110, 8)
+	print("dr:", 79, 110, 7)
+	print(get_drone_life_as_string(), 90, 110, 8)
 
 	if drone_life < 4 then
-	 drplusy = 90 + drone_life * 8
+		drplusy = 90 + drone_life * 8
 	else
-	 drplusy = 98
+		drplusy = 98
 	end
 
- print("+", drplusy, 110, 12)
- print(drone_shields, drplusy + 4, 110, 12)
+	print("+", drplusy, 110, 12)
+	print(drone_shields, drplusy + 4, 110, 12)
 
 	print("stg:", 5, 119, 7)
 	print(get_free_storage(), 20, 119, 13)
@@ -196,6 +205,50 @@ function draw_battle_stats()
 	
 	print("sts:", 101, 119, 7)
 	print(pl_ship_shot_speed, 116, 119, 14)
+end
+
+function create_explosion(posx, posy)
+	add(explosions, {posx, posy, 139})
+	sfx(0)
+end
+
+function draw_explosions()
+	for exp in all(explosions) do
+		spr(exp[3], exp[1], exp[2])
+		if adhs_counter == 7 or adhs_counter == 14 or adhs_counter == 21 then
+		 exp[3] += 1
+		 if exp[3] >= 144 then
+		 	del(explosions, exp)
+		 end
+	 end
+	end
+end
+
+function create_hitmarker(posx, posy, ship_drone_enemy)
+	add(hitmarkers, {posx, posy, 0, ship_drone_enemy})
+end
+
+function draw_hitmarkers()
+	for mark in all(hitmarkers) do
+		col = 0
+		if mark[4] == 1 then
+			col = 11
+		elseif mark[4] == 2 then
+			col = 12
+		elseif mark[4] == 3 then
+			col = 8
+		end
+		
+		pset(mark[1]-1, mark[2], col)
+		pset(mark[1]+1, mark[2], col)
+		pset(mark[1], mark[2]-1, col)
+		pset(mark[1], mark[2]+1, col)
+		
+		mark[3] += 1
+		if mark[3] >= 5 then
+			del(hitmarkers, mark)
+		end
+	end
 end
 -->8
 -- player ships
@@ -218,10 +271,10 @@ pl_ship_shot_timer = 0
 pl_ship_can_shoot = false
 
 function set_pl_ship_t1()
- pl_ship_sprite=0
- pl_ship_hitbox_skip_pixle = 2
- pl_ship_hitbox_width = 5
-	pl_ship_daamage=1
+	pl_ship_sprite=0
+	pl_ship_hitbox_skip_pixle = 2
+	pl_ship_hitbox_width = 5
+	pl_ship_damage=1
 	pl_ship_life=3
 	pl_ship_shields=0
 	pl_ship_weapons=1
@@ -234,24 +287,24 @@ function get_shot_mask(weapons)
 	shot_mask = {}
 	
 	if weapons == 0 then
-  shot_mask = {-1, -1, -1, -1, -1}
- end
- if weapons == 1 then
-  shot_mask = {-1, -1, 4, -1, -1}
- end
-	if weapons == 2 then
-  shot_mask = {-1, -1, 3, 5, -1}
- end
- if weapons == 3 then
-  shot_mask = {-1, 2, 4, 6, -1}
- end
- if weapons == 4 then
-  shot_mask = {1, 3, 5, 7, -1}
- end
- if weapons == 5 then
-  shot_mask = {0, 2, 4, 6, 8}
- end
- return shot_mask
+  		shot_mask = {-1, -1, -1, -1, -1}
+ 	end
+	if weapons == 1 then
+		shot_mask = {-1, -1, 4, -1, -1}
+	end
+		if weapons == 2 then
+		shot_mask = {-1, -1, 3, 5, -1}
+	end
+	if weapons == 3 then
+		shot_mask = {-1, 2, 4, 6, -1}
+	end
+	if weapons == 4 then
+		shot_mask = {1, 3, 5, 7, -1}
+	end
+	if weapons == 5 then
+		shot_mask = {0, 2, 4, 6, 8}
+	end
+	return shot_mask
 end
 
 function ship_and_drone_shoot()
@@ -261,30 +314,30 @@ function ship_and_drone_shoot()
 	end
 	
 	if btn(4) and pl_ship_can_shoot == true then
-	 shot_mask = get_shot_mask(pl_ship_weapons)
-	 sfx(5)
+		shot_mask = get_shot_mask(pl_ship_weapons)
+		sfx(5)
+		
+		for shm in all(shot_mask) do
+			if shm != -1 then
+				shot = {pl_ship_x + 10, pl_ship_y + shm}
+				add(pl_ship_shots, shot)
+			end
+		end
+		
+		shot_mask = get_shot_mask(drone_weapons)
+		for shm in all(shot_mask) do
+			if shm != -1 then
+				shot = {drone_x + 10, drone_y + shm -2}
+				add(drone_shots, shot)
+			end
+		end
 	 
-	 for shm in all(shot_mask) do
-	  if shm != -1 then
-	   shot = {pl_ship_x + 10, pl_ship_y + shm}
-	   add(pl_ship_shots, shot)
-	  end
-	 end
-	 
-	 shot_mask = get_shot_mask(drone_weapons)
-	 for shm in all(shot_mask) do
-	  if shm != -1 then
-	   shot = {drone_x + 10, drone_y + shm -2}
-	   add(drone_shots, shot)
-	  end
-	 end
-	 
-	 pl_ship_can_shoot = false
-	 pl_ship_shot_timer = 0
+		pl_ship_can_shoot = false
+		pl_ship_shot_timer = 0
 	end
 	
 	if pl_ship_can_shoot == false then
-	 pl_ship_shot_timer += 1
+	 	pl_ship_shot_timer += 1
 	end
 end
 
@@ -292,81 +345,127 @@ function ship_ctrl()
 	sp = pl_ship_speed * 1
 	
 	if btn(0) then
-	 if pl_ship_x > x_left_boundry then
-	  pl_ship_x -= sp
-	 end
+		if pl_ship_x > x_left_boundry then
+			pl_ship_x -= sp
+		end
 	end
 	if btn(1) then
-	 if pl_ship_x < x_right_boundry then
-	 	pl_ship_x += sp
+	 	if pl_ship_x < x_right_boundry then
+	 		pl_ship_x += sp
 		end
 	end
 	if btn(2) then
-	 if pl_ship_y > y_up_boundry then
-		 pl_ship_y -= sp
+	 	if pl_ship_y > y_up_boundry then
+		 	pl_ship_y -= sp
 		end
 	end
 	if btn(3) then
-	 if pl_ship_y < y_down_boundry then
-		 pl_ship_y += sp
+	 	if pl_ship_y < y_down_boundry then
+			pl_ship_y += sp
 		end
 	end
 end
 
 -- with drone storage
 function get_free_storage()
- return pl_ship_storage + drone_storage - #pl_ship_items_stored
+ 	return pl_ship_storage + drone_storage - #pl_ship_items_stored
 end
 
 function get_ship_life_as_string()
 	ship_life = ""
-	 if pl_ship_life < 4 then
+	 	if pl_ship_life < 4 then
 			for i = 1, pl_ship_life do
 				ship_life = ship_life .. "♥"
 			end
 		else
-		 ship_life = " " .. pl_ship_life
+		 	ship_life = " " .. pl_ship_life
 		end
 	return ship_life
 end
 
 function get_ship_shields_as_string()
 	ship_shields = ""
-	 if pl_ship_shields < 4 then
+	 	if pl_ship_shields < 4 then
 			for i = 1, pl_ship_shields do
 				ship_shields = ship_shields .. "◆"
 			end
 		else
-		 ship_shields = " " .. pl_ship_shields
+		 	ship_shields = " " .. pl_ship_shields
 		end
 	return ship_shields
+end
+
+function ship_burner_calculation()
+	if adhs_counter == 10 or adhs_counter == 20 then
+	 	pl_ship_sprite += 16
+	end
+	if pl_ship_sprite > 37 then
+	 	pl_ship_sprite -= 3*16
+	end
 end
 -->8
 -- player drones
 
-drone_x = pl_ship_x-5
+drone_x = 0
 drone_y = 0
 drone_offset_y = 0
 drone_offset_x = 0
-drone_hitbox_skip_pixle = 0
+drone_hitbox_skip_pixle = 8
 drone_hitbox_width = 0
-drone_sprite = 0
-drone_damage = 0
+drone_sprite = 48
+drone_damage = 00
 drone_weapons = 0
 drone_life = 0
 drone_shields = 0
 drone_storage = 0
 drone_shots = {}
+drone_available = false
 
-function add_pl_drone_t1()
- drone_hitbox_skip_pixle = 4
- drone_hitbox_width = 3
- drone_sprite = 48
-	drone_damage = 1
-	drone_weapons = 1
-	drone_life =  2
-	drone_shields = 0
-	drone_storage = 1
+function add_pl_drone(tier)
+	-- get attack drone
+	if tier >= 0 and tier <= 6 then
+ 	drone_sprite = 48 + tier
+ 	htbx = get_drone_htbx_skp_pxl_width(tier)
+  drone_hitbox_skip_pixle = htbx[1]
+  drone_hitbox_width = htbx[2]
+  drone_damage = flr(10 * tier * 0.1) + 1
+ 	drone_life = flr(20 * tier * 0.1) + 1
+ 	drone_shields = flr(10 * tier * 0.1 - 1) + 1
+ 	drone_storage = flr(10 * tier * 0.1) + 1
+ 	drone_available = true
+ 	drone_weapons = flr(1 * tier * 0.5) + 1
+
+	-- get storage drone
+ elseif tier >= 7 and tier <= 9 then
+ 	drone_sprite = 6 + tier - 7
+ 	htbx = get_drone_htbx_skp_pxl_width(tier)
+  drone_hitbox_skip_pixle = htbx[1]
+  drone_hitbox_width = htbx[2]
+  drone_damage = 0
+ 	drone_life = flr(20 * (tier-3) * 0.1) + 1
+ 	drone_shields = flr(10 * (tier-6.5) * 0.2) + 1
+ 	drone_storage = flr(10 * tier * 0.1) + 1
+ 	drone_available = true
+ 	drone_weapons = 0
+	end
+end
+
+function get_drone_htbx_skp_pxl_width(tier)
+ if tier == 1 then
+ 	return {3, 3}
+ elseif tier == 2 or tier == 3 or tier == 5 then
+  return {0, 7}
+ elseif tier == 4 then
+  return {2, 5}
+ elseif tier == 6 then
+  return {1, 7}
+ elseif tier == 7 then
+  return {4, 4}
+ elseif tier == 8 then
+  return {0, 8}
+ elseif tier == 9 then
+  return {1, 6}
+ end
 end
 
 function drone_ctrl()
@@ -374,11 +473,11 @@ function drone_ctrl()
 		drone_offset_y = 2 * (pl_ship_y - 7)
 		drone_offset_x = flr(drone_offset_y / 1.5)
 		if drone_offset_x < -5 then
-	  drone_offset_x = 0 - pl_ship_y * 2
+	  		drone_offset_x = 0 - pl_ship_y * 2
 		end
 	else
-	 drone_offset_y = 0
-	 drone_offset_x = 0
+		drone_offset_y = 0
+		drone_offset_x = 0
 	end
 	
 	drone_x = pl_ship_x-5+drone_offset_x
@@ -386,40 +485,44 @@ function drone_ctrl()
 	if adhs_counter <= 10 then
 		drone_y = pl_ship_y-6 - drone_offset_y
 	elseif adhs_counter > 10 then
-	 drone_y = pl_ship_y-7 - drone_offset_y
+	 	drone_y = pl_ship_y-7 - drone_offset_y
 	end
---	if adhs_counter == 21 then
--- 	adhs_counter = 0
--- end
---	adhs_counter+=1
 end
 
 function get_drone_life_as_string()
 	 drone_life_string = ""
-	 if drone_life < 4 then
+	 	if drone_life < 4 then
 			for i = 1, drone_life do
 				drone_life_string = drone_life_string .. "♥"
 			end
 		else
-		 drone_life_string = " " .. drone_life
+		 	drone_life_string = " " .. drone_life
 		end
 	return drone_life_string
 end
+
+function kill_drone()
+	drone_hitbox_skip_pixle = 8
+	drone_hitbox_width = 0
+	drone_sprite = 48
+	drone_damage = 00
+	drone_weapons = 0
+	drone_life = 0
+	drone_shields = 0
+	drone_storage = 0
+	drone_shots = {}
+	drone_available = false
+	
+	if #pl_ship_items_stored > pl_ship_storage then
+		for i = pl_ship_storage+1, #pl_ship_items_stored do
+			temp_item = pl_ship_items_stored[i]
+			del(pl_ship_items_stored, temp_item)
+			--todo drop-item into void
+		end
+	end
+end
 -->8
 -- enemys
-
---posx
---posy
---hitbox_skip_pixle -- from mid
---hitbox_width
---sprite
---damage
---life
---shields--max=5 sprites 250-254
---weapons
---shot_speed
---speed
---value
 
 enemys_max_y = 0
 enemys = {}
@@ -427,51 +530,73 @@ enemy_shots = {}
 enemy_shot_cooldown = 0
 
 function en_ship_t1_1()
- y = flr(rnd(enemys_max_y))
- htbx_skp_pxl = 0
- htbx_wdth = 7
- 
- while enemy_colides_enemy(y) do
-  y = flr(rnd(enemys_max_y))
- end
- 
- enemy = {}
- enemy[1] = y --posy
- enemy[2] = 127 --posx = 0
- enemy[3] = htbx_skp_pxl --	h_sk_px
- enemy[4] = htbx_wdth -- h_width
- enemy[5] = 200 -- sprite
- enemy[6] = 1 -- damage
- enemy[7] = 3 -- life
- enemy[8] = 0 -- shields
- enemy[9] = 1 -- weapons
- enemy[10] = 1 -- shot_spee
- enemy[11] = 0.1 -- speed
- enemy[12] = 1 -- value
- 
- add(enemys, enemy)
+	y = flr(rnd(enemys_max_y))
+	htbx_skp_pxl = 2
+	htbx_wdth = 5
+	
+	while enemy_colides_enemy(127, y, -1) do
+		y = flr(rnd(enemys_max_y))
+	end
+	
+	enemy = {}
+	--posx
+	enemy[1] = 127 
+	--posy
+	enemy[2] = y 
+	--	h_sk_px
+	enemy[3] = htbx_skp_pxl 
+	-- h_width
+	enemy[4] = htbx_wdth 
+	-- sprite
+	enemy[5] = 203 
+	-- damage
+	enemy[6] = 1 
+	-- life
+	enemy[7] = 3 
+	-- shields
+	enemy[8] = 0 
+	-- weapons
+	enemy[9] = 1 
+	-- shot_spee
+	enemy[10] = 1 
+	-- speed
+	enemy[11] = 1
+	-- value
+	enemy[12] = 1
+	--wobble
+	enemy[13] = 50
+	--wobble state (1;-1)
+	enemy[14] = 1
+	-- original y
+	enemy[15] = enemy[2]
+	--wobble counter
+	enemy[16] = 0
+	--id
+	enemy[17] = #enemys+1
+	
+	add(enemys, enemy)
 end
 
 function enemy_shoot()
-		if enemy_shot_cooldown == 6 or enemy_shot_cooldown == 12 or enemy_shot_cooldown == 18 then
-				for enemy in all(enemys) do
-			
-				 shot_mask = get_shot_mask(pl_ship_weapons)
-			
-					sfx(5)
-			
-						for shm in all(shot_mask) do
-						  if shm != -1 then
-						   shot = {enemy[2] -3, enemy[1] + shm, enemy[10]}
-						   add(enemy_shots, shot)
-						  end
-					 end
+	if enemy_shot_cooldown == 6 or enemy_shot_cooldown == 12 or enemy_shot_cooldown == 18 then
+		for enemy in all(enemys) do
+	
+			shot_mask = get_shot_mask(pl_ship_weapons)
+	
+			sfx(5)
+	
+			for shm in all(shot_mask) do
+				if shm != -1 then
+					shot = {enemy[1] -3, enemy[2] + shm, enemy[10], enemy[6]}
+					add(enemy_shots, shot)
 				end
+			end
 		end
-		if enemy_shot_cooldown == 36 then
-				enemy_shot_cooldown = 0
-		end
-		enemy_shot_cooldown += 1
+	end
+	if enemy_shot_cooldown == 36 then
+		enemy_shot_cooldown = 0
+	end
+	enemy_shot_cooldown += 1
 end
 -->8
 -- items
@@ -482,14 +607,20 @@ function debug_coords()
 	line(10,70,10,70,8)
 	print("point x:10 y:70", 10,60,8)
 	
- print("ship_x:" .. pl_ship_x, 10, 10, 7)
- print("ship_y:" .. pl_ship_y, 10, 20, 7)
- print("drone_x:" .. drone_x, 10, 30, 12)
- print("drone_y:" .. drone_y, 10, 40, 12)
+	print("ship_x:" .. pl_ship_x, 10, 10, 7)
+	print("ship_y:" .. pl_ship_y, 10, 20, 7)
+	print("drone_x:" .. drone_x, 10, 30, 12)
+	print("drone_y:" .. drone_y, 10, 40, 12)
 end
 
-function info(text)
- print(text, 20, 20, 7)
+function info(text, val, plusy)
+		if plusy == nil then
+			plusy = 0
+		end
+		if val == nil then
+			val = ""
+		end
+ 	print(text .. ": " .. val, 5, 5+plusy, 7)
 end
 -->8
 -- stars
@@ -504,77 +635,119 @@ stars_max_y = 0
 stars = {}
 
 function init_passing_stars()
- for i = 1, max_stars do
-  star = {flr(rnd(127)), flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier} 
- 	add(stars, star)
- end
+	for i = 1, max_stars do
+		star = {flr(rnd(127)), flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier} 
+		add(stars, star)
+	end
 end
 
 function draw_passing_stars()
 	if star_speed_multiplier > 0 then
-	 stars_start_x = 127
+	 	stars_start_x = 127
 	else
-	 stars_start_x = 0
+	 	stars_start_x = 0
 	end
 
- if stars_counter >= stars_counter_threshold and max_stars > #stars then
+ 	if stars_counter >= stars_counter_threshold and max_stars > #stars then
 		star = {stars_start_x, flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier}
 		add(stars, star)
-  stars_counter = 0
- end
- stars_counter += 1
+  		stars_counter = 0
+ 	end
+ 	stars_counter += 1
  
- for star in all(stars) do
-  -- draw star
-  line(star[1], star[2], star[1], star[2], 7)
-  star[1] -= star[3]
-  if star[1] < 0 or star[1] > 127 then
-   del(stars, star)
-  end
- end
+	for star in all(stars) do
+		-- draw star
+		line(star[1], star[2], star[1], star[2], 7)
+		star[1] -= star[3]
+		if star[1] < 0 or star[1] > 127 then
+			del(stars, star)
+		end
+	end
 end
 
 function all_stars_speed_ctrl(speed_multiplier)
- for star in all(stars) do
- 	star[3] = star[3] * speed_multiplier
- end
- star_speed_multiplier = speed_multiplier
+	for star in all(stars) do
+		star[3] = star[3] * speed_multiplier
+	end
+	star_speed_multiplier = speed_multiplier
 end
 -->8
 --collision
 
 
 -- shots --> [1] = x; [2] = y
-function friendly_shots_hit_enemy()
-	for shot in all(pl_ship_shots) do
-	 for enemy in all(enemys) do
-	  hit_x = shot[1] - 1 >= enemy[2]
-	  hit_y = shot[2] > enemy[1] -1 + enemy[3] and shot[2] < enemy[1] + enemy[4]
-	 
-	  if hit_x and hit_y then
-	   enemy[7] -= pl_ship_daamage
-	   if enemy[7] <= 0 then
-	    del(enemys, enemy)
-	    sfx(0)
-	   end
-	   
-	   
---	   line(shot[1]-1, shot[2], shot[1]-1, shot[2], 11)
---	   line(shot[1]+1, shot[2], shot[1]+1, shot[2], 11)
---	   line(shot[1], shot[2]-1, shot[1], shot[2]-1, 11)
---	   line(shot[1], shot[2]+1, shot[1], shot[2]+1, 11)
-	   
-	   del(pl_ship_shots, shot)
-	  end
-	 end
+function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
+	for shot in all(shot_array) do
+		for enemy in all(enemys) do
+			hit_x = shot[1] + 2 >= enemy[1] and shot[1] <= enemy[1] + 7			
+			hit_y = shot[2] > enemy[2] - 1 + enemy[3] and shot[2] < enemy[2] + enemy[4] + enemy[3]
+			
+			if hit_x and hit_y then
+				enemy[7] -= damage_from
+				if flr(enemy[7]) <= 0 then
+					create_explosion(enemy[1], enemy[2])
+					del(enemys, enemy)
+				end
+
+				create_hitmarker(shot[1], shot[2], ship1_drone2)
+				del(shot_array, shot)
+			end
+		end
 	end
 end
 
-function enemy_colides_enemy(posy)
+function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1_drone2)
+	for shot in all(enemy_shots) do
+		hit_x = shot[1] - 8 <= posx and shot[1] >= posx
+		hit_y = shot[2] > posy - 1 + htbx_skip_pxl and shot[2] < posy + htbx_width + htbx_skip_pxl
+		if hit_x and hit_y then
+			life = 0
+			if player1_drone2 == 1 then
+			 pl_ship_life -= shot[4]
+			 life = pl_ship_life
+			elseif player1_drone2 == 2 then
+				drone_life -= shot[4]
+				life = drone_life
+			end
+			sfx(7)
+			
+			if flr(life) <= 0 then
+				create_explosion(posx, posy)
+				if player1_drone2 == 1 then
+				
+				elseif player1_drone2 == 2 then
+					kill_drone()
+				end
+			end
+
+			create_hitmarker(shot[1], shot[2], 3)
+			del(enemy_shots, shot)
+		end
+	end
+end
+
+-- probably not needed anymore... just keeping for safety
+--function new_enemy_colides_enemy(posx, posy)
+--	for enemy in all(enemys) do
+--		hity = enemy[2] - 8 < posy and enemy[2] + 8 > posy
+--		hitx = enemy[1] - 8 < posx and enemy[1] + 8 > posx
+--		if hity and hitx then
+----		if hitx then
+--	  		return true
+--	 end
+--	end
+--	return false
+--end
+
+function enemy_colides_enemy(posx, posy, id)
 	for enemy in all(enemys) do
-		if enemy[1] - 8 < posy and enemy[1] + 8 > posy then
-	  return true
-	 end
+		if id != enemy[17] then
+			hity = enemy[2] - 8 < posy and enemy[2] + 8 > posy
+			hitx = enemy[1] - 8 < posx and enemy[1] + 8 > posx
+			if hity and hitx then
+		  		return true
+		 end
+		end
 	end
 	return false
 end
@@ -591,101 +764,122 @@ end
 
 -- make damage with drone projectiles
 -- make damage with enemy projectiles
+-->8
+-- data_ops
+
+-- call once at _init
+function init_data_ops()
+	cartdata("void_merchants_4e40baa22f0e407277e79304514550b9e952ccef")
+end
+
+function save_game()
+	dset(index, variable_value)
+end
+
+function load_game()
+	variable = dget(index)
+end
+-->8
+-- player itself
+
+pl_credits = 0
+pl_items_stored = {}
+reputation = 0
 __gfx__
-0000000000000000000000005500dd000055500005d55dd0000000000000c777777c000000000000000000000000aaaaaaaa0000000000000000033333300000
-00000000005d000000050000005d00d0005ddd000a66655d000000000ccccc77777cccc000000000000000000aaaaaaaaaaaaaa0000000000003333333333000
-00dd00000dddd00005d55000a055500d95566660a99855dc0000000ccccccccc7cccccccc00000000000000aaaaaaaaaaaaaaaaaa00000000033333333333300
-05556d00a95566d0a98d56500985c600a985cccd0d566dcc000000cccccccccccccccccccc000000000000aaaaaaaaaaaaaaaaaaaa0000000333ccc333333330
-a985ccd0085ddccd0a98dcc50985c600a985cccd0d566dcc00000cccccccccccccccccccccc0000000000aaaaaaaa999aaaaaaaaaaa00000033ccc3333333330
-05556d00a95566d0a98d5650a055500d95566660a99855dc0000cccccccc33333333333ccccc00000000aaaaaaa99aaaaa999aaaaaaa000033ccc333333c3333
-00dd00000dddd00005d55000005d00d0005ddd000a66655d000ccccccc3333333333333333ccc000000aaaaaaa9aaaaaaaaaaaa99aaaa00033cc3333333ccc33
-00000000005d0000000500005500dd000055500005d55dd000cccccccc3333333333333333333c0000aaa9aaaaaaaaaaaa9aaaaa99aaaa003333333333333c33
-0000000000000000000000005500dd000055500005d55dd000c333ccc33333333333333333333c0000aaa9aa99aaaaaaaa99aaaaaaaaaa0033333c3333333333
-00000000005d000000050000005d00d0005ddd000966655d0c33333cc33333333333333333333cc00aaaaaaa9aaaaaaaaaa9aaaaaaaaaaa03333333333333333
-00dd00000dddd00005d550009055500da5566660a88955dc0c33333cc33333333333333333333cc00aaaaaaaaaaaaaaa9aa9aa9aaaaaaaa0333333333c333333
-05556d009a5566d0a98d56500985c6009895cccd0d566dcc0c33333ccc3333333333333333333c300aaaaaaaaaaaaaaa9aaaaa999aaaaaa00333333ccc333330
-9895ccd0095ddccd0aa9dcc50895c600a985cccd0d566dcccc3333cccc33cc3cc333333333333c3caaaaaaaaaaa9999a9aaaaaaa9aaaaaaa033333cccc333330
-05556d00a85566d0989d5650a055500da5566660998955dccc3333ccccccc33ccc333333333333ccaaaaaaaaaaa9aaaa9aaaaaaaaaaaaaaa0033333333333300
-00dd00000dddd00005d55000005d00d0005ddd000a66655dcc3333ccccc3ccccc3c333333333ccccaaaa9aaaaaaaaaaaaaaa99aaaaa99aaa0003333333333000
-00000000005d0000000500005500dd000055500005d55dd0ccc3cccccc333333cc3c333333ccccccaaaa9aa99aaaaaaaaaaa9aaaaaaa9aaa0000033333300000
-0000000000000000000000005500dd000055500005d55dd0ccc3ccccc333333333ccccccccccccccaaaaaaaa9aaaaaaaaaaa9aaaaaaa9aaa00000cccccc00000
-00000000005d000000050000005d00d0005ddd000966655dcc333cccc333333333ccccccccccccccaaaaaaaa99aaaa9aaaaaaaaaaaaaaaaa000cccccccccc000
-00dd00000dddd00005d550009055500d95566660989955dcccc33cccc3333333333cccccccccccccaaaaaaaaa99aaa999aaaaaaaaaaaaaaa00cccccccccccc00
-05556d00895566d0a89d56500995c600a895cccd0d566dcccc333ccccccc3333333cccccccccccccaaaa9aaaaa99aaaaaaaaaaaaaaaaaaaa0cccccccccccccc0
-aa85ccd0095ddccd09a9dcc50895c6009995cccd0d566dcc0c3333ccccccc333333cccc33cccccc00aaa9aaaaaaaaaaaaaaa9aaaaaaaaaa00cccccccccccccc0
-05556d00a85566d0a98d5650a055500da5566660a88955dc0cc3333cccccc33333cccc33333cccc00aaa9aaaaaaaaaaaaa999aaa9aaaaaa0cccccccccccccccc
-00dd00000dddd00005d55000005d00d0005ddd000966655d0cc3333ccccccc3333c3cc333333ccc00aaa99aaaaaaaaaaa99aaaa99aaaaaa0cccccccaa66ccccc
-00000000005d0000000500005500dd000055500005d55dd000cc333ccccccc3333c3cc333333cc0000aaaaaaaaaaaaaaaaaaaa99aaaaaa00cccccca55a6acccc
-00000000000dd000000dd0000000000000d000000000000000ccccccccccccc33cccccc33333cc0000aaaaaaa9aaaaaaaaaaaa9aaaaaaa00ccccccca66666acc
-0000000000950000009500000000000005dd000000000050000cccccccccccccccccccc3333cc000000aaaaaaa9aaaaaaaaaaaaaaaaaa000cccccccccca6cccc
-00000000000dd000000dd00000000d00a95000d000005d000000cccccccccccccccccccccccc00000000aaaaaaa99aaaaaaa9999aaaa0000cccccccccccccccc
-0000000000000000000000dd00005dd005dd05dd0a5ddddd00000ccccccccccc777cccccccc0000000000aaaaaaa9aaaaaa9aaaaaaa000000cccccccccccccc0
-00000dd000000dd00dd00950000a950000d0a95000955600000000cccccccc777777cccccc000000000000aaaaaaaaaaaaaaaaaaaa0000000cccccccccccccc0
-0000950000009500950000dd00005dd0000005dd0a5ddddd0000000ccccc777777777cccc00000000000000aaaaaaaaaaaaaaaaaa000000000cccccccccccc00
-00000dd000000dd00dd0000000000d00000000d000005d00000000000cc77777777777c000000000000000000aaaaaaaaaaaaaa000000000000cccccccccc000
-00000000000000000000000000000000000000000000005000000000000077777777000000000000000000000000aaaaaaaa00000000000000000cccccc00000
-000000000000bbbbbbbb0000000000000000000000003333388800000000000000000000000099999999000000000000000000000000dddddddd000000000000
-000000000bbbbbbbbbbbbbb0000000000000000008888333338888800000000000000000099999999999999000000000000000000dddddddddddddd000000000
-0000000bbbbbb33bbbbbbbbbb000000000000008888888833338888880000000000000055999999999999999900000000000000dddddddddddddddddd0000000
-000000bbbbb3bbbbbbbbbbbbbb0000000000008888888888838888883300000000000095555999999999999999000000000000dddddddddddddddddddd000000
-00000bbbbb33bbbb333333bbbbb00000000008888888888888888888833000000000099999559999999999999990000000000d6dddddddddd666ddddddd00000
-0000bbbbbbbbbbbbbbbbbbbbbbbb0000000088888888888888888888883300000000999999999999999955599999000000006666dddddddd6666dddddddd0000
-000bbbbbbbbbbbbb33bbbbbbbbbbb00000088888888888888888888888833000000999999999999999995555999990000006666ddddddddd66666dddddddd000
-00bbbbbbbbbbb333bbbbbbbbbbbbbb00008888888883388888833888888888000099999999999999999995555999990000d6666ddddddd6666666ddddddddd00
-00bbbbbbbbbbbbbbbbbbbbbbbbbbbb00008888888333888888883338888888000099999999999999999999955599990000666ddddddd666dddd6dddddddddd00
-0bbbbb3333bbbbbbbbbb33bbbbb3bbb008888888333888888888883338888880099999999999999999999999955999900ddddddddd666dddddddddddddddddd0
-0bbbbbbbb333bbbbbbbbbbbbbbb33bb008888888333888888888888333888880099999999555999999999999999999900dddddddd6666dddddddddddddddddd0
-0bbbbbbbbbbbbbbbbbbbbbb33bbb3bb008888883338888888888888333388880095999999555999999999999999999900ddddddd66666dddddddddddddddddd0
-bbbbbbbbbbbbbbbbbbbbbbbb3bbbbbbb8888883338888888338888883338888895599999555999999999999999999999dddddddd66666ddddddddd666ddddddd
-bbbbbbbbbbbbbbbbbbbbbbbb3bbbbbbb8888883338888883338888888338888855999995559999999999999999999999ddddddddd6666ddddddddd6666dddddd
-bbbbbb3bbbbbbbbbb3bbbbbbb3bbbbbb8888883338888883338888888888888359999995599999999955999999995999ddddddddd6666dddddddddd666dddddd
-bbbbbb3bbbbbbb3333bbbbbbbbbbbbbb8888883338888833388888888888888399999995599999955555999999995999ddddddddd6666ddddddddddd666ddddd
-bbbbbb3bbb3bbbbbbbbbbbbbbbbbbbbb8888888838888833888888888888888399999995999999955559999999955999ddddddddd66666dddddddddd6666dddd
-bbbbbb3bb33bbbbbbbbbbb33bbbbbbbb8888888888888333888888838888888399999999999999999559999999959999ddddddd666666666ddddddddd666dddd
-bbbbbb3bb3bbbbbbbbbbb33bbbbbbbbb8888888888888888888883333888888399999999999999999999999999959999dddddddd666666666ddddddddd66dddd
-bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb8888888888888888888883333888883399999999999999999999999999559999ddddddddddd6666666dddddddd66dddd
-0bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb003333888888888888888833338888830099999999999999999999999555999900dddddddddddd66666ddddddddddddd0
-0bbbbbbbbbbbbbbbbbbbbbbb33bbbbb003333338888888888888833338888880099999999999555999999995599999900dddddddddddddd6666dddddddddddd0
-0bbbbbbbbbb33bbbbbbbbbb33bbbbbb003338888888888888888833388888880099999999999555599999999999999900ddddddddddddddd6666ddddddddddd0
-00bbbbbbbbbb33bbbbbbbb33bbbbbb00003388888888333388883338888888000099999999995555599999999999990000ddddddd6dddddddddddddddddddd00
-00bbbbbb3bbbb333bbbbbbbbbbbbbb00008888883333333388883388888888000099599999999995599999999999990000dddddd66666ddddddddddd6ddddd00
-000bbbbb33bbbbbbbbbbbbbbbbbbb0000008888833333388888888888888800000095999999999955599999999999000000ddddd666666ddddddddd66dddd000
-0000bbbbb3bbbbbbbbbbbbbbbbbb000000008888888888888888888888880000000059999999999995559999999900000000ddddddddddddddddd6666ddd0000
-00000bbbbbbbbbbbbb3bbbbbbbb00000000008888888888888888888888000000000099999999999999999999990000000000ddddddddddddd666666ddd00000
-000000bbbbbbbbbb333bbbbbbb0000000000008888888888888888888800000000000099999999999999999999000000000000ddddddddddd666666ddd000000
-0000000bbbbbbbbbbbbbbbbbb000000000000008888888333888888880000000000000099999999999999999900000000000000dddddddddd6ddddddd0000000
-000000000bbbbbbbbbbbbbb0000000000000000008888833338888800000000000000000099999999999999000000000000000000dddddddddddddd000000000
-000000000000bbbbbbbb0000000000000000000000008888888800000000000000000000000099999999000000000000000000000000dddddddd000000000000
-00000000000022222222000000000000000006666660000000000111111000000000000000000000060000000000000000000000000000000000000000000000
-0000000002222222222222200000000000066666666660000001111d111110000000000000000000060000000000000000000000000000000000000000000000
-000000022222222222888222200000000066666666666600001111dd111111000000000000000000060000000000000000000000000000000000000000000000
-000000222222222222288888220000000666656665566660011111111d1111100000000000000000060000000000000000000000000000000000000000000000
-00000222222222222222288882200000066656565665666001111d111dddd1100000000000000000060000000000000000000000000000000000000000000000
-0000222222222222222222888822000066666566566566661111d111111111110000000000000000060000000000000000000000000000000000000000000000
-000222222222e222222222288822200066666666655666651111d111111111116666666600000066060000000000000000000000000000000000000000000000
-002222222eeee22222eeee228882220066666666666666561111111111dd11110000000000000006060000000000000000000000000000000000000000000000
-00222222eeee22222eeee22288822200666666666655666511ddd1111dd11d110000000000566c00000000000000000000000000000000000000000000000000
-0222222eeee22222eeee22228882222066665566656656661111111111111d110000000000d55600000000000000000000000000000000000000000000000000
-022222eeee22222eeee2222228822220666566566566566611111dd1111111110000000098dd5500000000000000000000000000000000000000000000000000
-022222eee222222eee22222222222220066566566655666001111d111111111000000000000d0000000000000000000000000000000000000000000000000000
-22222eee222222eee222222222222222066655666666666001111d11111d1110000566c0000566c0000000000000000000000000000000000000000000000000
-22222eee222222eee2222222882222220066666656666600001111111ddd1100000d5560000d5560000000000000000000000000000000000000000000000000
-22222eee222222ee222222888822228200066665656660000001111111111000089dd550098dd550000000000000000000000000000000000000000000000000
-222222ee222222ee2222288882222288000006665660000000000111111000000000d0000000d000000000000000000000000000000000000000000000000000
+0000000000000000000000005500dd000055500005d55dd00000000000566c000000000000000000000000000000aaaaaaaa0000000000000000033333300000
+00000000005d000000050000005d00d0005ddd000a66655d0000000000d55600005dd55000000000000000000aaaaaaaaaaaaaa0000000000003333333333000
+00dd00000dddd00005d55000a055500d95566660a99855dc0000000098dd550005d66cc0000000000000000aaaaaaaaaaaaaaaaaa00000000033333333333300
+05556d00a95566d0a98d56500985c600a985cccd0d566dcc00000000000d00000d66ddd000000000000000aaaaaaaaaaaaaaaaaaaa0000000333ccc333333330
+a985ccd0085ddccd0a98dcc50985c600a985cccd0d566dcc000566c0000566c005d66d500000000000000aaaaaaaa999aaaaaaaaaaa00000033ccc3333333330
+05556d00a95566d0a98d5650a055500d95566660a99855dc000d5560000d5560985dd550000000000000aaaaaaa99aaaaa999aaaaaaa000033ccc333333c3333
+00dd00000dddd00005d55000005d00d0005ddd000a66655d089dd550098dd55000d5500000000000000aaaaaaa9aaaaaaaaaaaa99aaaa00033cc3333333ccc33
+00000000005d0000000500005500dd000055500005d55dd00000d0000000d000000000000000000000aaa9aaaaaaaaaaaa9aaaaa99aaaa003333333333333c33
+0000000000000000000000005500dd000055500005d55dd00000000000000000000000000000000000aaa9aa99aaaaaaaa99aaaaaaaaaa0033333c3333333333
+00000000005d000000050000005d00d0005ddd000966655d000000000000000000000000000000000aaaaaaa9aaaaaaaaaa9aaaaaaaaaaa03333333333333333
+00dd00000dddd00005d550009055500da5566660a88955dc000000000000000000000000000000000aaaaaaaaaaaaaaa9aa9aa9aaaaaaaa0333333333c333333
+05556d009a5566d0a98d56500985c6009895cccd0d566dcc000000000000000000000000000000000aaaaaaaaaaaaaaa9aaaaa999aaaaaa00333333ccc333330
+9895ccd0095ddccd0aa9dcc50895c600a985cccd0d566dcc00000000000000000000000000000000aaaaaaaaaaa9999a9aaaaaaa9aaaaaaa033333cccc333330
+05556d00a85566d0989d5650a055500da5566660998955dc00000000000000000000000000000000aaaaaaaaaaa9aaaa9aaaaaaaaaaaaaaa0033333333333300
+00dd00000dddd00005d55000005d00d0005ddd000a66655d00000000000000000000000000000000aaaa9aaaaaaaaaaaaaaa99aaaaa99aaa0003333333333000
+00000000005d0000000500005500dd000055500005d55dd000000000000000000000000000000000aaaa9aa99aaaaaaaaaaa9aaaaaaa9aaa0000033333300000
+0000000000000000000000005500dd000055500005d55dd000000000000000000000000000000000aaaaaaaa9aaaaaaaaaaa9aaaaaaa9aaa00000cccccc00000
+00000000005d000000050000005d00d0005ddd000966655d00000000000000000000000000000000aaaaaaaa99aaaa9aaaaaaaaaaaaaaaaa000cccccccccc000
+00dd00000dddd00005d550009055500d95566660989955dc00000000000000000000000000000000aaaaaaaaa99aaa999aaaaaaaaaaaaaaa00cccccccccccc00
+05556d00895566d0a89d56500995c600a895cccd0d566dcc00000000000000000000000000000000aaaa9aaaaa99aaaaaaaaaaaaaaaaaaaa0cccccccccccccc0
+aa85ccd0095ddccd09a9dcc50895c6009995cccd0d566dcc000000000000000000000000000000000aaa9aaaaaaaaaaaaaaa9aaaaaaaaaa00cccccccccccccc0
+05556d00a85566d0a98d5650a055500da5566660a88955dc000000000000000000000000000000000aaa9aaaaaaaaaaaaa999aaa9aaaaaa0cccccccccccccccc
+00dd00000dddd00005d55000005d00d0005ddd000966655d000000000000000000000000000000000aaa99aaaaaaaaaaa99aaaa99aaaaaa0cccccccaa66ccccc
+00000000005d0000000500005500dd000055500005d55dd00000000000000000000000000000000000aaaaaaaaaaaaaaaaaaaa99aaaaaa00cccccca55a6acccc
+0000000000000000000dd000000dd0000000000000d000000000000000000000000000000000000000aaaaaaa9aaaaaaaaaaaa9aaaaaaa00ccccccca66666acc
+000000000000000000950000009500000000000005dd000000000050000000000000000000000000000aaaaaaa9aaaaaaaaaaaaaaaaaa000cccccccccca6cccc
+0000000000000000000dd000000dd00000000d00a95000d000005d000000000000000000000000000000aaaaaaa99aaaaaaa9999aaaa0000cccccccccccccccc
+0000000000000dd000000000000000dd00005dd005dd05dd0a5ddddd00000000000000000000000000000aaaaaaa9aaaaaa9aaaaaaa000000cccccccccccccc0
+000000000000950000000dd00dd00950000a950000d0a95000955600000000000000000000000000000000aaaaaaaaaaaaaaaaaaaa0000000cccccccccccccc0
+0000000000000dd000009500950000dd00005dd0000005dd0a5ddddd0000000000000000000000000000000aaaaaaaaaaaaaaaaaa000000000cccccccccccc00
+000000000000000000000dd00dd0000000000d00000000d000005d00000000000000000000000000000000000aaaaaaaaaaaaaa000000000000cccccccccc000
+00000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000aaaaaaaa00000000000000000cccccc00000
+000000000000bbbbbbbb000000000000000000000000c777777c00000000000000000000000099999999000000000000000000000000dddddddd000000000000
+000000000bbbbbbbbbbbbbb000000000000000000ccccc77777cccc00000000000000000099999999999999000000000000000000dddddddddddddd000000000
+0000000bbbbbb33bbbbbbbbbb00000000000000ccccccccc7cccccccc0000000000000055999999999999999900000000000000dddddddddddddddddd0000000
+000000bbbbb3bbbbbbbbbbbbbb000000000000cccccccccccccccccccc00000000000095555999999999999999000000000000dddddddddddddddddddd000000
+00000bbbbb33bbbb333333bbbbb0000000000cccccccccccccccccccccc000000000099999559999999999999990000000000d6dddddddddd666ddddddd00000
+0000bbbbbbbbbbbbbbbbbbbbbbbb00000000cccccccc33333333333ccccc00000000999999999999999955599999000000006666dddddddd6666dddddddd0000
+000bbbbbbbbbbbbb33bbbbbbbbbbb000000ccccccc3333333333333333ccc000000999999999999999995555999990000006666ddddddddd66666dddddddd000
+00bbbbbbbbbbb333bbbbbbbbbbbbbb0000cccccccc3333333333333333333c000099999999999999999995555999990000d6666ddddddd6666666ddddddddd00
+00bbbbbbbbbbbbbbbbbbbbbbbbbbbb0000c333ccc33333333333333333333c000099999999999999999999955599990000666ddddddd666dddd6dddddddddd00
+0bbbbb3333bbbbbbbbbb33bbbbb3bbb00c33333cc33333333333333333333cc0099999999999999999999999955999900ddddddddd666dddddddddddddddddd0
+0bbbbbbbb333bbbbbbbbbbbbbbb33bb00c33333cc33333333333333333333cc0099999999555999999999999999999900dddddddd6666dddddddddddddddddd0
+0bbbbbbbbbbbbbbbbbbbbbb33bbb3bb00c33333ccc3333333333333333333c30095999999555999999999999999999900ddddddd66666dddddddddddddddddd0
+bbbbbbbbbbbbbbbbbbbbbbbb3bbbbbbbcc3333cccc33cc3cc333333333333c3c95599999555999999999999999999999dddddddd66666ddddddddd666ddddddd
+bbbbbbbbbbbbbbbbbbbbbbbb3bbbbbbbcc3333ccccccc33ccc333333333333cc55999995559999999999999999999999ddddddddd6666ddddddddd6666dddddd
+bbbbbb3bbbbbbbbbb3bbbbbbb3bbbbbbcc3333ccccc3ccccc3c333333333cccc59999995599999999955999999995999ddddddddd6666dddddddddd666dddddd
+bbbbbb3bbbbbbb3333bbbbbbbbbbbbbbccc3cccccc333333cc3c333333cccccc99999995599999955555999999995999ddddddddd6666ddddddddddd666ddddd
+bbbbbb3bbb3bbbbbbbbbbbbbbbbbbbbbccc3ccccc333333333cccccccccccccc99999995999999955559999999955999ddddddddd66666dddddddddd6666dddd
+bbbbbb3bb33bbbbbbbbbbb33bbbbbbbbcc333cccc333333333cccccccccccccc99999999999999999559999999959999ddddddd666666666ddddddddd666dddd
+bbbbbb3bb3bbbbbbbbbbb33bbbbbbbbbccc33cccc3333333333ccccccccccccc99999999999999999999999999959999dddddddd666666666ddddddddd66dddd
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcc333ccccccc3333333ccccccccccccc99999999999999999999999999559999ddddddddddd6666666dddddddd66dddd
+0bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb00c3333ccccccc333333cccc33cccccc0099999999999999999999999555999900dddddddddddd66666ddddddddddddd0
+0bbbbbbbbbbbbbbbbbbbbbbb33bbbbb00cc3333cccccc33333cccc33333cccc0099999999999555999999995599999900dddddddddddddd6666dddddddddddd0
+0bbbbbbbbbb33bbbbbbbbbb33bbbbbb00cc3333ccccccc3333c3cc333333ccc0099999999999555599999999999999900ddddddddddddddd6666ddddddddddd0
+00bbbbbbbbbb33bbbbbbbb33bbbbbb0000cc333ccccccc3333c3cc333333cc000099999999995555599999999999990000ddddddd6dddddddddddddddddddd00
+00bbbbbb3bbbb333bbbbbbbbbbbbbb0000ccccccccccccc33cccccc33333cc000099599999999995599999999999990000dddddd66666ddddddddddd6ddddd00
+000bbbbb33bbbbbbbbbbbbbbbbbbb000000cccccccccccccccccccc3333cc00000095999999999955599999999999000000ddddd666666ddddddddd66dddd000
+0000bbbbb3bbbbbbbbbbbbbbbbbb00000000cccccccccccccccccccccccc0000000059999999999995559999999900000000ddddddddddddddddd6666ddd0000
+00000bbbbbbbbbbbbb3bbbbbbbb0000000000ccccccccccc777cccccccc000000000099999999999999999999990000000000ddddddddddddd666666ddd00000
+000000bbbbbbbbbb333bbbbbbb000000000000cccccccc777777cccccc00000000000099999999999999999999000000000000ddddddddddd666666ddd000000
+0000000bbbbbbbbbbbbbbbbbb00000000000000ccccc777777777cccc0000000000000099999999999999999900000000000000dddddddddd6ddddddd0000000
+000000000bbbbbbbbbbbbbb000000000000000000cc77777777777c00000000000000000099999999999999000000000000000000dddddddddddddd000000000
+000000000000bbbbbbbb0000000000000000000000007777777700000000000000000000000099999999000000000000000000000000dddddddd000000000000
+000000000000222222220000000000000000066666600000000001111110000000000000000000000600000000000000000a000000aa0aa00999099009000080
+0000000002222222222222200000000000066666666660000001111d11111000000000000000000006000000000a000000a9a0a00a99a9a0a988889a00980098
+000000022222222222888222200000000066666666666600001111dd1111110000000000000000000600000000a99a000a999a00a999989a9898888989000000
+000000222222222222288888220000000666656665566660011111111d1111100000000000000000060000000a9899a00a98889aa98889899888898000000009
+00000222222222222222288882200000066656565665666001111d111dddd11000000000000000000600000000a989a000a989900a99889a0888888900000000
+0000222222222222222222888822000066666566566566661111d1111111111100000000000000000600000000099a000a9999a0a99898909089898a99000098
+000222222222e222222222288822200066666666655666651111d11111111111666666660000006606000000000aa000000aaa00aa99999a9a98889980900009
+002222222eeee22222eeee228882220066666666666666561111111111dd111100000000000000060600000000000000000000000aaa09a009a909a009009080
+00222222eeee22222eeee22288822200666666666655666511ddd1111dd11d110000000000000000000000000000000000000000000000000000000000000000
+0222222eeee22222eeee22228882222066665566656656661111111111111d1100555500000000000000000000060000000b0000000800000000000000000000
+022222eeee22222eeee2222228822220666566566566566611111dd1111111110555555000000000000c00000066600000bbb000008780000000000000000000
+022222eee222222eee22222222222220066566566655666001111d1111111110055d6cc00000000000ccc000066666000bbbbb00088878000000000000000000
+22222eee222222eee222222222222222066655666666666001111d11111d111005ddd660000000000ccccc000066600000bbb000008880000000000000000000
+22222eee222222eee2222222882222220066666656666600001111111ddd110005ddddd0000000000000000000060000000b0000000800000000000000000000
+22222eee222222ee22222288882222820006666565666000000111111111100000ddd00000000000000000000000000000000000000000000000000000000000
+222222ee222222ee2222288882222288000006665660000000000111111000000555550000000000000000000000000000000000000000000000000000000000
 2222222e222222e22222888822222228000005555550000000000eeeeee000000000000000000000000000000000000000000000000000000000000000000000
-22882222222222e222288822222222280005556555555000000ee8eeeeeee0000000000000000000000000000000000000000000000000000000000000000000
-2288822222222222222882222ee22222005556565555550000eee88eeeeeee000000000000000000000000000000000000000000000000000000000000000000
-2228822222222222222222222ee2222205555565555555500eeeee8888eeeee00000000000000000000000000000000000000000000000000000000000000000
-022888888888222222222222eee2222005555555555555500eeeeeeee88eeee00000000000000000000000000000000000000000000000000000000000000000
-02222888888222222222222eee2222205555555555666555eeeeee8eee8eeeee0000000000000000000000000000000000000000000000000000000000000000
+22882222222222e222288822222222280005556555555000000ee8eeeeeee00000000000000000000000000000060000000b0000000800000000000000000000
+2288822222222222222882222ee22222005556565555550000eee88eeeeeee000000000000000000000800000066600000bbb000008780000000000000000000
+2228822222222222222222222ee2222205555565555555500eeeee8888eeeee0000000000000000000888000066b66000bb3bb00088b78000000000000000000
+022888888888222222222222eee2222005555555555555500eeeeeeee88eeee00000000000000000088888000066600000bbb000008880000000000000000000
+02222888888222222222222eee2222205555555555666555eeeeee8eee8eeeee00000000000000000000000000060000000b0000000800000000000000000000
 02222222222222222222222ee22222205566555556555655eeee8e8eee8ee8ee0000000000000000000000000000000000000000000000000000000000000000
 002222222222222222222eeee22222005655655556555655eee88e88ee8ee8ee0000000000000000000000000000000000000000000000000000000000000000
 002222222eeeeee222eeeeee222222005655655556555655eee8eee8eeeee8ee0000000000000000000000000000000000000000000000000000000000000000
-00022222222eeeeeeeeeeee2222220005566555555666555ee88eee88eeeeeee0000000000000000000000000000000000000000000000000000000000000000
-00002222222eeeeeeeeeee22222200005555555655555555ee8eeeee8eeee8ee0000000000000000000000000000000000000000000000000000000000000000
-0000022222222222222222222220000005555565655555500eeeeeeeee8888e00000000000000000000000000000000000000000000000000000000000000000
-0000002222222222222222222200000005555556555555500eee8eeee88eeee00000000000000000000000000000000000000000000000000000000000000000
-000000022222222222222ee220000000005555555555550000ee888eeeeeee000000000000000000000000000000000000000000000000000000000000000000
+00022222222eeeeeeeeeeee2222220005566555555666555ee88eee88eeeeeee00000000000000000000000000060000000b0000000800000000000000000000
+00002222222eeeeeeeeeee22222200005555555655555555ee8eeeee8eeee8ee00000000000e0000000900000065600000b3b000008780000000000000000000
+0000022222222222222222222220000005555565655555500eeeeeeeee8888e00000000000eee00000999000065c56000b3c3b00082c78000000000000000000
+0000002222222222222222222200000005555556555555500eee8eeee88eeee0000000000eeeee00099999000065600000b3b000008280000000000000000000
+000000022222222222222ee220000000005555555555550000ee888eeeeeee0000000000000000000000000000060000000b0000000800000000000000000000
 000000000222222222eeee80000000000005555555555000000eeeeeeeeee0000000000000000000000000000000000000000000000000000000000000000000
 00000000000022222888000000000000000005555550000000000eeeeee000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000006000000006000000660000000000000000000000000000000000000000d000
@@ -724,10 +918,11 @@ __sfx__
 000500001f353226531e3531d65318353166531434311643123430f6430b343086230732303623043230261302313006130131300613003130230302303033030230301303013030030300302003020130201300
 0010000037620266201c65015650116500e6500c6500a650086500565003650026500065000640006400064000630006300063000620006200062000610006100061000610006000060000600006000060000600
 00100010307103271033710377103a71037710327102e7102675028750297501f7501f7501f7501e7501d75034100000000000000000000000000000000000000000000000000000000000000000000000000000
-000a00001d3232c333283331a3231031310313103030a303103031030310303103031030310303103030030300303003030030300303003030030300303003030030300303003030130300302003020030208300
-000800000000031350363502d35029350000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+010a00001d3232c333283331a3231031310313103030a303103031030310303103031030310303103030030300303003030030300303003030030300303003030030300303003030130300302003020030208300
+000a0000203342032420314223041a3041b3041b30400004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 011000002d753207031d7030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000001f7511f7511f7511f7511f7511f7511f7511f750227512275122751227512275122751227512275026750267502675026750267502675026750267502475024750247502475024750247502475024750
+001000002935329353293332931329303293030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __music__
 00 01424344
 
