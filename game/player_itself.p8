@@ -1,4 +1,4 @@
-__lua__10
+__lua__4
 -- player itself
 
 pl_credits = 0

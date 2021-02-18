@@ -1,4 +1,4 @@
-__lua__2
+__lua__5
 -- player ships
 
 pl_ship_x=50

@@ -1,4 +1,4 @@
-__lua__3
+__lua__6
 -- player drones
 
 drone_x = 0

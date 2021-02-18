@@ -1,4 +1,4 @@
-__lua__11
+__lua__12
 -- garbage collection
 
 function gc_all()

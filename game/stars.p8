@@ -1,4 +1,4 @@
-__lua__7
+__lua__11
 -- stars
 
 star_speed_multiplier = 1

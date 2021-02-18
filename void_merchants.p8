@@ -96,6 +96,192 @@ end
 
 
 -->8
+-- global variables
+
+show_battle_stats = true
+adhs_counter = 0
+x_left_boundry = 5
+x_right_boundry = 120
+y_up_boundry = 0
+y_down_boundry = 97
+
+initial_draw = true
+death_screen = false
+play_sfx = true
+
+
+-- arrays
+
+explosions = {}
+hitmarkers = {}
+-->8
+-- draw functions
+
+function draw_explosions()
+	for exp in all(explosions) do
+		spr(exp[3], exp[1], exp[2])
+		if adhs_counter == 7 or adhs_counter == 14 or adhs_counter == 21 then
+		 exp[3] += 1
+		 if exp[3] >= 144 then
+		 	del(explosions, exp)
+		 end
+	 end
+	end
+end
+
+function draw_hitmarkers()
+	for mark in all(hitmarkers) do
+		col = 0
+		if mark[4] == 1 then
+			col = 11
+		elseif mark[4] == 2 then
+			col = 12
+		elseif mark[4] == 3 then
+			col = 8
+		end
+		
+		pset(mark[1]-1, mark[2], col)
+		pset(mark[1]+1, mark[2], col)
+		pset(mark[1], mark[2]-1, col)
+		pset(mark[1], mark[2]+1, col)
+		
+		mark[3] += 1
+		if mark[3] >= 5 then
+			del(hitmarkers, mark)
+		end
+	end
+end
+
+function draw_battle_stats()
+	spr(137, 0, 100, 1, 1, true)
+	spr(137, 0, 126, 1, 1, true, true)
+	spr(137, 120, 100, 1, 1)
+	spr(137, 120, 126, 1, 1, false, true)
+	
+	for i = 2, 122, 8 do
+		spr(136, i, 100)
+		spr(136, i, 126, 1, 1, false, true)
+	end
+	
+	for i = 107, 123, 8 do
+		spr(138, -1, i)
+		spr(138, 126, i)
+	end
+	
+	print("hp:", 5, 110, 7)
+	print(get_ship_life_as_string(), 16, 110, 8)
+	
+	print("sh:", 42, 110, 7)
+		print(get_ship_shields_as_string(), 53, 110, 12)
+
+	print("dr:", 79, 110, 7)
+	print(get_drone_life_as_string(), 90, 110, 8)
+
+	if drone_life < 4 then
+		drplusy = 90 + drone_life * 8
+	elseif drone_life < 10 then
+		drplusy = 98
+	else
+		drplusy = 102
+	end
+
+	print("+", drplusy, 110, 12)
+	print(drone_shields, drplusy + 4, 110, 12)
+
+	print("stg:", 5, 119, 7)
+	print(get_free_storage(), 20, 119, 13)
+
+	print("dmg:", 29, 119, 7)
+	print(pl_ship_damage+drone_damage, 44, 119, 9)
+	
+	print("wps:", 53, 119, 7)
+	print(pl_ship_weapons+drone_weapons, 68, 119, 5)
+	
+	print("sp:", 77, 119, 7)
+	print(pl_ship_speed, 88, 119, 11)
+	
+	print("sts:", 101, 119, 7)
+	print(pl_ship_shot_speed, 116, 119, 14)
+end
+
+function draw_ship()
+	spr(pl_ship_sprite, pl_ship_x, pl_ship_y)
+ spr(249 + pl_ship_shields, pl_ship_x + 9, pl_ship_y, 1, 1, true, false)
+end
+
+function draw_friendly_shots(array, col)
+	for shot in all(array) do
+	line(shot[1], shot[2], shot[1]+1, shot[2], col)
+	shot[1] += 1 * pl_ship_shot_speed * 1.3
+		if shot[1] > 127 then
+		del(pl_ship_shots, shot)
+		end
+	end
+end
+
+function draw_enemy_shots()
+	for shot in all(enemy_shots) do
+			line(shot[1], shot[2], shot[1]+1, shot[2], 8)
+			shot[1] -= 1 * shot[3] * 1
+		if shot[1] < 1 then
+			del(enemy_shots, shot)
+		end
+	end
+end
+
+function draw_drone()
+	spr(drone_sprite, drone_x, drone_y)
+	spr(249 + drone_shields, drone_x + 9, drone_y, 1, 1, true, false)
+end
+
+function draw_enemys()
+ for enemy in all(enemys) do
+		spr(enemy[5], enemy[1], enemy[2])
+		spr(249 + enemy[8], enemy[1] - 9, enemy[2])
+		enemy[1] -= 0.1 * enemy[11]
+
+		if enemy[1] - 4 > 127 then
+			spr(199, 119, enemy[2])
+		end
+		
+		-- this if is for the enemy_wobble
+		if enemy[16] >= 20 / enemy[11] then
+			if enemy[2] > 0 and enemy[2] < enemys_max_y + 1 and not enemy_colides_enemy(enemy[1], enemy[2], enemy[17]) then
+				enemy[2] += enemy[14]
+				if enemy[15] + enemy[13] <= enemy[2] or enemy[15] - enemy[13] >= enemy[2] then
+					enemy[14] = enemy[14] - enemy[14] * 2
+				end
+			else
+				enemy[14] = enemy[14] - enemy[14] * 2
+				enemy[2] += enemy[14]
+			end
+			enemy[16] = 0
+		end
+		enemy[16] += 1
+		
+		if show_enemy_life then
+			life_line = enemy[7] * 8 / calc_enemy_life(enemy[12])
+			line(enemy[1], enemy[2]-2, enemy[1]+8, enemy[2]-2, 2)
+			line(enemy[1], enemy[2]-2, enemy[1]+life_line, enemy[2]-2, 8)
+		end
+		
+		if enemy[1] <= -7 then
+			del(enemys, enemy)
+		end
+ end
+end
+-->8
+-- player itself
+
+pl_credits = 0
+pl_items_stored = {}
+reputation = 0
+
+
+-- perks
+
+show_enemy_life = true
+-->8
 -- player ships
 
 pl_ship_x=50
@@ -490,109 +676,6 @@ function enemy_drop_item(enemy)
 end
 
 -->8
--- items
-
-floating_items = {}
-
-speed_buff = 184
-shot_speed_buff = 185
-
-function add_floating_item(item_type, x, y)
-	item = {}
-	item[1] = x
-	item[2] = y
-	-- sprite and id
-	item[3] = item_type
-	-- item wobble
-	item[4] = 1
-	add(floating_items, item) 
-end
-
-function calculate_floating_items_drift()
-	for item in all(floating_items) do
-		item[1] -= 0.25
-		item[2] -= item[4]
-		item[4] = item[4]*-1
-	end
-end
-
-function draw_floating_items()
-	for item in all(floating_items) do
-		spr(item[3], item[1], item[2])	
-	end
-end
--->8
--- debug infos
-
-function debug_coords()
-	line(10,70,10,70,8)
-	print("point x:10 y:70", 10,60,8)
-	
-	print("ship_x:" .. pl_ship_x, 10, 10, 7)
-	print("ship_y:" .. pl_ship_y, 10, 20, 7)
-	print("drone_x:" .. drone_x, 10, 30, 12)
-	print("drone_y:" .. drone_y, 10, 40, 12)
-end
-
-function info(text, val, plusy)
-		if plusy == nil then
-			plusy = 0
-		end
-		if val == nil then
-			val = ""
-		end
- 	print(text .. ": " .. val, 5, 5+plusy, 7)
-end
--->8
--- stars
-
-star_speed_multiplier = 1
-max_stars = 25
-min_star_speed = 1
-max_star_speed = 5
-stars_counter_threshold = 2
-stars_counter = 0
-stars_max_y = 0
-stars = {}
-
-function init_passing_stars()
-	for i = 1, max_stars do
-		star = {flr(rnd(127)), flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier} 
-		add(stars, star)
-	end
-end
-
-function draw_passing_stars()
-	if star_speed_multiplier > 0 then
-	 	stars_start_x = 127
-	else
-	 	stars_start_x = 0
-	end
-
- 	if stars_counter >= stars_counter_threshold and max_stars > #stars then
-		star = {stars_start_x, flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier}
-		add(stars, star)
-  		stars_counter = 0
- 	end
- 	stars_counter += 1
- 
-	for star in all(stars) do
-		-- draw star
-		line(star[1], star[2], star[1], star[2], 7)
-		star[1] -= star[3]
-		if star[1] < 0 or star[1] > 127 then
-			del(stars, star)
-		end
-	end
-end
-
-function all_stars_speed_ctrl(speed_multiplier)
-	for star in all(stars) do
-		star[3] = star[3] * speed_multiplier
-	end
-	star_speed_multiplier = speed_multiplier
-end
--->8
 --collision
 
 -- shots --> [1] = x; [2] = y
@@ -699,219 +782,36 @@ end
 
 
 -->8
--- data_ops
+-- items
 
--- call once at _init
-function init_data_ops()
-	cartdata("void_merchants_4e40baa22f0e407277e79304514550b9e952ccef")
+floating_items = {}
+
+speed_buff = 184
+shot_speed_buff = 185
+
+function add_floating_item(item_type, x, y)
+	item = {}
+	item[1] = x
+	item[2] = y
+	-- sprite and id
+	item[3] = item_type
+	-- item wobble
+	item[4] = 1
+	add(floating_items, item) 
 end
 
-function save_game()
-	dset(index, variable_value)
-end
-
-function load_game()
-	variable = dget(index)
-end
--->8
--- player itself
-
-pl_credits = 0
-pl_items_stored = {}
-reputation = 0
-
-
--- perks
-
-show_enemy_life = true
--->8
--- garbage collection
-
-function gc_all()
-explosions = nil
-hitmarkers = nil
-pl_ship_shots = nil
-pl_ship_items_stored = nil
-drone_shots = nil
-enemys = nil
-enemy_shots = nil
-stars = nil
-pl_items_stored = nil
-end
--->8
--- global variables
-
-show_battle_stats = true
-adhs_counter = 0
-x_left_boundry = 5
-x_right_boundry = 120
-y_up_boundry = 0
-y_down_boundry = 97
-
-initial_draw = true
-death_screen = false
-play_sfx = true
-
-
--- arrays
-
-explosions = {}
-hitmarkers = {}
--->8
--- draw functions
-
-function draw_explosions()
-	for exp in all(explosions) do
-		spr(exp[3], exp[1], exp[2])
-		if adhs_counter == 7 or adhs_counter == 14 or adhs_counter == 21 then
-		 exp[3] += 1
-		 if exp[3] >= 144 then
-		 	del(explosions, exp)
-		 end
-	 end
+function calculate_floating_items_drift()
+	for item in all(floating_items) do
+		item[1] -= 0.25
+		item[2] -= item[4]
+		item[4] = item[4]*-1
 	end
 end
 
-function draw_hitmarkers()
-	for mark in all(hitmarkers) do
-		col = 0
-		if mark[4] == 1 then
-			col = 11
-		elseif mark[4] == 2 then
-			col = 12
-		elseif mark[4] == 3 then
-			col = 8
-		end
-		
-		pset(mark[1]-1, mark[2], col)
-		pset(mark[1]+1, mark[2], col)
-		pset(mark[1], mark[2]-1, col)
-		pset(mark[1], mark[2]+1, col)
-		
-		mark[3] += 1
-		if mark[3] >= 5 then
-			del(hitmarkers, mark)
-		end
+function draw_floating_items()
+	for item in all(floating_items) do
+		spr(item[3], item[1], item[2])	
 	end
-end
-
-function draw_battle_stats()
-	spr(137, 0, 100, 1, 1, true)
-	spr(137, 0, 126, 1, 1, true, true)
-	spr(137, 120, 100, 1, 1)
-	spr(137, 120, 126, 1, 1, false, true)
-	
-	for i = 2, 122, 8 do
-		spr(136, i, 100)
-		spr(136, i, 126, 1, 1, false, true)
-	end
-	
-	for i = 107, 123, 8 do
-		spr(138, -1, i)
-		spr(138, 126, i)
-	end
-	
-	print("hp:", 5, 110, 7)
-	print(get_ship_life_as_string(), 16, 110, 8)
-	
-	print("sh:", 42, 110, 7)
-		print(get_ship_shields_as_string(), 53, 110, 12)
-
-	print("dr:", 79, 110, 7)
-	print(get_drone_life_as_string(), 90, 110, 8)
-
-	if drone_life < 4 then
-		drplusy = 90 + drone_life * 8
-	elseif drone_life < 10 then
-		drplusy = 98
-	else
-		drplusy = 102
-	end
-
-	print("+", drplusy, 110, 12)
-	print(drone_shields, drplusy + 4, 110, 12)
-
-	print("stg:", 5, 119, 7)
-	print(get_free_storage(), 20, 119, 13)
-
-	print("dmg:", 29, 119, 7)
-	print(pl_ship_damage+drone_damage, 44, 119, 9)
-	
-	print("wps:", 53, 119, 7)
-	print(pl_ship_weapons+drone_weapons, 68, 119, 5)
-	
-	print("sp:", 77, 119, 7)
-	print(pl_ship_speed, 88, 119, 11)
-	
-	print("sts:", 101, 119, 7)
-	print(pl_ship_shot_speed, 116, 119, 14)
-end
-
-function draw_ship()
-	spr(pl_ship_sprite, pl_ship_x, pl_ship_y)
- spr(249 + pl_ship_shields, pl_ship_x + 9, pl_ship_y, 1, 1, true, false)
-end
-
-function draw_friendly_shots(array, col)
-	for shot in all(array) do
-	line(shot[1], shot[2], shot[1]+1, shot[2], col)
-	shot[1] += 1 * pl_ship_shot_speed * 1.3
-		if shot[1] > 127 then
-		del(pl_ship_shots, shot)
-		end
-	end
-end
-
-function draw_enemy_shots()
-	for shot in all(enemy_shots) do
-			line(shot[1], shot[2], shot[1]+1, shot[2], 8)
-			shot[1] -= 1 * shot[3] * 1
-		if shot[1] < 1 then
-			del(enemy_shots, shot)
-		end
-	end
-end
-
-function draw_drone()
-	spr(drone_sprite, drone_x, drone_y)
-	spr(249 + drone_shields, drone_x + 9, drone_y, 1, 1, true, false)
-end
-
-function draw_enemys()
- for enemy in all(enemys) do
-		spr(enemy[5], enemy[1], enemy[2])
-		spr(249 + enemy[8], enemy[1] - 9, enemy[2])
-		enemy[1] -= 0.1 * enemy[11]
-
-		if enemy[1] - 4 > 127 then
-			spr(199, 119, enemy[2])
-		end
-		
-		-- this if is for the enemy_wobble
-		if enemy[16] >= 20 / enemy[11] then
-			if enemy[2] > 0 and enemy[2] < enemys_max_y + 1 and not enemy_colides_enemy(enemy[1], enemy[2], enemy[17]) then
-				enemy[2] += enemy[14]
-				if enemy[15] + enemy[13] <= enemy[2] or enemy[15] - enemy[13] >= enemy[2] then
-					enemy[14] = enemy[14] - enemy[14] * 2
-				end
-			else
-				enemy[14] = enemy[14] - enemy[14] * 2
-				enemy[2] += enemy[14]
-			end
-			enemy[16] = 0
-		end
-		enemy[16] += 1
-		
-		if show_enemy_life then
-			life_line = enemy[7] * 8 / calc_enemy_life(enemy[12])
-			line(enemy[1], enemy[2]-2, enemy[1]+8, enemy[2]-2, 2)
-			line(enemy[1], enemy[2]-2, enemy[1]+life_line, enemy[2]-2, 8)
-		end
-		
-		if enemy[1] <= -7 then
-			del(enemys, enemy)
-		end
- end
 end
 -->8
 -- common
@@ -927,6 +827,106 @@ end
 
 function create_hitmarker(posx, posy, ship_drone_enemy)
 	add(hitmarkers, {posx, posy, 0, ship_drone_enemy})
+end
+-->8
+-- stars
+
+star_speed_multiplier = 1
+max_stars = 25
+min_star_speed = 1
+max_star_speed = 5
+stars_counter_threshold = 2
+stars_counter = 0
+stars_max_y = 0
+stars = {}
+
+function init_passing_stars()
+	for i = 1, max_stars do
+		star = {flr(rnd(127)), flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier} 
+		add(stars, star)
+	end
+end
+
+function draw_passing_stars()
+	if star_speed_multiplier > 0 then
+	 	stars_start_x = 127
+	else
+	 	stars_start_x = 0
+	end
+
+ 	if stars_counter >= stars_counter_threshold and max_stars > #stars then
+		star = {stars_start_x, flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier}
+		add(stars, star)
+  		stars_counter = 0
+ 	end
+ 	stars_counter += 1
+ 
+	for star in all(stars) do
+		-- draw star
+		line(star[1], star[2], star[1], star[2], 7)
+		star[1] -= star[3]
+		if star[1] < 0 or star[1] > 127 then
+			del(stars, star)
+		end
+	end
+end
+
+function all_stars_speed_ctrl(speed_multiplier)
+	for star in all(stars) do
+		star[3] = star[3] * speed_multiplier
+	end
+	star_speed_multiplier = speed_multiplier
+end
+-->8
+-- garbage collection
+
+function gc_all()
+explosions = nil
+hitmarkers = nil
+pl_ship_shots = nil
+pl_ship_items_stored = nil
+drone_shots = nil
+enemys = nil
+enemy_shots = nil
+stars = nil
+pl_items_stored = nil
+end
+-->8
+-- data_ops
+
+-- call once at _init
+function init_data_ops()
+	cartdata("void_merchants_4e40baa22f0e407277e79304514550b9e952ccef")
+end
+
+function save_game()
+	dset(index, variable_value)
+end
+
+function load_game()
+	variable = dget(index)
+end
+-->8
+-- debug infos
+
+function debug_coords()
+	line(10,70,10,70,8)
+	print("point x:10 y:70", 10,60,8)
+	
+	print("ship_x:" .. pl_ship_x, 10, 10, 7)
+	print("ship_y:" .. pl_ship_y, 10, 20, 7)
+	print("drone_x:" .. drone_x, 10, 30, 12)
+	print("drone_y:" .. drone_y, 10, 40, 12)
+end
+
+function info(text, val, plusy)
+		if plusy == nil then
+			plusy = 0
+		end
+		if val == nil then
+			val = ""
+		end
+ 	print(text .. ": " .. val, 5, 5+plusy, 7)
 end
 __gfx__
 0000000000000000000000005500dd000055500005d55dd00000000000566c000000000000000000000000000000aaaaaaaa0000000000000000033333300000
@@ -1198,4 +1198,5 @@ __sfx__
 001000002935329353293332931329303293030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __music__
 00 01424344
+
 

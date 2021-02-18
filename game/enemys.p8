@@ -1,4 +1,4 @@
-__lua__4
+__lua__7
 -- enemys
 
 enemys_max_y = 0

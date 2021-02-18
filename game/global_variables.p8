@@ -1,4 +1,4 @@
-__lua__12
+__lua__2
 -- global variables
 
 show_battle_stats = true
