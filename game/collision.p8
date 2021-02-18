@@ -1,0 +1,107 @@
+__lua__8
+--collision
+
+-- shots --> [1] = x; [2] = y
+function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
+	info("htbx")
+	for shot in all(shot_array) do
+		for enemy in all(enemys) do
+			if enemy[7] > 0 then
+				hit_x = shot[1] + 5 >= enemy[1] and shot[1] <= enemy[1] + 7
+			else
+				hit_x = shot[1] + 2 >= enemy[1] and shot[1] <= enemy[1] + 7
+			end -- upper ship part _and_ lower ship part
+			hit_y = shot[2] >= enemy[2] + enemy[3] and shot[2] < enemy[2] + enemy[4] + enemy[3] + 1
+			
+			if hit_x and hit_y then
+				if enemy[8] > 0 then
+				 enemy[8] -= 1
+				else
+					enemy[7] -= damage_from
+				end
+				if flr(enemy[7]) <= 0 then
+					create_explosion(enemy[1], enemy[2])
+					enemy_drop_item(enemy)
+					del(enemys, enemy)
+				end
+
+				create_hitmarker(shot[1], shot[2], ship1_drone2)
+				del(shot_array, shot)
+			end
+		end
+	end
+end
+
+function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1_drone2)
+	for shot in all(enemy_shots) do
+		if player1_drone2 == 1 and pl_ship_shields > 0 or player1_drone2 == 2 and drone_shields > 0 then
+			hit_x = shot[1] - 11 <= posx and shot[1] >= posx
+		else
+			hit_x = shot[1] - 8 <= posx and shot[1] >= posx
+		end
+		hit_y = shot[2] > posy - 1 + htbx_skip_pxl and shot[2] < posy + htbx_width + htbx_skip_pxl
+		
+		if hit_x and hit_y then
+			life = 0
+			if player1_drone2 == 1 then
+				if pl_ship_shields > 0 then
+				 pl_ship_shields -= 1
+				else
+				 pl_ship_life -= shot[4]
+				end
+				life = pl_ship_life
+			elseif player1_drone2 == 2 then
+				if drone_shields > 0 then
+					drone_shields -= 1
+				else
+					drone_life -= shot[4]
+				end
+				life = drone_life
+			end
+			sfx(7)
+			
+			if flr(life) <= 0 then
+				create_explosion(posx, posy)
+				if player1_drone2 == 1 then
+						death_screen = true
+						clear_screen()
+						gc_all()
+				elseif player1_drone2 == 2 then
+					kill_drone()
+				end
+			end
+
+			create_hitmarker(shot[1], shot[2], 3)
+			del(enemy_shots, shot)
+		end
+	end
+end
+
+-- probably not needed anymore... just keeping for safety
+--function new_enemy_colides_enemy(posx, posy)
+--	for enemy in all(enemys) do
+--		hity = enemy[2] - 8 < posy and enemy[2] + 8 > posy
+--		hitx = enemy[1] - 8 < posx and enemy[1] + 8 > posx
+--		if hity and hitx then
+----		if hitx then
+--	  		return true
+--	 end
+--	end
+--	return false
+--end
+
+function enemy_colides_enemy(posx, posy, id)
+	for enemy in all(enemys) do
+		if id != enemy[17] then
+			hity = enemy[2] - 8 < posy and enemy[2] + 8 > posy
+			hitx = enemy[1] - 8 < posx and enemy[1] + 8 > posx
+			if hity and hitx then
+		  		return true
+		 end
+		end
+	end
+	return false
+end
+
+
+-->8
