@@ -1,0 +1,170 @@
+__lua__2
+-- player ships
+
+pl_ship_x=50
+pl_ship_y=20
+pl_ship_hitbox_skip_pixle = 0 -- from mid
+pl_ship_hitbox_width = 0 -- from mid
+pl_ship_sprite=0
+pl_ship_damage=0
+pl_ship_life=0
+pl_ship_shields=0--sris 250-255
+pl_ship_weapons=0
+pl_ship_shot_speed=0 -- actual projectile speed and fire rate
+pl_ship_speed=0 -- float
+pl_ship_storage=0 -- in tons
+pl_ship_shots = {}
+pl_ship_items_stored = {}
+pl_ship_shot_timer = 0
+pl_ship_can_shoot = false
+pl_ship_tier = 1
+
+function set_pl_ship(tier)
+	pl_ship_sprite=tier-1
+	htbx = get_ship_htbx_skp_pxl_width(tier)
+	pl_ship_hitbox_skip_pixle = htbx[1]
+	pl_ship_hitbox_width = htbx[2]
+	pl_ship_damage=2*tier
+	pl_ship_life=3*tier
+	pl_ship_shields=flr(tier/2)
+	pl_ship_weapons=flr(tier/4)+1
+	pl_ship_shot_speed=tier/3+1
+	pl_ship_speed=1
+	pl_ship_storage=7
+	pl_ship_tier=tier
+end
+
+function get_ship_htbx_skp_pxl_width(tier)
+ if tier == 1 then
+ 	return {2, 5}
+ elseif tier == 2 or tier == 3 then
+  return {1, 7}
+ elseif tier == 4 or tier == 5 or tier == 6 then
+  return {0, 8}
+ end
+end
+
+function get_shot_mask(weapons)
+	shot_mask = {}
+	
+	if weapons == 0 then
+  		shot_mask = {-1, -1, -1, -1, -1}
+ 	end
+	if weapons == 1 then
+		shot_mask = {-1, -1, 4, -1, -1}
+	end
+		if weapons == 2 then
+		shot_mask = {-1, -1, 3, 5, -1}
+	end
+	if weapons == 3 then
+		shot_mask = {-1, 2, 4, 6, -1}
+	end
+	if weapons == 4 then
+		shot_mask = {1, 3, 5, 7, -1}
+	end
+	if weapons == 5 then
+		shot_mask = {0, 2, 4, 6, 8}
+	end
+	return shot_mask
+end
+
+function ship_and_drone_shoot()
+ shot_freq = 10 / pl_ship_shot_speed
+	if shot_freq <= pl_ship_shot_timer then
+		pl_ship_can_shoot = true
+	end
+	
+	if btn(4) and pl_ship_can_shoot == true then
+		shot_mask = get_shot_mask(pl_ship_weapons)
+		if play_sfx == true then
+			sfx(5)
+		end
+		
+		for shm in all(shot_mask) do
+			if shm != -1 then
+				shot = {pl_ship_x + 10, pl_ship_y + shm}
+				add(pl_ship_shots, shot)
+			end
+		end
+		
+		shot_mask = get_shot_mask(drone_weapons)
+		for shm in all(shot_mask) do
+			if shm != -1 then
+				shot = {drone_x + 10, drone_y + shm -2}
+				add(drone_shots, shot)
+			end
+		end
+	 
+		pl_ship_can_shoot = false
+		pl_ship_shot_timer = 0
+	end
+	
+	if pl_ship_can_shoot == false then
+	 	pl_ship_shot_timer += 1
+	end
+end
+
+function ship_ctrl()
+	sp = pl_ship_speed * 1
+	
+	if btn(0) then
+		if pl_ship_x > x_left_boundry then
+			pl_ship_x -= sp
+		end
+	end
+	if btn(1) then
+	 	if pl_ship_x < x_right_boundry then
+	 		pl_ship_x += sp
+		end
+	end
+	if btn(2) then
+	 	if pl_ship_y > y_up_boundry then
+		 	pl_ship_y -= sp
+		end
+	end
+	if btn(3) then
+	 	if pl_ship_y < y_down_boundry then
+			pl_ship_y += sp
+		end
+	end
+end
+
+-- with drone storage
+function get_free_storage()
+ 	return pl_ship_storage + drone_storage - #pl_ship_items_stored
+end
+
+function get_ship_life_as_string()
+	ship_life = ""
+	 	if pl_ship_life < 4 then
+			for i = 1, pl_ship_life do
+				ship_life = ship_life .. "♥"
+			end
+		else
+		 	ship_life = " " .. pl_ship_life
+		end
+	return ship_life
+end
+
+function get_ship_shields_as_string()
+	ship_shields = ""
+	 	if pl_ship_shields < 4 then
+			for i = 1, pl_ship_shields do
+				ship_shields = ship_shields .. "◆"
+			end
+		else
+		 	ship_shields = " " .. pl_ship_shields
+		end
+	return ship_shields
+end
+
+function ship_burner_calculation()
+	if adhs_counter == 10 or adhs_counter == 20 then
+	 	pl_ship_sprite += 16
+	end
+	if pl_ship_sprite > 37 then
+	 	pl_ship_sprite -= 3*16
+	end
+end
+
+-->8

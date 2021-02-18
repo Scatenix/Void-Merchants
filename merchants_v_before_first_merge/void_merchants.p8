@@ -19,8 +19,8 @@ function _init()
 	add_enemy(1)
 	
 	
-	set_pl_ship(6)
- 	add_pl_drone(4)
+	set_pl_ship(1)
+ add_pl_drone(1)
 end
 
 
