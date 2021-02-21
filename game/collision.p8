@@ -104,4 +104,24 @@ function enemy_colides_enemy(posx, posy, id)
 end
 
 
+function floating_items_colides_player()
+		hit_x_drone = false
+		hit_y_drone = false
+
+	for item in all(floating_items) do
+		hit_x_ship = item[1] <= pl_ship_x+8 and item[1] >= pl_ship_x or item[1]+8 <= pl_ship_x+8 and item[1]+8 >= pl_ship_x
+		hit_y_ship = item[2] <= pl_ship_y+8 and item[2] >= pl_ship_y or item[2]+8 <= pl_ship_y+8 and item[2]+8 >= pl_ship_y
+
+		if drone_available then
+			hit_x_drone = item[1] <= drone_x+drone_hitbox_width and item[1] >= drone_x or item[1]+8 <= drone_x+drone_hitbox_width and item[1]+8 >= drone_x
+			hit_y_drone = item[2] <= drone_y+drone_hitbox_width and item[2] >= drone_y or item[2]+8 <= drone_y+drone_hitbox_width and item[2]+8 >= drone_y
+		end
+
+		if hit_x_ship and hit_y_ship or hit_x_drone and hit_y_drone then
+			del(floating_items, item)
+			interpret_item(item[3])
+		end
+	end
+end
+
 -->8

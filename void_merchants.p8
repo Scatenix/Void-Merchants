@@ -1,26 +1,41 @@
 pico-8 cartridge // http://www.pico-8.com
 version 29
 __lua__
+
 -- main
 -- shift + h = ♥
 
 function _init()
 	clear_screen()
-	
+
 	if show_battle_stats == true then
 		stars_max_y = 105
 		enemys_max_y = 96
- 	else
+	else
 		stars_max_y = 127
 		enemys_max_y = 119
- 	end
-	
+	end
+
 	add_enemy(1)
 	add_enemy(1)
-	
-	
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+	add_enemy(1)
+
+	drone_tier = 3
+
 	set_pl_ship(6)
- 	add_pl_drone(4)
+	set_pl_drone(drone_tier)
 end
 
 
@@ -30,22 +45,33 @@ end
 
 
 function _update()
-	ship_ctrl()
-	drone_ctrl()
-	ship_and_drone_shoot()
-	friendly_shots_hit_enemy(pl_ship_shots, pl_ship_damage, 1)
-	friendly_shots_hit_enemy(drone_shots, drone_damage, 2)
-	enemy_shots_hit_friendly(pl_ship_x, pl_ship_y, pl_ship_hitbox_skip_pixle, pl_ship_hitbox_width, 1)
-	enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixle, drone_hitbox_width, 2)
-	enemy_shoot()
-	ship_burner_calculation()
-	calculate_floating_items_drift()
+	if death_screen == false then
+		ship_ctrl()
+		drone_ctrl()
+		ship_and_drone_shoot()
+		friendly_shots_hit_enemy(pl_ship_shots, pl_ship_damage, 1)
+		friendly_shots_hit_enemy(drone_shots, drone_damage, 2)
+		enemy_shots_hit_friendly(pl_ship_x, pl_ship_y, pl_ship_hitbox_skip_pixle, pl_ship_hitbox_width, 1)
+		enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixle, drone_hitbox_width, 2)
+		enemy_shoot()
+		ship_burner_calculation()
+		calculate_floating_items_drift()
+		floating_items_colides_player()
+		speed_buff_timer()
+		shot_speed_buff_timer()
 	
-	-- adhs_counter -> used for animations
-	if adhs_counter == 21 then
- 		adhs_counter = 0
- 	end
-	adhs_counter+=1
+		-- adhs_counter -> used for animations
+		if adhs_counter == 21 then
+			adhs_counter = 0
+		end
+		adhs_counter+=1
+	
+		-- long_adhs_counter -> used for animations with longer runtime
+		if long_adhs_counter == 101 then
+			long_adhs_counter = 0
+		end
+		long_adhs_counter+=1
+	end
 end
 
 
@@ -59,13 +85,13 @@ end
 function _draw()
 	clear_screen()
 
-	----- debug section
-	
+----- debug section
+
 --	debug_coords()
 --	info(enemy_shot_cooldown)
-	
-	----------------
-	
+
+----------------
+
 	if death_screen == true then
 		print("you died :c\nwanna play again? :)\nrestart the game!", 30, 30, 10)
 	else
@@ -73,22 +99,22 @@ function _draw()
 			init_passing_stars()
 			initial_draw = false
 		end
-		
+
 		draw_passing_stars()
-		
+
 		if show_battle_stats then
-		 	draw_battle_stats()
+			draw_battle_stats()
 		end
-	
+
 		draw_floating_items()
 		draw_enemys()
 		draw_ship()
 		draw_drone()
-	
+
 		draw_friendly_shots(pl_ship_shots, 11)
 		draw_friendly_shots(drone_shots, 12)
 		draw_enemy_shots()
-		
+
 		draw_hitmarkers()
 		draw_explosions()
 	end
@@ -100,6 +126,7 @@ end
 
 show_battle_stats = true
 adhs_counter = 0
+long_adhs_counter = 0
 x_left_boundry = 5
 x_right_boundry = 120
 y_up_boundry = 0
@@ -109,6 +136,12 @@ initial_draw = true
 death_screen = false
 play_sfx = true
 
+speed_buff_time = 4.0
+shot_speed_buff_time = 4.0
+
+max_pl_dr_weapons = 5
+max_drones = 6
+max_pl_extra_damage = 6
 
 -- arrays
 
@@ -121,11 +154,11 @@ function draw_explosions()
 	for exp in all(explosions) do
 		spr(exp[3], exp[1], exp[2])
 		if adhs_counter == 7 or adhs_counter == 14 or adhs_counter == 21 then
-		 exp[3] += 1
-		 if exp[3] >= 144 then
-		 	del(explosions, exp)
-		 end
-	 end
+			exp[3] += 1
+			if exp[3] >= 144 then
+				del(explosions, exp)
+			end
+		end
 	end
 end
 
@@ -139,12 +172,12 @@ function draw_hitmarkers()
 		elseif mark[4] == 3 then
 			col = 8
 		end
-		
+
 		pset(mark[1]-1, mark[2], col)
 		pset(mark[1]+1, mark[2], col)
 		pset(mark[1], mark[2]-1, col)
 		pset(mark[1], mark[2]+1, col)
-		
+
 		mark[3] += 1
 		if mark[3] >= 5 then
 			del(hitmarkers, mark)
@@ -157,22 +190,22 @@ function draw_battle_stats()
 	spr(137, 0, 126, 1, 1, true, true)
 	spr(137, 120, 100, 1, 1)
 	spr(137, 120, 126, 1, 1, false, true)
-	
+
 	for i = 2, 122, 8 do
 		spr(136, i, 100)
 		spr(136, i, 126, 1, 1, false, true)
 	end
-	
+
 	for i = 107, 123, 8 do
 		spr(138, -1, i)
 		spr(138, 126, i)
 	end
-	
+
 	print("hp:", 5, 110, 7)
 	print(get_ship_life_as_string(), 16, 110, 8)
-	
+
 	print("sh:", 42, 110, 7)
-		print(get_ship_shields_as_string(), 53, 110, 12)
+	print(get_ship_shields_as_string(), 53, 110, 12)
 
 	print("dr:", 79, 110, 7)
 	print(get_drone_life_as_string(), 90, 110, 8)
@@ -206,23 +239,24 @@ end
 
 function draw_ship()
 	spr(pl_ship_sprite, pl_ship_x, pl_ship_y)
- spr(249 + pl_ship_shields, pl_ship_x + 9, pl_ship_y, 1, 1, true, false)
+	spr(249 + pl_ship_shields, pl_ship_x + 9, pl_ship_y, 1, 1, true, false)
 end
 
 function draw_friendly_shots(array, col)
 	for shot in all(array) do
 	line(shot[1], shot[2], shot[1]+1, shot[2], col)
 	shot[1] += 1 * pl_ship_shot_speed * 1.3
-		if shot[1] > 127 then
+		if shot[1] > 150 then
 		del(pl_ship_shots, shot)
+		del(drone_shots, shot)
 		end
 	end
 end
 
 function draw_enemy_shots()
 	for shot in all(enemy_shots) do
-			line(shot[1], shot[2], shot[1]+1, shot[2], 8)
-			shot[1] -= 1 * shot[3] * 1
+		line(shot[1], shot[2], shot[1]+1, shot[2], 8)
+		shot[1] -= 1 * shot[3] * 1
 		if shot[1] < 1 then
 			del(enemy_shots, shot)
 		end
@@ -235,7 +269,7 @@ function draw_drone()
 end
 
 function draw_enemys()
- for enemy in all(enemys) do
+	for enemy in all(enemys) do
 		spr(enemy[5], enemy[1], enemy[2])
 		spr(249 + enemy[8], enemy[1] - 9, enemy[2])
 		enemy[1] -= 0.1 * enemy[11]
@@ -258,17 +292,17 @@ function draw_enemys()
 			enemy[16] = 0
 		end
 		enemy[16] += 1
-		
+
 		if show_enemy_life then
 			life_line = enemy[7] * 8 / calc_enemy_life(enemy[12])
 			line(enemy[1], enemy[2]-2, enemy[1]+8, enemy[2]-2, 2)
 			line(enemy[1], enemy[2]-2, enemy[1]+life_line, enemy[2]-2, 8)
 		end
-		
+
 		if enemy[1] <= -7 then
 			del(enemys, enemy)
 		end
- end
+	end
 end
 -->8
 -- player itself
@@ -277,12 +311,33 @@ pl_credits = 0
 pl_items_stored = {}
 reputation = 0
 
-
 -- perks
 
 show_enemy_life = true
+
+function store_item(item)
+	if get_free_storage() > 0 then
+		add(pl_items_stored, item[3])
+		del(floating_items, item)
+	end
+end
+
+function drop_items_when_drone_dies()
+	for i=pl_ship_storage+1,#pl_items_stored do
+		add_floating_item(pl_items_stored[i], drone_x, drone_y + 3*i)
+		del(pl_items_stored, pl_items_stored[i])
+	-- this does not work! throws nil-pointer exce
+end
+
+function get_free_storage()
+	return pl_ship_storage + drone_storage - #pl_items_stored
+end
+
+function get_max_storage()
+	return pl_ship_storage + drone_storage
+end
 -->8
--- player ships
+-- player ship
 
 pl_ship_x=50
 pl_ship_y=20
@@ -290,17 +345,22 @@ pl_ship_hitbox_skip_pixle = 0 -- from mid
 pl_ship_hitbox_width = 0 -- from mid
 pl_ship_sprite=0
 pl_ship_damage=0
+pl_ship_base_damage=0
 pl_ship_life=0
+pl_ship_max_life=0
 pl_ship_shields=0--sris 250-255
 pl_ship_weapons=0
 pl_ship_shot_speed=0 -- actual projectile speed and fire rate
 pl_ship_speed=0 -- float
-pl_ship_storage=0 -- in tons
+pl_ship_default_shot_speed=0
+pl_ship_default_speed=0
+pl_ship_storage=0
 pl_ship_shots = {}
-pl_ship_items_stored = {}
 pl_ship_shot_timer = 0
 pl_ship_can_shoot = false
 pl_ship_tier = 1
+pl_ship_speed_buff_time = 0
+pl_ship_shot_speed_buff_time = 0
 
 function set_pl_ship(tier)
 	pl_ship_sprite=tier-1
@@ -308,31 +368,35 @@ function set_pl_ship(tier)
 	pl_ship_hitbox_skip_pixle = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
 	pl_ship_damage=2*tier
+	pl_ship_base_damage=pl_ship_damage
 	pl_ship_life=3*tier
+	pl_ship_max_life=pl_ship_life
 	pl_ship_shields=flr(tier/2)
 	pl_ship_weapons=flr(tier/4)+1
 	pl_ship_shot_speed=tier/3+1
 	pl_ship_speed=1
+	pl_ship_default_shot_speed=tier/3+1
+	pl_ship_default_speed=1
 	pl_ship_storage=7
 	pl_ship_tier=tier
 end
 
 function get_ship_htbx_skp_pxl_width(tier)
- if tier == 1 then
- 	return {2, 5}
- elseif tier == 2 or tier == 3 then
-  return {1, 7}
- elseif tier == 4 or tier == 5 or tier == 6 then
-  return {0, 8}
- end
+	if tier == 1 then
+		return {2, 5}
+	elseif tier == 2 or tier == 3 then
+		return {1, 7}
+	elseif tier == 4 or tier == 5 or tier == 6 then
+		return {0, 8}
+	end
 end
 
 function get_shot_mask(weapons)
 	shot_mask = {}
 	
 	if weapons == 0 then
-  		shot_mask = {-1, -1, -1, -1, -1}
- 	end
+		shot_mask = {-1, -1, -1, -1, -1}
+	end
 	if weapons == 1 then
 		shot_mask = {-1, -1, 4, -1, -1}
 	end
@@ -352,24 +416,24 @@ function get_shot_mask(weapons)
 end
 
 function ship_and_drone_shoot()
- shot_freq = 10 / pl_ship_shot_speed
+	shot_freq = 10 / pl_ship_shot_speed
 	if shot_freq <= pl_ship_shot_timer then
 		pl_ship_can_shoot = true
 	end
-	
+
 	if btn(4) and pl_ship_can_shoot == true then
 		shot_mask = get_shot_mask(pl_ship_weapons)
 		if play_sfx == true then
 			sfx(5)
 		end
-		
+
 		for shm in all(shot_mask) do
 			if shm != -1 then
 				shot = {pl_ship_x + 10, pl_ship_y + shm}
 				add(pl_ship_shots, shot)
 			end
 		end
-		
+
 		shot_mask = get_shot_mask(drone_weapons)
 		for shm in all(shot_mask) do
 			if shm != -1 then
@@ -377,66 +441,61 @@ function ship_and_drone_shoot()
 				add(drone_shots, shot)
 			end
 		end
-	 
+
 		pl_ship_can_shoot = false
 		pl_ship_shot_timer = 0
 	end
-	
+
 	if pl_ship_can_shoot == false then
-	 	pl_ship_shot_timer += 1
+		pl_ship_shot_timer += 1
 	end
 end
 
 function ship_ctrl()
 	sp = pl_ship_speed * 1
-	
+
 	if btn(0) then
 		if pl_ship_x > x_left_boundry then
 			pl_ship_x -= sp
 		end
 	end
 	if btn(1) then
-	 	if pl_ship_x < x_right_boundry then
-	 		pl_ship_x += sp
+		if pl_ship_x < x_right_boundry then
+			pl_ship_x += sp
 		end
 	end
 	if btn(2) then
-	 	if pl_ship_y > y_up_boundry then
-		 	pl_ship_y -= sp
+		if pl_ship_y > y_up_boundry then
+			pl_ship_y -= sp
 		end
 	end
 	if btn(3) then
-	 	if pl_ship_y < y_down_boundry then
+		if pl_ship_y < y_down_boundry then
 			pl_ship_y += sp
 		end
 	end
 end
 
--- with drone storage
-function get_free_storage()
- 	return pl_ship_storage + drone_storage - #pl_ship_items_stored
-end
-
 function get_ship_life_as_string()
 	ship_life = ""
-	 	if pl_ship_life < 4 then
+		if pl_ship_life < 4 then
 			for i = 1, pl_ship_life do
 				ship_life = ship_life .. "♥"
 			end
 		else
-		 	ship_life = " " .. pl_ship_life
+			ship_life = " " .. pl_ship_life
 		end
 	return ship_life
 end
 
 function get_ship_shields_as_string()
 	ship_shields = ""
-	 	if pl_ship_shields < 4 then
+		if pl_ship_shields < 4 then
 			for i = 1, pl_ship_shields do
 				ship_shields = ship_shields .. "◆"
 			end
 		else
-		 	ship_shields = " " .. pl_ship_shields
+			ship_shields = " " .. pl_ship_shields
 		end
 	return ship_shields
 end
@@ -453,6 +512,7 @@ end
 -->8
 -- player drones
 
+drone_tier = 0
 drone_x = 0
 drone_y = 0
 drone_offset_y = 0
@@ -468,7 +528,7 @@ drone_storage = 0
 drone_shots = {}
 drone_available = false
 
-function add_pl_drone(tier)
+function set_pl_drone(tier)
 	-- get attack drone
 	if tier >= 0 and tier <= 6 then
  	drone_sprite = 48 + tier
@@ -549,6 +609,8 @@ function get_drone_life_as_string()
 end
 
 function kill_drone()
+	drop_items_when_drone_dies()
+	
 	drone_hitbox_skip_pixle = 8
 	drone_hitbox_width = 0
 	drone_sprite = 48
@@ -559,14 +621,7 @@ function kill_drone()
 	drone_storage = 0
 	drone_shots = {}
 	drone_available = false
-	
-	if #pl_ship_items_stored > pl_ship_storage then
-		for i = pl_ship_storage+1, #pl_ship_items_stored do
-			temp_item = pl_ship_items_stored[i]
-			del(pl_ship_items_stored, temp_item)
-			--todo drop-item into void
-		end
-	end
+	drone_tier = 0
 end
 -->8
 -- enemys
@@ -672,7 +727,10 @@ function enemy_shoot()
 end
 
 function enemy_drop_item(enemy)
-	add_floating_item(speed_buff, enemy[1], enemy[2])
+	droped_item = drop_item()
+	if droped_item > 0 then
+		add_floating_item(droped_item, enemy[1], enemy[2])
+	end
 end
 
 -->8
@@ -781,30 +839,178 @@ function enemy_colides_enemy(posx, posy, id)
 end
 
 
+function floating_items_colides_player()
+		hit_x_drone = false
+		hit_y_drone = false
+
+	for item in all(floating_items) do
+		hit_x_ship = item[1] <= pl_ship_x+8 and item[1] >= pl_ship_x or item[1]+8 <= pl_ship_x+8 and item[1]+8 >= pl_ship_x
+		hit_y_ship = item[2] <= pl_ship_y+8 and item[2] >= pl_ship_y or item[2]+8 <= pl_ship_y+8 and item[2]+8 >= pl_ship_y
+
+		if drone_available then
+			hit_x_drone = item[1] <= drone_x+drone_hitbox_width and item[1] >= drone_x or item[1]+8 <= drone_x+drone_hitbox_width and item[1]+8 >= drone_x
+			hit_y_drone = item[2] <= drone_y+drone_hitbox_width and item[2] >= drone_y or item[2]+8 <= drone_y+drone_hitbox_width and item[2]+8 >= drone_y
+		end
+
+		if hit_x_ship and hit_y_ship or hit_x_drone and hit_y_drone then
+			interpret_item(item)
+		end
+	end
+end
+
 -->8
 -- items
 
 floating_items = {}
 
+-- buff
 speed_buff = 184
 shot_speed_buff = 185
+life_up = 170
+
+-- stat increases
+attack_damage_inc = 186
+drone_inc = 158
+weapons_inc = 174
+
+-- trading items
+parts_crate = 154
+scrap = 155
+void_crystal = 157
+gold = 171
+copper = 188
+platinum = 172
+void_fragment = 173
+cobalt = 187
 
 function add_floating_item(item_type, x, y)
-	item = {}
-	item[1] = x
-	item[2] = y
-	-- sprite and id
-	item[3] = item_type
-	-- item wobble
-	item[4] = 1
-	add(floating_items, item) 
+	if item_type > 0 then
+		item = {}
+		item[1] = x
+		item[2] = y
+		-- sprite and id
+		item[3] = item_type
+		add(floating_items, item)
+	end
+end
+
+function interpret_item(item)
+	if item[3] == speed_buff then
+		if pl_ship_speed_buff_time == 0 then
+			pl_ship_speed *= 2
+			pl_ship_speed_buff_time = time()
+			del(floating_items, item)
+		end
+	elseif item[3] == shot_speed_buff then
+		if pl_ship_shot_speed_buff_time == 0 then
+			pl_ship_shot_speed *= 2
+			pl_ship_shot_speed_buff_time = time()
+			del(floating_items, item)
+		end
+	elseif item[3] == life_up then
+		if pl_ship_life < pl_ship_max_life then
+			pl_ship_life += 1
+			del(floating_items, item)
+		end
+	elseif item[3] == attack_damage_inc then
+		if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
+			pl_ship_damage += 1
+			del(floating_items, item)
+		else
+			store_item(item)
+		end
+	elseif item[3] == drone_inc then
+		if drone_tier < max_drones then
+			drone_tier+=1
+			set_pl_drone(drone_tier)
+			del(floating_items, item)
+		else
+			store_item(item)
+		end
+	elseif item[3] == weapons_inc then
+		if pl_ship_weapons < max_pl_dr_weapons then
+			pl_ship_weapons+=1
+			del(floating_items, item)
+		elseif drone_weapons < max_pl_dr_weapons then
+			drone_weapons+=1
+			del(floating_items, item)
+		else
+			store_item(item)
+		end
+	else
+		store_item(item)
+	end
+end
+
+function speed_buff_timer()
+	if pl_ship_speed_buff_time > 0 then
+		delta = time() - pl_ship_speed_buff_time
+		if delta >= speed_buff_time then
+			pl_ship_speed = pl_ship_default_speed
+			pl_ship_speed_buff_time = 0
+		end
+	end
+end
+
+function shot_speed_buff_timer()
+	if pl_ship_shot_speed_buff_time > 0 then
+		delta = time() - pl_ship_shot_speed_buff_time
+		if delta >= shot_speed_buff_time then
+			pl_ship_shot_speed = pl_ship_default_shot_speed
+			pl_ship_shot_speed_buff_time = 0
+		end
+	end
+end
+
+-- calculate drop (random chance)
+function drop_item()
+	num = rnd(1000)
+	if num >= 995 then    --0.5%
+		return void_crystal
+	elseif num >=985 then --1%
+		return drone_inc
+	elseif num >=975 then --1%
+		return weapons_inc
+	elseif num >=965 then --1%
+		return attack_damage_inc
+	elseif num >=945 then --2%
+		return void_fragment
+	elseif num >=920 then --2,5%
+		return platinum
+	elseif num >=890 then --3%
+		return life_up
+	elseif num >=860 then --3%
+		return cobalt
+	elseif num >=825 then --3,5%
+		return parts_crate
+	elseif num >=785 then --4%
+		return gold
+	elseif num >=735 then --5%
+		return speed_buff
+	elseif num >=675 then --6%
+		return copper
+	elseif num >=605 then --7%
+		return shot_speed_buff
+	elseif num >=00 then --10,5%
+		return scrap
+	else --50%
+		return -1
+	end
 end
 
 function calculate_floating_items_drift()
 	for item in all(floating_items) do
 		item[1] -= 0.25
-		item[2] -= item[4]
-		item[4] = item[4]*-1
+
+		if long_adhs_counter == 50 then
+			item[2] = item[2] - 1
+		elseif long_adhs_counter == 100 then
+			item[2] = item[2] + 1
+		end
+
+		if item[1] < 0 then
+			del(floating_items, item)
+		end
 	end
 end
 
@@ -1003,19 +1209,19 @@ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcc333ccccccc3333333ccccccccccccc9999999999999999
 002222222eeee22222eeee228882220066666666666666561111111111dd111100000000000000060600000000000000000000000aaa09a009a909a009009080
 00222222eeee22222eeee22288822200666666666655666511ddd1111dd11d110020100d00e0200c000000000000000000000000000000000000000000000000
 0222222eeee22222eeee22228882222066665566656656661111111111111d11d0000222222000000d5555d00000000000000000000800000000000000000000
-022222eeee22222eeee2222228822220666566566566566611111dd111111111000222eeee222010056666500006000000999000008780000000000000000000
-022222eee222222eee22222222222220066566566655666001111d11111111102022eeecceee220e056655500055600000908800088878000000000000000000
-22222eee222222eee222222222222222066655666666666001111d11111d1110002eeccccccee200055566500005560000a00800008880000000000000000000
-22222eee222222eee2222222882222220066666656666600001111111ddd1100022ecc1111cce220056666500056060000aaa800000800000000000000000000
-22222eee222222ee22222288882222820006666565666000000111111111100002eec110011cee200d5555d00000000000000000000000000000000000000000
+022222eeee22222eeee2222228822220666566566566566611111dd111111111000222eeee222010056666500006000000999000008780000d666d0000000000
+022222eee222222eee22222222222220066566566655666001111d11111111102022eeecceee220e05665550005560000090880008887800067dd60000000000
+22222eee222222eee222222222222222066655666666666001111d11111d1110002eeccccccee200055566500005560000a00800008880000695760000000000
+22222eee222222eee2222222882222220066666656666600001111111ddd1100022ecc1111cce220056666500056060000aaa80000080000067dd60000000000
+22222eee222222ee22222288882222820006666565666000000111111111100002eec110011cee200d5555d00000000000000000000000000d666d0000000000
 222222ee222222ee22222888822222880000066656600000000001111110000002ecc100001cce21000000000000000000000000000000000000000000000000
 2222222e222222e22222888822222228000005555550000000000eeeeee0000002ecc100001cce20000000000000000000000000000000000000000000000000
 22882222222222e222288822222222280005556555555000000ee8eeeeeee000d2eec110011cee20000000000000000000000000000000000000000000000000
-2288822222222222222882222ee22222005556565555550000eee88eeeeeee00022ecc1111cce22e008080000009a000000670000005d0000000000000000000
-2228822222222222222222222ee2222205555565555555500eeeee8888eeeee0002eeccccccee200087888000099aa00006677000055dd000000000000000000
-022888888888222222222222eee2222005555555555555500eeeeeeee88eeee00022eeecceee220208888800009aaa0000677700005ddd000000000000000000
-02222888888222222222222eee2222205555555555666555eeeeee8eee8eeeeee00222eeee22200000888000000aa00000077000000dd0000000000000000000
-02222222222222222222222ee22222205566555556555655eeee8e8eee8ee8ee02000222222000c0000800000000000000000000000000000000000000000000
+2288822222222222222882222ee22222005556565555550000eee88eeeeeee00022ecc1111cce22e008080000009a000000670000005d0000d666d0000000000
+2228822222222222222222222ee2222205555565555555500eeeee8888eeeee0002eeccccccee200087888000099aa00006677000055dd000675760000000000
+022888888888222222222222eee2222005555555555555500eeeeeeee88eeee00022eeecceee220208888800009aaa0000677700005ddd00065bb60000000000
+02222888888222222222222eee2222205555555555666555eeeeee8eee8eeeeee00222eeee22200000888000000aa00000077000000dd0000675760000000000
+02222222222222222222222ee22222205566555556555655eeee8e8eee8ee8ee02000222222000c0000800000000000000000000000000000d666d0000000000
 002222222222222222222eeee22222005655655556555655eee88e88ee8ee8ee000100e0c00d2000000000000000000000000000000000000000000000000000
 002222222eeeeee222eeeeee222222005655655556555655eee8eee8eeeee8ee000000000000e200000000000000000000000000000000000000000000000000
 00022222222eeeeeeeeeeee2222220005566555555666555ee88eee88eeeeeee03b3b00000000e20000000000000000000000000000000000000000000000000
@@ -1198,5 +1404,4 @@ __sfx__
 001000002935329353293332931329303293030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 __music__
 00 01424344
-
 

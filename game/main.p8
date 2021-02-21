@@ -38,12 +38,19 @@ function _update()
 	enemy_shoot()
 	ship_burner_calculation()
 	calculate_floating_items_drift()
-	
+	floating_items_colides_player()
+
 	-- adhs_counter -> used for animations
 	if adhs_counter == 21 then
  		adhs_counter = 0
  	end
 	adhs_counter+=1
+
+	-- long_adhs_counter -> used for animations with longer runtime
+	if long_adhs_counter == 101 then
+		long_adhs_counter = 0
+	end
+	long_adhs_counter+=1
 end
 
 

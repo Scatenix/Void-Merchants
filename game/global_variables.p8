@@ -3,6 +3,7 @@ __lua__2
 
 show_battle_stats = true
 adhs_counter = 0
+long_adhs_counter = 0
 x_left_boundry = 5
 x_right_boundry = 120
 y_up_boundry = 0
