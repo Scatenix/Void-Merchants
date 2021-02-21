@@ -119,7 +119,7 @@ function _draw()
 		draw_hitmarkers()
 		draw_explosions()
 		
-		show_stored_items()
+--		show_stored_items()
 		
 	end
 end
@@ -875,19 +875,29 @@ s_life_up = "life up"
 
 -- stat increases
 attack_damage_inc = 186
-s_attack_damage_inc = "bigger weapon.. something???"
+s_attack_damage_inc = "damage upgrade"
 drone_inc = 158
+s_drone_inc = "drone upgrade"
 weapons_inc = 174
+s_weapons_inc = "weapon upgrade"
 
 -- trading items
 parts_crate = 154
+s_parts_crate = "parts crate"
 scrap = 155
+s_scrap = "scrap"
 void_crystal = 157
+s_void_crystal = "void crystal"
 gold = 171
+s_gold = "gold"
 copper = 188
+s_copper = "copper"
 platinum = 172
+s_platinum = "platinum"
 void_fragment = 173
+s_void_fragment = "void fragment"
 cobalt = 187
+s_cobalt = "cobalt"
 
 function add_floating_item(item_type, x, y)
 	if item_type > 0 then
@@ -997,7 +1007,7 @@ function drop_item()
 		return copper
 	elseif num >=605 then --7%
 		return shot_speed_buff
-	elseif num >=00 then --10,5%
+	elseif num >=500 then --10,5%
 		return scrap
 	else --50%
 		return -1
