@@ -26,16 +26,17 @@ function _init()
 	add_enemy(1)
 	add_enemy(1)
 	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
 
 	drone_tier = 3
 
 	set_pl_ship(6)
 	set_pl_drone(drone_tier)
+
+--pl_ship_storage = 8
+--drone_storage = 6
+
+--pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
+
 end
 
 
@@ -117,10 +118,11 @@ function _draw()
 
 		draw_hitmarkers()
 		draw_explosions()
+		
+		show_stored_items()
+		
 	end
 end
-
-
 -->8
 -- global variables
 
@@ -323,10 +325,10 @@ function store_item(item)
 end
 
 function drop_items_when_drone_dies()
-	for i=pl_ship_storage+1,#pl_items_stored do
-		add_floating_item(pl_items_stored[i], drone_x, drone_y + 3*i)
-		del(pl_items_stored, pl_items_stored[i])
-	-- this does not work! throws nil-pointer exce
+	for i=#pl_items_stored, pl_ship_storage+1, -1 do
+		add_floating_item(pl_items_stored[i], drone_x - 6*(i-pl_ship_storage-1) , drone_y - 4 + rnd(8))
+		deli(pl_items_stored, i)
+	end
 end
 
 function get_free_storage()
@@ -865,11 +867,15 @@ floating_items = {}
 
 -- buff
 speed_buff = 184
+s_speed_buff = "speed buff"
 shot_speed_buff = 185
+s_shot_speed_buff = "shot speed buff"
 life_up = 170
+s_life_up = "life up"
 
 -- stat increases
 attack_damage_inc = 186
+s_attack_damage_inc = "bigger weapon.. something???"
 drone_inc = 158
 weapons_inc = 174
 
@@ -1132,7 +1138,15 @@ function info(text, val, plusy)
 		if val == nil then
 			val = ""
 		end
- 	print(text .. ": " .. val, 5, 5+plusy, 7)
+	print(text .. ": " .. val, 5, 5+plusy, 7)
+end
+
+function show_stored_items()
+	bla = 0
+	for i in all(pl_items_stored) do
+		info("i" .. bla .. ": ", i, bla)
+		bla+=7
+	end
 end
 __gfx__
 0000000000000000000000005500dd000055500005d55dd00000000000566c000000000000000000000000000000aaaaaaaa0000000000000000033333300000
