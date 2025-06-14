@@ -129,21 +129,23 @@ function _draw()
 
 		draw_passing_stars()
 
-		if show_battle_stats then
-			draw_battle_stats()
-		end
+		-- if show_battle_stats then
+		-- 	draw_battle_stats()
+		-- end
 
-		draw_floating_items()
-		draw_enemys()
-		draw_ship()
-		draw_drone()
+		draw_textbox("test", char_player, char_void)
 
-		draw_friendly_shots(pl_ship_shots, 11)
-		draw_friendly_shots(drone_shots, 12)
-		draw_enemy_shots()
+		-- draw_floating_items()
+		-- draw_enemys()
+		-- draw_ship()
+		-- draw_drone()
 
-		draw_hitmarkers()
-		draw_explosions()
+		-- draw_friendly_shots(pl_ship_shots, 11)
+		-- draw_friendly_shots(drone_shots, 12)
+		-- draw_enemy_shots()
+
+		-- draw_hitmarkers()
+		-- draw_explosions()
 		
 --		show_stored_items()
 		
@@ -211,6 +213,28 @@ function draw_hitmarkers()
 			del(hitmarkers, mark)
 		end
 	end
+end
+
+function draw_textbox(text, character_left, character_right)
+	spr(137, 0, 84, 1, 1, true)
+	spr(137, 0, 126, 1, 1, true, true)
+	spr(137, 120, 84, 1, 1)
+	spr(137, 120, 126, 1, 1, false, true)
+
+	for i = 2, 122, 8 do
+		spr(136, i, 84)
+		spr(136, i, 126, 1, 1, false, true)
+	end
+
+	for i = 91, 123, 8 do
+		spr(138, -1, i)
+		spr(138, 126, i)
+	end
+
+	spr(character_left, 68, 32)
+	spr(character_left+16, 76, 32)
+	spr(character_right, 68, 128)
+	spr(character_right+16, 76, 128)
 end
 
 function draw_battle_stats()
@@ -1204,6 +1228,12 @@ function show_stored_items()
 		bla+=7
 	end
 end
+-->8
+-- characters
+char_player=23
+char_trader=24
+char_void=22
+
 __gfx__
 0000000000000000000000005500dd000055500005d55dd00000000000566c000000000000000000000000000000aaaaaaaa0000000000000000033333300000
 00000000005d000000050000005d00d0005ddd000a66655d0000000000d55600005dd55000000000000000000aaaaaaaaaaaaaa0000000000003333333333000
