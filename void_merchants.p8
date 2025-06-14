@@ -342,6 +342,7 @@ show_enemy_life = true
 
 function store_item(item)
 	if get_free_storage() > 0 then
+		sfx(6)
 		add(pl_items_stored, item[3])
 		del(floating_items, item)
 	end
@@ -936,12 +937,14 @@ end
 function interpret_item(item)
 	if item[3] == speed_buff then
 		if pl_ship_speed_buff_time == 0 then
+			sfx(9)
 			pl_ship_speed *= 2
 			pl_ship_speed_buff_time = time()
 			del(floating_items, item)
 		end
 	elseif item[3] == shot_speed_buff then
 		if pl_ship_shot_speed_buff_time == 0 then
+			sfx(4)
 			pl_ship_shot_speed *= 2
 			pl_ship_shot_speed_buff_time = time()
 			del(floating_items, item)
@@ -985,6 +988,7 @@ function speed_buff_timer()
 	if pl_ship_speed_buff_time > 0 then
 		delta = time() - pl_ship_speed_buff_time
 		if delta >= speed_buff_time then
+			sfx(9, -2)
 			pl_ship_speed = pl_ship_default_speed
 			pl_ship_speed_buff_time = 0
 		end
@@ -995,6 +999,7 @@ function shot_speed_buff_timer()
 	if pl_ship_shot_speed_buff_time > 0 then
 		delta = time() - pl_ship_shot_speed_buff_time
 		if delta >= shot_speed_buff_time then
+			sfx(4, -2)
 			pl_ship_shot_speed = pl_ship_default_shot_speed
 			pl_ship_shot_speed_buff_time = 0
 		end
