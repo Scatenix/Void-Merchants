@@ -66,7 +66,6 @@ function _init()
 	trading_mode = false
 	death_mode = false
 
-	if battle_mode then
 		-- add_enemy(1)
 		-- add_enemy(3)
 		-- add_enemy(6)
@@ -96,14 +95,13 @@ function _init()
 
 		drone_tier = 6
 
-		set_pl_ship(5)
+		set_pl_ship(6)
 		set_pl_drone(drone_tier)
 
 		-- pl_ship_storage = 8
 		-- drone_storage = 6
 
 		-- pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
-	end
 end
 
 
@@ -139,84 +137,8 @@ function _update()
 			end
 		end
 		travel_from_battle_animation_script()
-
-		-- if travel_after_battle_phase == 11 and time() - tme >= 33 then -- 33
-		-- 	-- go inside
-		-- 	-- converstaion_mode = true
-		-- 	battle_mode = true
-		-- elseif travel_after_battle_phase == 10 and time() - tme >= 31 then -- 31
-		-- 	-- land
-		-- 	travel_after_battle_phase = 11
-		-- 	stop_trader_station_near = true
-		-- elseif travel_after_battle_phase == 9 and time() - tme >= 26 then -- 26
-		-- 	-- approach landing from near
-		-- 	travel_after_battle_phase = 10
-		-- 	trader_station_x = 130
-		-- 	show_trader_station_far = false
-		-- 	show_trader_station_near = true
-		-- 	stop_trader_station_near = false
-		-- 	all_stars_speed_ctrl(0.2)
-		-- elseif travel_after_battle_phase == 8 and time() - tme >= 17 then -- 17
-		-- 	-- approach landing from far
-		-- 	travel_after_battle_phase = 9
-		-- 	trader_station_x = 130
-		-- 	show_trader_station_far = true
-		-- 	all_stars_speed_ctrl(1)
-		-- 	sfx(20)
-		-- 	sfx(18)
-		-- elseif travel_after_battle_phase == 7 and time() - tme >= 16.5 then -- 16.5
-		-- 	-- jump out of hyperspace
-		-- 	travel_after_battle_phase = 8
-		-- 	all_stars_speed_ctrl(5)
-		-- elseif travel_after_battle_phase == 6 and time() - tme >= 11.5 then -- 11.5
-		-- 	-- flying through hyperspace
-		-- 	travel_after_battle_phase = 7
-		-- 	stars_hyperspeed = false
-		-- 	jump_to_hyperspce = false
-		-- 	stars = {}
-		-- 	init_passing_stars()
-		-- 	all_stars_speed_ctrl(20)
-		-- 	pl_ship_x = 0
-		-- 	pl_ship_y = 64
-		-- 	arrive_in_hyperspace = true
-		-- 	sfx(16)
-		-- 	sfx(19)
-		-- elseif travel_after_battle_phase == 5 and time() - tme >= 11 then -- 11
-		-- 	-- jumping into hyperspace
-		-- 	travel_after_battle_phase = 6
-		-- 	jump_wobble = false
-		-- 	jump_to_hyperspce = true
-		-- 	all_stars_speed_ctrl(50)
-		-- 	sfx(15)
-		-- elseif travel_after_battle_phase == 4 and time() - tme >= 10 then -- 10
-		-- 	-- approaching hyperspace
-		-- 	travel_after_battle_phase = 5
-		-- 	stars_hyperspeed = true
-		-- 	all_stars_speed_ctrl(50)
-		-- elseif travel_after_battle_phase == 3 and time() - tme >= 6 then -- 6
-		-- 	-- engaging thrusters
-		-- 	travel_after_battle_phase = 4
-		-- 	jump_wobble = true
-		-- 	battle_mode = false
-		-- 	show_battle_stats = false
-		-- 	all_stars_speed_ctrl(0.2)
-		-- 	sfx(14)
-		-- elseif travel_after_battle_phase == 2 and time() - tme >= 2 then -- 2
-		-- 	-- loading batteries
-		-- 	travel_after_battle_phase = 3
-		-- 	all_stars_speed_ctrl(0.4)
-		-- 	sfx(13)
-		-- elseif travel_after_battle_phase == 1 and time() - tme >= 1 then -- 1
-		-- 	-- slow down stars further
-		-- 	travel_after_battle_phase = 2
-		-- 	all_stars_speed_ctrl(0.6)
-		-- elseif travel_after_battle_phase == 0 and time() - tme >= 0 then -- 0
-		-- 	-- slow down stars
-		-- 	travel_after_battle_phase = 1
-		-- 	all_stars_speed_ctrl(0.8)
-		-- end
-	end
-	if battle_mode then
+	-- end
+	elseif battle_mode then
 		ship_ctrl()
 		drone_ctrl()
 		ship_and_drone_shoot()
@@ -237,7 +159,10 @@ function _update()
 		end
 	end
 
+	animation_counters()
+end
 
+function animation_counters()
 	-- animation_counter -> used for animations
 	if animation_counter == 21 then
 		animation_counter = 0
@@ -260,7 +185,7 @@ function _draw()
 
 --	debug_coords()
 --	info(enemy_shot_cooldown)
-	info(pl_ship_speed)
+	-- info(pl_ship_speed)
 	-- info("", current_small_planet, 10)
 
 ----------------
@@ -293,10 +218,10 @@ function _draw()
 
 		-- show_stored_items()
 	elseif converstaion_mode then
-		draw_textbox("hello, how are you my friend",
-			"you want to buy something",
-			"i haven't got all day, you know",
-			"come on, do something!", true)
+		draw_textbox("hello there!",
+			"",
+			"",
+			"", false)
 	elseif travel_after_battle_mode then
 		draw_passing_stars()
 		draw_floating_items()
@@ -685,7 +610,7 @@ function set_pl_ship(tier)
 	pl_ship_max_shield=pl_ship_shields
 	pl_ship_weapons=flr(tier/4)+1
 	pl_ship_shot_speed=tier/3+1
-	pl_ship_speed=1
+	pl_ship_speed=1+tier*0.2
 	pl_ship_default_shot_speed=tier/3+1
 	pl_ship_default_speed=1
 	pl_ship_storage=7
@@ -763,26 +688,24 @@ function ship_and_drone_shoot()
 end
 
 function ship_ctrl()
-	sp = pl_ship_speed * 1
-
 	if btn(0) then
 		if pl_ship_x > x_left_boundry then
-			pl_ship_x -= sp
+			pl_ship_x -= pl_ship_speed
 		end
 	end
 	if btn(1) then
 		if pl_ship_x < x_right_boundry then
-			pl_ship_x += sp
+			pl_ship_x += pl_ship_speed
 		end
 	end
 	if btn(2) then
 		if pl_ship_y > y_up_boundry then
-			pl_ship_y -= sp
+			pl_ship_y -= pl_ship_speed
 		end
 	end
 	if btn(3) then
 		if pl_ship_y < y_down_boundry then
-			pl_ship_y += sp
+			pl_ship_y += pl_ship_speed
 		end
 	end
 end
@@ -1527,15 +1450,14 @@ function draw_trader_station()
 end
 
 function travel_from_battle_animation_script()
-	if travel_after_battle_phase == 11 and time() - tme >= 33 then -- 33
+	if travel_after_battle_phase == 11 and time() - tme >= 30 then -- 30
 		-- go inside
-		-- converstaion_mode = true
-		battle_mode = true
-	elseif travel_after_battle_phase == 10 and time() - tme >= 31 then -- 31
+		converstaion_mode = true
+	elseif travel_after_battle_phase == 10 and time() - tme >= 28 then -- 28
 		-- land
 		travel_after_battle_phase = 11
 		stop_trader_station_near = true
-	elseif travel_after_battle_phase == 9 and time() - tme >= 26 then -- 26
+	elseif travel_after_battle_phase == 9 and time() - tme >= 23 then -- 23
 		-- approach landing from near
 		travel_after_battle_phase = 10
 		trader_station_x = 130
@@ -1548,6 +1470,7 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 9
 		trader_station_x = 130
 		show_trader_station_far = true
+		pl_ship_speed /= 0.2
 		all_stars_speed_ctrl(1)
 		sfx(20)
 		sfx(18)
@@ -1586,6 +1509,7 @@ function travel_from_battle_animation_script()
 		jump_wobble = true
 		battle_mode = false
 		show_battle_stats = false
+		pl_ship_speed *= 0.2
 		all_stars_speed_ctrl(0.2)
 		sfx(14)
 	elseif travel_after_battle_phase == 2 and time() - tme >= 2 then -- 2
