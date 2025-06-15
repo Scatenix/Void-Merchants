@@ -61,7 +61,7 @@ function _init()
 	death_mode = false
 
 	if battle_mode then
-		add_enemy(1)
+		-- add_enemy(1)
 		-- add_enemy(3)
 		-- add_enemy(6)
 		-- add_enemy(9)
@@ -114,31 +114,64 @@ function _update()
 		calculate_floating_items_drift()
 		floating_items_colides_player()
 
+		if jump_to_hyperspce == true then
+			jump_to_hyperspce_animation()
+		end
+		if arrive_in_hyperspace == true then
+			arrive_in_hyperspce_animation()
+		end
 		
-		if travel_after_battle_phase == 5 and time() - tme >= 13 then
+		if travel_after_battle_phase == 10 and time() - tme >= 18 then -- ?
 			-- landing
-			travel_after_battle_phase = 6
-		elseif travel_after_battle_phase == 4 and time() - tme >= 13 then
+			travel_after_battle_phase = 9
+		elseif travel_after_battle_phase == 7 and time() - tme >= 17 then -- ?
 			-- jump out of hyperspace
-			travel_after_battle_phase = 5
-		elseif travel_after_battle_phase == 3 and time() - tme >= 13 then
+			travel_after_battle_phase = 8
+		elseif travel_after_battle_phase == 6 and time() - tme >= 16.5 then -- 16.5
 			-- flying through hyperspace
-			travel_after_battle_phase = 4
-		elseif travel_after_battle_phase == 2 and time() - tme >= 13 then
+			travel_after_battle_phase = 7
+			stars_hyperspeed = false
+			jump_to_hyperspce = false
+			stars = {}
+			init_passing_stars()
+			all_stars_speed_ctrl(20)
+			pl_ship_x = 0
+			pl_ship_y = 64
+			arrive_in_hyperspace = true
+			sfx(16)
+		elseif travel_after_battle_phase == 5 and time() - tme >= 16 then -- 16
 			-- jumping into hyperspace
-			travel_after_battle_phase = 3
+			travel_after_battle_phase = 6
+			jump_wobble = false
+			jump_to_hyperspce = true
+			all_stars_speed_ctrl(50)
 			sfx(15)
-		elseif travel_after_battle_phase == 1 and time() - tme >= 8 then
+		elseif travel_after_battle_phase == 4 and time() - tme >= 15 then -- 15
+			-- approaching hyperspace
+			travel_after_battle_phase = 5
+			stars_hyperspeed = true
+			all_stars_speed_ctrl(50)
+		elseif travel_after_battle_phase == 3 and time() - tme >= 10 then -- 10
 			-- engaging thrusters
-			travel_after_battle_phase = 2
+			travel_after_battle_phase = 4
+			jump_wobble = true
 			battle_mode = false
 			show_battle_stats = false
-			wobble_ship_and_drone_random()
+			all_stars_speed_ctrl(0.2)
 			sfx(14)
-		elseif travel_after_battle_phase == 0 and time() - tme >= 0 then
+		elseif travel_after_battle_phase == 2 and time() - tme >= 2 then -- 2
 			-- loading batteries
-			travel_after_battle_phase = 1
+			travel_after_battle_phase = 3
+			all_stars_speed_ctrl(0.4)
 			sfx(13)
+		elseif travel_after_battle_phase == 1 and time() - tme >= 1 then -- 1
+			-- slow down stars further
+			travel_after_battle_phase = 2
+			all_stars_speed_ctrl(0.6)
+		elseif travel_after_battle_phase == 0 and time() - tme >= 0 then -- 0
+			-- slow down stars
+			travel_after_battle_phase = 1
+			all_stars_speed_ctrl(0.8)
 		end
 
 		-- -- going through the traveling to trader phases
@@ -175,7 +208,6 @@ function _update()
 		if not travel_after_battle_mode and #enemys == 0 then
 			tme = time()
 			travel_after_battle_mode = true
-			-- sfx(13)
 		end
 	end
 
@@ -288,6 +320,9 @@ trading_mode = false
 death_mode = false
 
 travel_after_battle_phase = 0
+jump_wobble = false
+jump_to_hyperspce = false
+arrive_in_hyperspace = false
 
 current_planet = 1
 planets = {
@@ -475,8 +510,15 @@ function draw_battle_stats()
 end
 
 function draw_ship()
-	spr(pl_ship_sprite, pl_ship_x, pl_ship_y)
-	spr(249 + pl_ship_shields, pl_ship_x + 9, pl_ship_y, 1, 1, true, false)
+	if jump_wobble and animation_counter % 3 == 0 then
+		x_rand = flr(rnd(3)) - 1;
+		y_rand = flr(rnd(3)) - 1;
+		spr(pl_ship_sprite, pl_ship_x + x_rand, pl_ship_y + y_rand)
+		spr(249 + pl_ship_shields, pl_ship_x + 9 + x_rand, pl_ship_y + y_rand, 1, 1, true, false)
+	else
+		spr(pl_ship_sprite, pl_ship_x, pl_ship_y)
+		spr(249 + pl_ship_shields, pl_ship_x + 9, pl_ship_y, 1, 1, true, false)
+	end
 end
 
 function draw_friendly_shots(array, col)
@@ -501,8 +543,15 @@ function draw_enemy_shots()
 end
 
 function draw_drone()
-	spr(drone_sprite, drone_x, drone_y)
-	spr(249 + drone_shields, drone_x + 9, drone_y, 1, 1, true, false)
+	if jump_wobble and animation_counter % 3 == 0 then
+		x_rand = flr(rnd(3)) - 1;
+		y_rand = flr(rnd(3)) - 1;
+		spr(drone_sprite, drone_x + x_rand, drone_y + y_rand)
+		spr(249 + drone_shields, drone_x + 9 + x_rand, drone_y + y_rand, 1, 1, true, false)
+	else
+		spr(drone_sprite, drone_x, drone_y)
+		spr(249 + drone_shields, drone_x + 9, drone_y, 1, 1, true, false)
+	end
 end
 
 function draw_enemys()
@@ -1317,7 +1366,8 @@ max_star_speed = 5
 stars_counter_threshold = 2
 stars_counter = 0
 stars_max_y = 0
-stars = {}
+stars = {} -- 1: x 2: y 3: speed
+stars_hyperspeed = false
 
 function init_passing_stars()
 	for i = 1, max_stars do
@@ -1342,10 +1392,15 @@ function draw_passing_stars()
  
 	for star in all(stars) do
 		-- draw star
-		line(star[1], star[2], star[1], star[2], 7)
-		star[1] -= star[3]
-		if star[1] < 0 or star[1] > 127 then
-			del(stars, star)
+		if not stars_hyperspeed then
+			line(star[1], star[2], star[1], star[2], 7)
+			star[1] -= star[3]
+			if star[1] < 0 or star[1] > 127 then
+				del(stars, star)
+			end
+		else
+			line(star[1], star[2], 128, star[2], 7)
+			star[1] -= star[3]
 		end
 	end
 end
@@ -1422,12 +1477,21 @@ char_trader=64
 char_void=48
 -->8
 -- jump_animations
-function wobble_ship_and_drone_random()
-	
-	-- pl_ship_x
-	-- pl_ship_y
+function jump_to_hyperspce_animation()
+	pl_ship_x += 20
+	drone_x += 20
 end
 
+function arrive_in_hyperspce_animation()
+	pl_ship_x += 2
+	drone_ctrl()
+
+	if pl_ship_x >= 64 then
+		pl_ship_x = 64
+		drone_ctrl()
+		arrive_in_hyperspace = false
+	end
+end
 __gfx__
 0000000000000000000000005500dd000055500005d55dd00000000000566c000000000000000000000000000000aaaaaaaa0000000000000000033333300000
 00000000005d000000050000005d00d0005ddd000a66655d0000000000d55600005dd55000000000000000000aaaaaaaaaaaaaa0000000000003333333333000
