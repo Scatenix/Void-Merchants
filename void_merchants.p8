@@ -20,6 +20,14 @@ __lua__
 --		as smaller (1:1 scale) and fights like a ship with maybe lvl 25 or something
 --		If feeling fancy, occasionally spawn bombs that explode and deal damage to player if in range. (do this only if he is in the background)
 
+-- Possible void creature dialog
+--	before lvl 1:
+--	after lvl 5: I see you are making progress. Very good!
+-- 	after lvl 10:
+-- 	after lvl 15:
+--  after lvl 20, before final boss:
+--			Finally you are strong enough for me to consume your strength
+
 -- SFX
 -- 0 explosion
 -- 1 big explosion
@@ -56,15 +64,20 @@ function _init()
 		enemys_max_y = 119
 	end
 
-	current_planet = flr(rnd(6))
-	current_small_planet = flr(rnd(6))
+	current_planet = flr(rnd(6)) + 1
+	current_small_planet = flr(rnd(6)) + 1
 
-	battle_mode = true
+	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
-	converstaion_mode = false
+	converstaion_mode = true
 	trading_mode = false
 	death_mode = false
+
+	level = 20
+
+	-- for testing:
+	-- tme = time() - 20
 
 		-- add_enemy(1)
 		-- add_enemy(3)
@@ -157,6 +170,40 @@ function _update()
 			tme = time()
 			travel_after_battle_mode = true
 		end
+	elseif converstaion_mode then
+		pause_on_text = true
+		conv_partner = 1
+		if level <= 1 then
+			conv_text_1 = "oh, a new face..."
+			conv_text_2 = "welcome on my trading station!"
+			conv_text_3 = "wanna have a look at my wares?"
+			conv_text_4 = "or perhaps sell some goods?"
+		elseif level < 5 then
+			conv_text_1 = "see who it is again!"
+			conv_text_2 = "i have restocked my wares"
+			conv_text_3 = "while you were out fighting."
+			conv_text_4 = "take a look!"
+		elseif level < 10 then
+			conv_text_1 = "nice you've maded it here!"
+			conv_text_2 = "make sure you stock up on"
+			conv_text_3 = "these drones."
+			conv_text_4 = "it's dangerous to go alone..."
+		elseif level < 15 then
+			conv_text_1 = "my best customer!"
+			conv_text_2 = "come in, come in!"
+			conv_text_3 = "looking forward to all that"
+			conv_text_4 = "gold and cobalt of yours."
+		elseif level < 20 then
+			conv_text_1 = "hello, fellow merchant,"
+			conv_text_2 = "quite the ship you've got!'"
+			conv_text_3 = "time to make it even better."
+			conv_text_4 = "your credits are welcome."
+		elseif level >= 20 then
+			conv_text_1 = "hello my friend!"
+			conv_text_2 = "you are pretty capable"
+			conv_text_3 = "to make it this far."
+			conv_text_4 = "prepare for the final battle!"
+		end
 	end
 
 	animation_counters()
@@ -215,13 +262,8 @@ function _draw()
 
 		draw_hitmarkers()
 		draw_explosions()
-
-		-- show_stored_items()
 	elseif converstaion_mode then
-		draw_textbox("hello there!",
-			"",
-			"",
-			"", false)
+		draw_textbox()
 	elseif travel_after_battle_mode then
 		draw_passing_stars()
 		draw_floating_items()
@@ -357,10 +399,10 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	line(127, 7, 127, 7, 6)
 
 	-- printing all 4 lines of text
-	print(text1, 5, 9, 7)
-	print(text2, 5, 17, 7)
-	print(text3, 5, 25, 7)
-	print(text4, 5, 33, 7)
+	print(conv_text_1, 5, 9, 7)
+	print(conv_text_2, 5, 17, 7)
+	print(conv_text_3, 5, 25, 7)
+	print(conv_text_4, 5, 33, 7)
 
 	-- drawing "waiting for input" indicator
 	waiting_indicator_woble = 0
@@ -371,9 +413,9 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	line(120, 36+waiting_indicator_woble, 123, 36+waiting_indicator_woble, 9)
 	line(121, 37+waiting_indicator_woble, 122, 37+waiting_indicator_woble, 9)
 
-	if not in_void then
+	if conv_partner == 1 then
 		-- drawing planet
-		sspr(planets[current_planet][1], planets[current_planet][2], 32, 32, 42, 54, 32, 32)
+		sspr(planets[current_planet][1], planets[current_planet][2], 32, 32, 42, 44, 64, 64)
 		
 		-- drawing space-ship windows
 		sspr(16, 112, 16, 16, 0, 44, 32, 32)
@@ -392,7 +434,7 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 		
 		sspr(char_trader, 8, 8, 8, 88, 48, 8*4, 8*4)
 		sspr(char_trader, 16, 8, 8, 88, 80, 8*4, 8*4)
-	else
+	elseif conv_partner == 2 then
 		sspr(small_planets[7][1], small_planets[7][2], 16, 16, 59, 44, 32, 32)
 		sspr(char_void, 8, 8, 8, 88, 48, 8*4, 8*4)
 		sspr(char_void, 16, 8, 8, 88, 80, 8*4, 8*4)
@@ -402,6 +444,8 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	sspr(char_player, 8, 8, 8, 8, 48, 8*4, 8*4)
 	sspr(char_player, 16, 8, 8, 8, 80, 8*4, 8*4)
 
+	-- fix transparent main character mouth
+	rect(20, 74, 23, 75, 0)
 end
 
 function draw_battle_stats()
@@ -1442,9 +1486,11 @@ end
 
 function draw_trader_station()
 	if show_trader_station_far then
+		sspr(planets[current_planet][1], planets[current_planet][2], 32, 32, trader_station_x + 20, 32, 16, 16)
 		spr(228, trader_station_x, 24, 2, 2)
 	end
 	if show_trader_station_near then
+		sspr(planets[current_planet][1], planets[current_planet][2], 32, 32, trader_station_x + 24, 40, 64, 64)
 		sspr(32, 112, 16, 16, trader_station_x, 24, 64, 64)
 	end
 end
@@ -1527,6 +1573,25 @@ function travel_from_battle_animation_script()
 		all_stars_speed_ctrl(0.8)
 	end
 end
+-->8
+-- converstaion
+pause_on_text=false
+conv_partner=1 -- 1: trader, 2 void-creature
+conv_text_1="hello there!"
+conv_text_2=""
+conv_text_3=""
+conv_text_4=""
+
+function advance_textbox()
+	if pause_on_text and btn(4) then
+		pause_on_text = false
+	end
+end
+
+-->8
+-- trading
+
+
 __gfx__
 0000000000000000000000005500dd000055500005d55dd00000000000566c000000000000000000000000000000aaaaaaaa0000000000000000033333300000
 00000000005d000000050000005d00d0005ddd000a66655d0000000000d55600005dd55000000000000000000aaaaaaaaaaaaaa0000000000003333333333000
