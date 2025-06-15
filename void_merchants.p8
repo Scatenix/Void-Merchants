@@ -114,19 +114,25 @@ function _update()
 		calculate_floating_items_drift()
 		floating_items_colides_player()
 
-		if jump_to_hyperspce == true then
+		if jump_to_hyperspce then
 			jump_to_hyperspce_animation()
 		end
-		if arrive_in_hyperspace == true then
+		if arrive_in_hyperspace then
 			arrive_in_hyperspce_animation()
 		end
 		
-		if travel_after_battle_phase == 10 and time() - tme >= 18 then -- ?
+		if travel_after_battle_phase == 9 and time() - tme >= 23 then -- ?
 			-- landing
+			travel_after_battle_phase = 10
+		elseif travel_after_battle_phase == 8 and time() - tme >= 22 then -- 22
+			-- end flash
 			travel_after_battle_phase = 9
-		elseif travel_after_battle_phase == 7 and time() - tme >= 17 then -- ?
+			all_stars_speed_ctrl(1)
+			sfx(17)
+		elseif travel_after_battle_phase == 7 and time() - tme >= 21.5 then -- 21.5
 			-- jump out of hyperspace
 			travel_after_battle_phase = 8
+			all_stars_speed_ctrl(5)
 		elseif travel_after_battle_phase == 6 and time() - tme >= 16.5 then -- 16.5
 			-- flying through hyperspace
 			travel_after_battle_phase = 7
@@ -288,7 +294,6 @@ function _draw()
 		draw_ship()
 		draw_drone()
 	end
-
 end
 -->8
 -- global variables
