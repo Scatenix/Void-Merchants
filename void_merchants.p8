@@ -231,10 +231,10 @@ function draw_textbox(text, character_left, character_right)
 		spr(138, 126, i)
 	end
 
-	spr(character_left, 68, 32)
-	spr(character_left+16, 76, 32)
-	spr(character_right, 68, 128)
-	spr(character_right+16, 76, 128)
+	sspr(8*7, 8*1, 8, 8, 8, 42, 8*4, 8*4)
+	sspr(8*7, 8*2, 8, 8, 8, 74, 8*4, 8*4)
+	sspr()
+	sspr()
 end
 
 function draw_battle_stats()
