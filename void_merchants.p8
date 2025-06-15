@@ -42,27 +42,51 @@ function _init()
 		enemys_max_y = 119
 	end
 
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
-	add_enemy(1)
+	battle_mode = true
+	takeof_mode = false
+	landing_mode = false
+	converstaion_mode = true
+	trading_mode = false
+	death_mode = false
 
-	drone_tier = 3
+	if battle_mode then
+		add_enemy(1)
+		-- add_enemy(3)
+		-- add_enemy(6)
+		-- add_enemy(9)
+		-- add_enemy(14)
+		-- add_enemy(18)
+		-- add_enemy(1)
+		add_enemy(1)
+		add_enemy(1)
+		add_enemy(1)
 
-	set_pl_ship(6)
-	set_pl_drone(drone_tier)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
 
---pl_ship_storage = 8
---drone_storage = 6
+		drone_tier = 6
 
---pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
+		set_pl_ship(6)
+		set_pl_drone(drone_tier)
 
+		-- pl_ship_storage = 8
+		-- drone_storage = 6
+
+		-- pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
+	end
 end
 
 
@@ -72,14 +96,14 @@ end
 
 
 function _update()
-	if death_screen == false then
+	if not death_mode and battle_mode then
 		ship_ctrl()
 		drone_ctrl()
 		ship_and_drone_shoot()
 		friendly_shots_hit_enemy(pl_ship_shots, pl_ship_damage, 1)
 		friendly_shots_hit_enemy(drone_shots, drone_damage, 2)
-		enemy_shots_hit_friendly(pl_ship_x, pl_ship_y, pl_ship_hitbox_skip_pixle, pl_ship_hitbox_width, 1)
-		enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixle, drone_hitbox_width, 2)
+		enemy_shots_hit_friendly(pl_ship_x, pl_ship_y, pl_ship_hitbox_skip_pixel, pl_ship_hitbox_width, 1)
+		enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixel, drone_hitbox_width, 2)
 		enemy_shoot()
 		ship_burner_calculation()
 		calculate_floating_items_drift()
@@ -119,7 +143,7 @@ function _draw()
 
 ----------------
 
-	if death_screen == true then
+	if death_mode == true then
 		print("you died :c\nwanna play again? :)\nrestart the game!", 30, 30, 10)
 	else
 		if initial_draw == true then
@@ -129,26 +153,31 @@ function _draw()
 
 		draw_passing_stars()
 
-		-- if show_battle_stats then
-		-- 	draw_battle_stats()
-		-- end
+		if show_battle_stats then
+			draw_battle_stats()
+		end
 
-		draw_textbox("test", char_player, char_void)
+		draw_floating_items()
+		draw_enemys()
+		draw_ship()
+		draw_drone()
 
-		-- draw_floating_items()
-		-- draw_enemys()
-		-- draw_ship()
-		-- draw_drone()
+		draw_friendly_shots(pl_ship_shots, 11)
+		draw_friendly_shots(drone_shots, 12)
+		draw_enemy_shots()
 
-		-- draw_friendly_shots(pl_ship_shots, 11)
-		-- draw_friendly_shots(drone_shots, 12)
-		-- draw_enemy_shots()
-
-		-- draw_hitmarkers()
-		-- draw_explosions()
+		draw_hitmarkers()
+		draw_explosions()
 		
---		show_stored_items()
-		
+		-- show_stored_items()
+
+			
+		-- draw_textbox("hello, how are you my friend",
+		-- 	"you want to buy something",
+		-- 	"i haven't got all day, you know",
+		-- 	"come on, do something!", char_player, char_trader)
+
+
 	end
 end
 -->8
@@ -163,7 +192,6 @@ y_up_boundry = 0
 y_down_boundry = 97
 
 initial_draw = true
-death_screen = false
 play_sfx = true
 
 speed_buff_time = 4.0
@@ -172,6 +200,13 @@ shot_speed_buff_time = 4.0
 max_pl_dr_weapons = 5
 max_drones = 6
 max_pl_extra_damage = 6
+
+battle_mode = false
+takeof_mode = false
+landing_mode = false
+converstaion_mode = false
+trading_mode = false
+death_mode = false
 
 -- arrays
 
@@ -215,26 +250,48 @@ function draw_hitmarkers()
 	end
 end
 
-function draw_textbox(text, character_left, character_right)
-	spr(137, 0, 84, 1, 1, true)
-	spr(137, 0, 126, 1, 1, true, true)
-	spr(137, 120, 84, 1, 1)
-	spr(137, 120, 126, 1, 1, false, true)
+function draw_textbox(text1, text2, text3, text4, character_left, character_right)
+	-- corners
+	spr(137, 0, -1, 1, 1, true)
+	spr(137, 0, 40, 1, 1, true, true)
+	spr(137, 120, -1, 1, 1)
+	spr(137, 120, 40, 1, 1, false, true)
 
+	-- horizontal bars
 	for i = 2, 122, 8 do
-		spr(136, i, 84)
-		spr(136, i, 126, 1, 1, false, true)
+		spr(136, i, -1)
+		spr(136, i, 40, 1, 1, false, true)
 	end
 
-	for i = 91, 123, 8 do
+	-- vertical bars
+	for i = 8, 32, 8 do
 		spr(138, -1, i)
 		spr(138, 126, i)
 	end
 
-	sspr(8*7, 8*1, 8, 8, 8, 42, 8*4, 8*4)
-	sspr(8*7, 8*2, 8, 8, 8, 74, 8*4, 8*4)
-	sspr()
-	sspr()
+	-- extra dots for vertical bars
+	line(0, 7, 0, 7, 6)
+	line(127, 7, 127, 7, 6)
+
+	sspr(character_left, 8, 8, 8, 8, 48, 8*4, 8*4)
+	sspr(character_left, 16, 8, 8, 8, 80, 8*4, 8*4)
+	sspr(character_right, 8, 8, 8, 88, 48, 8*4, 8*4)
+	sspr(character_right, 16, 8, 8, 88, 80, 8*4, 8*4)
+
+	print(text1, 5, 9, 7)
+	print(text2, 5, 17, 7)
+	print(text3, 5, 25, 7)
+	print(text4, 5, 33, 7)
+
+	-- waiting for input indicator
+	waiting_indicator_woble = 0
+	if adhs_counter > 10 then
+		waiting_indicator_woble = 1
+	end
+
+	line(120, 35+waiting_indicator_woble, 123, 35+waiting_indicator_woble, 9)
+	line(120, 36+waiting_indicator_woble, 123, 36+waiting_indicator_woble, 9)
+	line(121, 37+waiting_indicator_woble, 122, 37+waiting_indicator_woble, 9)
 end
 
 function draw_battle_stats()
@@ -394,7 +451,7 @@ end
 
 pl_ship_x=50
 pl_ship_y=20
-pl_ship_hitbox_skip_pixle = 0 -- from mid
+pl_ship_hitbox_skip_pixel = 0 -- from mid
 pl_ship_hitbox_width = 0 -- from mid
 pl_ship_sprite=0
 pl_ship_damage=0
@@ -419,7 +476,7 @@ pl_ship_shot_speed_buff_time = 0
 function set_pl_ship(tier)
 	pl_ship_sprite=tier-1
 	htbx = get_ship_htbx_skp_pxl_width(tier)
-	pl_ship_hitbox_skip_pixle = htbx[1]
+	pl_ship_hitbox_skip_pixel = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
 	pl_ship_damage=2*tier
 	pl_ship_base_damage=pl_ship_damage
@@ -572,7 +629,7 @@ drone_x = 0
 drone_y = 0
 drone_offset_y = 0
 drone_offset_x = 0
-drone_hitbox_skip_pixle = 8
+drone_hitbox_skip_pixel = 8
 drone_hitbox_width = 0
 drone_sprite = 48
 drone_damage = 00
@@ -588,9 +645,9 @@ function set_pl_drone(tier)
 	if tier >= 0 and tier <= 6 then
  	drone_sprite = 48 + tier
  	htbx = get_drone_htbx_skp_pxl_width(tier)
-  drone_hitbox_skip_pixle = htbx[1]
-  drone_hitbox_width = htbx[2]
-  drone_damage = flr(10 * tier * 0.1) + 1
+	drone_hitbox_skip_pixel = htbx[1]
+	drone_hitbox_width = htbx[2]
+	drone_damage = flr(10 * tier * 0.1) + 1
  	drone_life = flr(20 * tier * 0.1) + 1
  	drone_shields = flr(10 * tier * 0.1 - 1) + 1
  	drone_storage = flr(10 * tier * 0.1) + 1
@@ -601,9 +658,9 @@ function set_pl_drone(tier)
  elseif tier >= 7 and tier <= 9 then
  	drone_sprite = 6 + tier - 7
  	htbx = get_drone_htbx_skp_pxl_width(tier)
-  drone_hitbox_skip_pixle = htbx[1]
-  drone_hitbox_width = htbx[2]
-  drone_damage = 0
+	drone_hitbox_skip_pixel = htbx[1]
+	drone_hitbox_width = htbx[2]
+	drone_damage = 0
  	drone_life = flr(20 * (tier-3) * 0.1) + 1
  	drone_shields = flr(10 * (tier-6.5) * 0.2) + 1
  	drone_storage = flr(10 * tier * 0.1) + 1
@@ -666,7 +723,7 @@ end
 function kill_drone()
 	drop_items_when_drone_dies()
 	
-	drone_hitbox_skip_pixle = 8
+	drone_hitbox_skip_pixel = 8
 	drone_hitbox_width = 0
 	drone_sprite = 48
 	drone_damage = 00
@@ -686,6 +743,7 @@ enemys = {}
 enemy_shots = {}
 enemy_shot_cooldown = 0
 
+-- max level 20
 function add_enemy(lvl)
 	y = flr(rnd(enemys_max_y))
 	x = 127
@@ -853,7 +911,7 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 			if flr(life) <= 0 then
 				create_explosion(posx, posy)
 				if player1_drone2 == 1 then
-						death_screen = true
+						death_mode = true
 						clear_screen()
 						gc_all()
 				elseif player1_drone2 == 2 then
@@ -1230,9 +1288,9 @@ function show_stored_items()
 end
 -->8
 -- characters
-char_player=23
-char_trader=24
-char_void=22
+char_player=56
+char_trader=64
+char_void=48
 
 __gfx__
 0000000000000000000000005500dd000055500005d55dd00000000000566c000000000000000000000000000000aaaaaaaa0000000000000000033333300000
@@ -1245,20 +1303,20 @@ a985ccd0085ddccd0a98dcc50985c600a985cccd0d566dcc000566c0000566c005d66d5000000000
 00000000005d0000000500005500dd000055500005d55dd00000d0000000d000000000000000000000aaa9aaaaaaaaaaaa9aaaaa99aaaa003333333333333c33
 0000000000000000000000005500dd000055500005d55dd00006d00000555d00008220000000000000aaa9aa99aaaaaaaa99aaaaaaaaaa0033333c3333333333
 00000000005d000000050000005d00d0005ddd000966655d006ddd005055d60008882200000000000aaaaaaa9aaaaaaaaaa9aaaaaaaaaaa03333333333333333
-00dd00000dddd00005d550009055500da5566660a88955dc06d111d0550444660eeee400000000000aaaaaaaaaaaaaaa9aa9aa9aaaaaaaa0333333333c333333
+00dd00000dddd00005d550009055500da5566660a88955dc06d111d055d444660eeee400000000000aaaaaaaaaaaaaaa9aa9aa9aaaaaaaa0333333333c333333
 05556d009a5566d0a98d56500985c6009895cccd0d566dcc061818d00555dddd88882220000000000aaaaaaaaaaaaaaa9aaaaa999aaaaaa00333333ccc333330
 9895ccd0095ddccd0aa9dcc50895c600a985cccd0d566dcc06d111d004bb9bb00bbb330000000000aaaaaaaaaaa9999a9aaaaaaa9aaaaaaa033333cccc333330
 05556d00a85566d0989d5650a055500da5566660998955dc06dd11dd8444990006db6d0000000000aaaaaaaaaaa9aaaa9aaaaaaaaaaaaaaa0033333333333300
 00dd00000dddd00005d55000005d00d0005ddd000a66655d066dddd1249000a09dd3dd4000000000aaaa9aaaaaaaaaaaaaaa99aaaaa99aaa0003333333333000
 00000000005d0000000500005500dd000055500005d55dd00066dd112299aaa00994440000000000aaaa9aa99aaaaaaaaaaa9aaaaaaa9aaa0000033333300000
 0000000000000000000000005500dd000055500005d55dd00606d111022288800077600000000000aaaaaaaa9aaaaaaaaaaa9aaaaaaa9aaa00000cccccc00000
-00000000005d000000050000005d00d0005ddd000966655d006dd111002888000288820000000000aaaaaaaa99aaaa9aaaaaaaaaaaaaaaaa000cccccccccc000
-00dd00000dddd00005d550009055500d95566660989955dc0060d110000880007826886000000000aaaaaaaaa99aaa999aaaaaaaaaaaaaaa00cccccccccccc00
-05556d00895566d0a89d56500995c600a895cccd0d566dcc06000d11000000007222220600000000aaaa9aaaaa99aaaaaaaaaaaaaaaaaaaa0cccccccccccccc0
-aa85ccd0095ddccd09a9dcc50895c6009995cccd0d566dcc006010100000000007292206000000000aaa9aaaaaaaaaaaaaaa9aaaaaaaaaa00cccccccccccccc0
-05556d00a85566d0a98d5650a055500da5566660a88955dc000001000000000002755206000000000aaa9aaaaaaaaaaaaa999aaa9aaaaaa0cccccccccccccccc
-00dd00000dddd00005d55000005d00d0005ddd000966655d000d00000000000000252055000000000aaa99aaaaaaaaaaa99aaaa99aaaaaa0cccccccaa66ccccc
-00000000005d0000000500005500dd000055500005d55dd00600000000000000002920050000000000aaaaaaaaaaaaaaaaaaaa99aaaaaa00cccccca55a6acccc
+00000000005d000000050000005d00d0005ddd000966655d006dd111092888a00288820000000000aaaaaaaa99aaaa9aaaaaaaaaaaaaaaaa000cccccccccc000
+00dd00000dddd00005d550009055500d95566660989955dc0060d11090388b0a7826886000000000aaaaaaaaa99aaa999aaaaaaaaaaaaaaa00cccccccccccc00
+05556d00895566d0a89d56500995c600a895cccd0d566dcc06000d1190333b097222220600000000aaaa9aaaaa99aaaaaaaaaaaaaaaaaaaa0cccccccccccccc0
+aa85ccd0095ddccd09a9dcc50895c6009995cccd0d566dcc006010105533bb5507292206000000000aaa9aaaaaaaaaaaaaaa9aaaaaaaaaa00cccccccccccccc0
+05556d00a85566d0a98d5650a055500da5566660a88955dc000001005049a40502755206000000000aaa9aaaaaaaaaaaaa999aaa9aaaaaa0cccccccccccccccc
+00dd00000dddd00005d55000005d00d0005ddd000966655d000d000000dddd0000252055000000000aaa99aaaaaaaaaaa99aaaa99aaaaaa0cccccccaa66ccccc
+00000000005d0000000500005500dd000055500005d55dd00600000000d00d00002920050000000000aaaaaaaaaaaaaaaaaaaa99aaaaaa00cccccca55a6acccc
 0000000000000000000dd000000dd0000000000000d000000000000000000000000000000000000000aaaaaaa9aaaaaaaaaaaa9aaaaaaa00ccccccca66666acc
 000000000000000000950000009500000000000005dd000000000050000000000000000000000000000aaaaaaa9aaaaaaaaaaaaaaaaaa000cccccccccca6cccc
 0000000000000000000dd000000dd00000000d00a95000d000005d000000000000000000000000000000aaaaaaa99aaaaaaa9999aaaa0000cccccccccccccccc
