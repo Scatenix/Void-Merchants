@@ -48,10 +48,10 @@ function _init()
 		enemys_max_y = 119
 	end
 
-	battle_mode = true
+	battle_mode = false
 	takeof_mode = false
 	landing_mode = false
-	converstaion_mode = true
+	converstaion_mode = false
 	trading_mode = false
 	death_mode = false
 
@@ -149,9 +149,13 @@ function _draw()
 
 ----------------
 
+	current_planet = 0
+	-- sspr(planets[current_planet], 0, 32, 32, 8, 48, 8*4, 8*4)
+	sspr(80, 0, 32, 32, 8, 48, 8*8, 8*8)
+
 	if death_mode == true then
 		print("you died :c\nwanna play again? :)\nrestart the game!", 30, 30, 10)
-	else
+	elseif battle_mode then
 		if initial_draw == true then
 			init_passing_stars()
 			initial_draw = false
@@ -176,15 +180,13 @@ function _draw()
 		draw_explosions()
 		
 		-- show_stored_items()
-
-			
-		-- draw_textbox("hello, how are you my friend",
-		-- 	"you want to buy something",
-		-- 	"i haven't got all day, you know",
-		-- 	"come on, do something!", char_player, char_trader)
-
-
+	elseif converstaion_mode then
+		draw_textbox("hello, how are you my friend",
+			"you want to buy something",
+			"i haven't got all day, you know",
+			"come on, do something!", char_player, char_trader)
 	end
+
 end
 -->8
 -- global variables
@@ -213,6 +215,11 @@ landing_mode = false
 converstaion_mode = false
 trading_mode = false
 death_mode = false
+
+current_planet = 0
+planets = {80}
+current_small_planet = 0
+small_planets = {}
 
 -- arrays
 
