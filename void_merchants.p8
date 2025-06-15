@@ -70,14 +70,15 @@ function _init()
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
-	converstaion_mode = true
-	trading_mode = false
+	converstaion_mode = false
+	trading_mode = true
 	death_mode = false
 
-	level = 20
+	level = 5
+	
 
 	-- for testing:
-	-- tme = time() - 20
+	-- tme = time() - 10
 
 		-- add_enemy(1)
 		-- add_enemy(3)
@@ -106,7 +107,7 @@ function _init()
 		-- add_floating_item(cobalt, 70, 70)
 		-- add_floating_item(cobalt, 70, 70)
 
-		drone_tier = 6
+		drone_tier = 5
 
 		set_pl_ship(6)
 		set_pl_drone(drone_tier)
@@ -169,41 +170,25 @@ function _update()
 		if not travel_after_battle_mode and #enemys == 0 then
 			tme = time()
 			travel_after_battle_mode = true
+			current_planet = flr(rnd(6)) + 1
 		end
 	elseif converstaion_mode then
 		pause_on_text = true
 		conv_partner = 1
-		if level <= 1 then
-			conv_text_1 = "oh, a new face..."
-			conv_text_2 = "welcome on my trading station!"
-			conv_text_3 = "wanna have a look at my wares?"
-			conv_text_4 = "or perhaps sell some goods?"
-		elseif level < 5 then
-			conv_text_1 = "see who it is again!"
-			conv_text_2 = "i have restocked my wares"
-			conv_text_3 = "while you were out fighting."
-			conv_text_4 = "take a look!"
-		elseif level < 10 then
-			conv_text_1 = "nice you've maded it here!"
-			conv_text_2 = "make sure you stock up on"
-			conv_text_3 = "these drones."
-			conv_text_4 = "it's dangerous to go alone..."
-		elseif level < 15 then
-			conv_text_1 = "my best customer!"
-			conv_text_2 = "come in, come in!"
-			conv_text_3 = "looking forward to all that"
-			conv_text_4 = "gold and cobalt of yours."
-		elseif level < 20 then
-			conv_text_1 = "hello, fellow merchant,"
-			conv_text_2 = "quite the ship you've got!'"
-			conv_text_3 = "time to make it even better."
-			conv_text_4 = "your credits are welcome."
-		elseif level >= 20 then
-			conv_text_1 = "hello my friend!"
-			conv_text_2 = "you are pretty capable"
-			conv_text_3 = "to make it this far."
-			conv_text_4 = "prepare for the final battle!"
+		trader_converstaion()
+	elseif trading_mode then
+		drone_ctrl()
+		ship_burner_calculation()
+
+		if trading_phase == 1 or trading_phase == 5 then
+			trader_station_x -= 0.5
+		elseif trading_phase == 2 then
+			black_hole_x -= 1
+		elseif trading_phase == 4 then
+			advance_textbox()
 		end
+
+		trading_script()
 	end
 
 	animation_counters()
@@ -233,8 +218,11 @@ function _draw()
 --	debug_coords()
 --	info(enemy_shot_cooldown)
 	-- info(pl_ship_speed)
-	-- info("", current_small_planet, 10)
-
+	if pause_on_text then
+		info("pause_on_text true", 10)
+	else 
+		info("pause_on_text false", 10)
+	end
 ----------------
 
 	if death_mode == true then
@@ -268,10 +256,25 @@ function _draw()
 		draw_passing_stars()
 		draw_floating_items()
 		draw_trader_station()
-		draw_ship()
 		draw_drone()
+		draw_ship()
 		draw_friendly_shots(pl_ship_shots, 11)
 		draw_friendly_shots(drone_shots, 12)
+	elseif trading_mode then
+		draw_passing_stars()
+		if trading_phase == 4 then
+			draw_textbox()
+		else
+			if talk_to_void_creature then
+				draw_black_hole_background()
+			end
+			draw_trader_station()
+			draw_drone()
+			draw_ship()
+			if talk_to_void_creature then
+				draw_black_hole_foreground()
+			end
+		end
 	end
 end
 -->8
@@ -310,6 +313,10 @@ jump_to_hyperspce = false
 arrive_in_hyperspace = false
 show_trader_station_far = false
 show_trader_station_near = false
+
+trading_phase = 0
+talk_to_void_creature = false
+skip_void = false
 
 current_planet = 1
 planets = {
@@ -1495,9 +1502,20 @@ function draw_trader_station()
 	end
 end
 
+function draw_black_hole_background()
+	sspr(small_planets[7][1], small_planets[7][2], 8, 16, black_hole_x, 48, 16, 32)
+end
+
+function draw_black_hole_foreground()
+	rectfill(black_hole_x+16, 48, black_hole_x+41, 80, 0)
+	sspr(small_planets[7][1]+8, small_planets[7][2], 8, 16, black_hole_x+16, 48, 16, 32)
+end
+
 function travel_from_battle_animation_script()
 	if travel_after_battle_phase == 11 and time() - tme >= 30 then -- 30
 		-- go inside
+		travel_after_battle_phase = 0
+		travel_after_battle_mode = false
 		converstaion_mode = true
 	elseif travel_after_battle_phase == 10 and time() - tme >= 28 then -- 28
 		-- land
@@ -1588,9 +1606,92 @@ function advance_textbox()
 	end
 end
 
+function trader_converstaion()
+	if level <= 1 then
+		conv_text_1 = "oh, a new face..."
+		conv_text_2 = "welcome on my trading station!"
+		conv_text_3 = "wanna have a look at my wares?"
+		conv_text_4 = "or perhaps sell some goods?"
+	elseif level < 5 then
+		conv_text_1 = "see who it is again!"
+		conv_text_2 = "i have restocked my wares"
+		conv_text_3 = "while you were out fighting."
+		conv_text_4 = "take a look!"
+	elseif level < 10 then
+		conv_text_1 = "nice you've maded it here!"
+		conv_text_2 = "make sure you stock up on"
+		conv_text_3 = "these drones."
+		conv_text_4 = "it's dangerous to go alone..."
+	elseif level < 15 then
+		conv_text_1 = "my best customer!"
+		conv_text_2 = "come in, come in!"
+		conv_text_3 = "looking forward to all that"
+		conv_text_4 = "gold and cobalt of yours."
+	elseif level < 20 then
+		conv_text_1 = "hello, fellow merchant,"
+		conv_text_2 = "quite the ship you've got!'"
+		conv_text_3 = "time to make it even better."
+		conv_text_4 = "your credits are welcome."
+	elseif level >= 20 then
+		conv_text_1 = "hello my friend!"
+		conv_text_2 = "you are pretty capable"
+		conv_text_3 = "to make it this far."
+		conv_text_4 = "prepare for the final battle!"
+	end
+end
+
+function send_to_void_creature()
+
+end
+
 -->8
 -- trading
+black_hole_x = 0
 
+function trading_script()
+	if trading_phase == 5 and time() - tme >= 30 then -- 30
+		all_stars_speed_ctrl(5)
+		trading_phase = 6
+	elseif trading_phase == 4 and not pause_on_text then
+		-- send back to trading station
+		skip_void = true
+		trading_phase = 0
+	elseif trading_phase == 3 and time() - tme >= 12  then -- 12 then
+		pause_on_text = true
+		trading_phase = 4
+	elseif trading_phase == 2 and time() - tme >= 10.5 then -- 10.5
+		trading_phase = 3
+		conv_partner = 2
+		conv_text_1 = "missing text"
+		conv_text_4 = "I will send you back..."
+	elseif trading_phase == 1 and time() - tme >= 5 then -- 5
+		all_stars_speed_ctrl(1)
+		trading_phase = 2
+	elseif trading_phase == 0 then
+		all_stars_speed_ctrl(0.2)
+		-- trade
+		-- ...
+
+		show_trader_station_near = true
+		pl_ship_x = 64
+		pl_ship_y = 64
+		-- leaving to the void creature
+		if level % 5 == 0 and not skip_void then
+			tme = time()
+			talk_to_void_creature = true
+			black_hole_x = 200
+			trading_phase = 1
+			trader_station_x = -24
+		else
+			tme = time()
+			skip_void = false
+			trading_phase = 5
+			level += 1
+			trader_station_x = -24
+			talk_to_void_creature = false
+		end
+	end
+end
 
 __gfx__
 0000000000000000000000005500dd000055500005d55dd00000000000566c000000000000000000000000000000aaaaaaaa0000000000000000033333300000
