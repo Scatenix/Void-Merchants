@@ -66,7 +66,7 @@ function _init()
 	trading_mode = false
 	death_mode = false
 
-	level = 15
+	level = 21
 	init_battle = true
 
 	-- for testing:
@@ -993,7 +993,7 @@ function add_enemy(lvl, avoid_placing_behind)
 	-- weapons
 	enemy[9] = flr(lvl / 5) + 1
 	-- shot_speed
-	enemy[10] = flr(lvl / 5) * 0.7 + 1
+	enemy[10] = 1 + 0.1 * lvl--flr(lvl / 5) * 0.7 + 1
 	-- speed
 	enemy[11] = flr(lvl / 5) * 0.7 + 1
 	-- value
@@ -1008,12 +1008,29 @@ function add_enemy(lvl, avoid_placing_behind)
 	enemy[16] = 0
 	-- id
 	enemy[17] = #enemys+1
-	-- shot_frequ
-	-- enemy[18] = 0
-	-- shot_salve
-	-- enemy[19] = 0
+	-- shot_pattern (array with vals between 1 and 60)
+	-- tells number of shots in one shot cycle, which lasts 60 frames and on which frame they are shot
+	enemy[18] = get_shot_pattern(lvl)
 	
 	add(enemys, enemy)
+end
+
+function get_shot_pattern(lvl)
+	if lvl >= 1 and lvl <= 3 then
+		return {1}
+	elseif lvl >= 4 and lvl <= 6 then
+		return {6, 12, 36}
+	elseif lvl >= 7 and lvl <= 9 then
+		return {6, 14, 36, 44}
+	elseif lvl >= 10 and lvl <= 12 then
+		return {4, 8, 12, 16, 20}
+	elseif lvl >= 13 and lvl <= 15 then
+		return {2, 4, 6, 32, 34, 36}
+	elseif lvl >= 16 and lvl <= 18 then
+		return {2, 4, 6, 8, 24, 26, 28, 30}
+	elseif lvl >= 19 and lvl <= 21 then
+		return {2, 4, 6, 24, 26, 28, 48, 50, 52}
+	end
 end
 
 function spawn_enemy_wave()
@@ -1047,14 +1064,15 @@ function get_enemy_htbx_skp_pxl_width(lvl)
 end
 
 function enemy_shoot()
-	if enemy_shot_cooldown == 44 then
+	if enemy_shot_cooldown == 60 then
 		enemy_shot_cooldown = 0
 	end
 	enemy_shot_cooldown += 1
+
+	--if enemy_shot_cooldown == 6 or enemy_shot_cooldown == 12 or enemy_shot_cooldown == 18 then
 	
-	if enemy_shot_cooldown == 6 or enemy_shot_cooldown == 12 or enemy_shot_cooldown == 18 then
-		for enemy in all(enemys) do
-	
+	for enemy in all(enemys) do
+		if contains(enemy_shot_cooldown, enemy[18]) then
 			shot_mask = get_shot_mask(enemy[9])
 	
 			if play_sfx == true then
@@ -1070,6 +1088,15 @@ function enemy_shoot()
 		end
 	end
 end
+
+function contains(val, arr)
+	for i=1,#arr do
+	  if arr[i] == val then
+		return true
+	  end
+	end
+	return false
+  end
 
 function enemy_drop_item(enemy)
 	droped_item = drop_item()
