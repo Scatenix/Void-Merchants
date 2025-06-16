@@ -5,6 +5,12 @@ __lua__
 -- main
 -- shift + h = ♥
 
+-- TODO:
+-- 	current known bugs
+--		- some sounds are played at the wrong time
+--		- some sounds play at the wrong time when no in the first game loop
+--		- question: is the level incremented correctly?
+
 -- Game loop description:
 -- 1st void guy talks to you
 -- starting journey with lightspeed into first stage
@@ -51,6 +57,7 @@ __lua__
 -- 19 hyper space thrusters
 -- 20 step out of hyperspace
 -- 21 buy
+-- 22 spawn in enemies
 
 function _init()
 	clear_screen()
@@ -66,8 +73,9 @@ function _init()
 	trading_mode = false
 	death_mode = false
 
-	level = 21
+	level = 5
 	init_battle = true
+	-- pause_on_text = true
 
 	-- for testing:
 	-- tme = time() - 10
@@ -99,9 +107,9 @@ function _init()
 		-- add_floating_item(cobalt, 70, 70)
 		-- add_floating_item(cobalt, 70, 70)
 
-		drone_tier = 1
+		drone_tier = 6
 
-		set_pl_ship(1)
+		set_pl_ship(6)
 		set_pl_drone(drone_tier)
 
 		-- pl_ship_storage = 8
@@ -147,19 +155,23 @@ function _update()
 	elseif battle_mode then
 		if init_battle then
 			show_battle_stats = true
-			min_enemys_on_level = 10 * level * 0.1
+			min_enemys_on_level = 10 + level
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
 		end
 
-		-- spawn new enemy wave every 1 seconds
-		-- I think this can lead to crashes
-		-- interval = 10
-		-- if time() - tme >= interval then
-		-- 	spawn_enemy_wave()
-		-- 	tme += interval
-		-- end
+		-- spawn new enemy wave every 20 seconds if there are still enemies. else after 5
+		-- I think this can lead to crashes if to many enemies are created at once
+		if #enemys > 0 then
+			interval = 20
+		else
+			interval -= 0.3
+		end
+		if time() - tme >= flr(interval) then
+			spawn_enemy_wave()
+			tme += interval
+		end
 
 		ship_ctrl()
 		drone_ctrl()
@@ -175,15 +187,20 @@ function _update()
 		speed_buff_timer()
 		shot_speed_buff_timer()
 
-		if not travel_after_battle_mode and min_enemys_on_level == 0 then
+		if not travel_after_battle_mode and min_enemys_on_level <= 0 and #enemys <= 0 then
 			tme = time()
 			travel_after_battle_mode = true
 			current_planet = flr(rnd(6)) + 1
+			reset_buffs()
 		end
 	elseif converstaion_mode then
-		pause_on_text = true
+		if not pause_on_text then
+			converstaion_mode = false
+			trading_mode = true
+		end
 		conv_partner = 1
 		trader_converstaion()
+		advance_textbox()
 	elseif trading_mode then
 		drone_ctrl()
 		ship_burner_calculation()
@@ -228,9 +245,9 @@ function _draw()
 ----- debug section
 
 --	debug_coords()
---	info(enemy_shot_cooldown)
+	info(min_enemys_on_level)
 -- info(time())
-print("memory: "..stat(0).." bytes", 0, 0, 7)
+-- print("memory: "..stat(0).." bytes", 0, 0, 7)
 	-- info(pl_ship_speed)
 	-- if pause_on_text then
 	-- 	info("pause_on_text true", 10)
@@ -1028,13 +1045,14 @@ function get_shot_pattern(lvl)
 		return {2, 4, 6, 32, 34, 36}
 	elseif lvl >= 16 and lvl <= 18 then
 		return {2, 4, 6, 8, 24, 26, 28, 30}
-	elseif lvl >= 19 and lvl <= 21 then
+	elseif lvl >= 19 and lvl <= 20 then
 		return {2, 4, 6, 24, 26, 28, 48, 50, 52}
 	end
 end
 
 function spawn_enemy_wave()
 	if min_enemys_on_level > 0 then
+		sfx(22)
 		enemy_number_this_wave = flr(rnd(4)) + 3
 		min_enemys_on_level -= enemy_number_this_wave
 
@@ -1368,6 +1386,15 @@ function shot_speed_buff_timer()
 	end
 end
 
+function reset_buffs()
+	sfx(9, -2)
+	sfx(4, -2)
+	pl_ship_speed = pl_ship_default_speed
+	pl_ship_speed_buff_time = 0
+	pl_ship_shot_speed = pl_ship_default_shot_speed
+	pl_ship_shot_speed_buff_time = 0
+end
+
 -- calculate drop (random chance)
 function drop_item()
 	num = rnd(1000)
@@ -1621,6 +1648,7 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 0
 		travel_after_battle_mode = false
 		converstaion_mode = true
+		pause_on_text = true
 	elseif travel_after_battle_phase == 10 and time() - tme >= 28 then -- 28
 		-- land
 		travel_after_battle_phase = 11
@@ -1705,7 +1733,7 @@ conv_text_3=""
 conv_text_4=""
 
 function advance_textbox()
-	if pause_on_text and btn(4) then
+	if pause_on_text and btn(5) then
 		pause_on_text = false
 	end
 end
@@ -1753,11 +1781,13 @@ end
 black_hole_x = 0
 
 function trading_script()
-	if trading_phase == 5 and time() - tme >= 4 then -- 30
+	if trading_phase == 5 and time() - tme >= 5 then -- 30
 		all_stars_speed_ctrl(1)
 		trading_mode = false
 		battle_mode = true
 		init_battle = true
+		show_trader_station_near = false
+		show_trader_station_far = false
 		trading_phase = 0
 	elseif trading_phase == 4 and not pause_on_text then
 		-- send back to trading station
@@ -2082,7 +2112,7 @@ __sfx__
 aa1400002067120671206712067120671206712067120671206712067120671206712067120671206712067120671206712067120671206712067120671206712067120671206712067120671206712067120671
 001000002237322353213531e3331e3031e3031e3031e3031e3030000300003000030000300003000030000300003000030000300003000030000300003000030000300003000030000300003000030000300003
 0010000006a760aa061da061aa0615606116060e6060c6060c6060670604706037060170600706000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006
-001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000800002c3532a353293332931329303293030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
