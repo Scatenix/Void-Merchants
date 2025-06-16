@@ -56,26 +56,18 @@ function _init()
 	clear_screen()
 	music(0)
 
-	if show_battle_stats == true then
-		stars_max_y = 105
-		enemys_max_y = 96
-	else
-		stars_max_y = 127
-		enemys_max_y = 119
-	end
-
 	current_planet = flr(rnd(6)) + 1
 	current_small_planet = flr(rnd(6)) + 1
 
-	battle_mode = false
+	battle_mode = true
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = true
+	trading_mode = false
 	death_mode = false
 
-	level = 5
-	
+	level = 15
+	init_battle = true
 
 	-- for testing:
 	-- tme = time() - 10
@@ -107,9 +99,9 @@ function _init()
 		-- add_floating_item(cobalt, 70, 70)
 		-- add_floating_item(cobalt, 70, 70)
 
-		drone_tier = 5
+		drone_tier = 1
 
-		set_pl_ship(6)
+		set_pl_ship(1)
 		set_pl_drone(drone_tier)
 
 		-- pl_ship_storage = 8
@@ -153,6 +145,22 @@ function _update()
 		travel_from_battle_animation_script()
 	-- end
 	elseif battle_mode then
+		if init_battle then
+			show_battle_stats = true
+			min_enemys_on_level = 10 * level * 0.1
+			init_battle = false
+			tme = time()
+			spawn_enemy_wave()
+		end
+
+		-- spawn new enemy wave every 1 seconds
+		-- I think this can lead to crashes
+		-- interval = 10
+		-- if time() - tme >= interval then
+		-- 	spawn_enemy_wave()
+		-- 	tme += interval
+		-- end
+
 		ship_ctrl()
 		drone_ctrl()
 		ship_and_drone_shoot()
@@ -167,7 +175,7 @@ function _update()
 		speed_buff_timer()
 		shot_speed_buff_timer()
 
-		if not travel_after_battle_mode and #enemys == 0 then
+		if not travel_after_battle_mode and min_enemys_on_level == 0 then
 			tme = time()
 			travel_after_battle_mode = true
 			current_planet = flr(rnd(6)) + 1
@@ -180,12 +188,16 @@ function _update()
 		drone_ctrl()
 		ship_burner_calculation()
 
-		if trading_phase == 1 or trading_phase == 5 then
+		if trading_phase == 1 then
 			trader_station_x -= 0.5
 		elseif trading_phase == 2 then
 			black_hole_x -= 1
 		elseif trading_phase == 4 then
 			advance_textbox()
+		elseif trading_phase == 5 then
+			trader_station_x -= 0.5
+			ship_ctrl()
+			ship_and_drone_shoot()
 		end
 
 		trading_script()
@@ -217,12 +229,14 @@ function _draw()
 
 --	debug_coords()
 --	info(enemy_shot_cooldown)
+-- info(time())
+print("memory: "..stat(0).." bytes", 0, 0, 7)
 	-- info(pl_ship_speed)
-	if pause_on_text then
-		info("pause_on_text true", 10)
-	else 
-		info("pause_on_text false", 10)
-	end
+	-- if pause_on_text then
+	-- 	info("pause_on_text true", 10)
+	-- else 
+	-- 	info("pause_on_text false", 10)
+	-- end
 ----------------
 
 	if death_mode == true then
@@ -271,6 +285,10 @@ function _draw()
 			draw_trader_station()
 			draw_drone()
 			draw_ship()
+			if trading_phase == 5 then
+				draw_friendly_shots(pl_ship_shots, 11)
+				draw_friendly_shots(drone_shots, 12)
+			end
 			if talk_to_void_creature then
 				draw_black_hole_foreground()
 			end
@@ -282,10 +300,11 @@ end
 tme = 0 -- here to track times with time()
 
 level = 1
-show_battle_stats = true
+init_battle = false
+show_battle_stats = false
 animation_counter = 0
 long_animation_counter = 0
-x_left_boundry = 5
+x_left_boundry = 2
 x_right_boundry = 120
 y_up_boundry = 0
 y_down_boundry = 97
@@ -577,7 +596,7 @@ function draw_enemys()
 		end
 		enemy[16] += 1
 
-		if show_enemy_life then
+		if show_enemy_life and enemy[7] < calc_enemy_life(enemy[12]) then
 			life_line = enemy[7] * 8 / calc_enemy_life(enemy[12])
 			line(enemy[1], enemy[2]-2, enemy[1]+8, enemy[2]-2, 2)
 			line(enemy[1], enemy[2]-2, enemy[1]+life_line, enemy[2]-2, 8)
@@ -663,7 +682,7 @@ function set_pl_ship(tier)
 	pl_ship_shot_speed=tier/3+1
 	pl_ship_speed=1+tier*0.2
 	pl_ship_default_shot_speed=tier/3+1
-	pl_ship_default_speed=1
+	pl_ship_default_speed=1+tier*0.2
 	pl_ship_storage=7
 	pl_ship_tier=tier
 end
@@ -678,6 +697,7 @@ function get_ship_htbx_skp_pxl_width(tier)
 	end
 end
 
+-- shotmask is used to tell at which positions shots come out of the enemy. -1 means no shot
 function get_shot_mask(weapons)
 	shot_mask = {}
 	
@@ -752,11 +772,15 @@ function ship_ctrl()
 	if btn(2) then
 		if pl_ship_y > y_up_boundry then
 			pl_ship_y -= pl_ship_speed
+		elseif pl_ship_y < y_up_boundry then
+			pl_ship_y = y_up_boundry
 		end
 	end
 	if btn(3) then
 		if pl_ship_y < y_down_boundry then
 			pl_ship_y += pl_ship_speed
+		elseif pl_ship_y > y_down_boundry then
+			pl_ship_y = y_down_boundry
 		end
 	end
 end
@@ -872,6 +896,10 @@ function drone_ctrl()
 		drone_offset_x = 0
 	end
 	
+	if pl_ship_x <= x_left_boundry + 3 then
+		drone_offset_x = x_left_boundry + 3 - pl_ship_x
+	end
+
 	drone_x = pl_ship_x-5+drone_offset_x
 	
 	if animation_counter <= 10 then
@@ -913,11 +941,18 @@ end
 
 enemys_max_y = 0
 enemys = {}
+min_enemys_on_level = 0
 enemy_shots = {}
 enemy_shot_cooldown = 0
 
 -- max level 20
-function add_enemy(lvl)
+function add_enemy(lvl, avoid_placing_behind)
+	if show_battle_stats == true then
+		enemys_max_y = 96
+	else
+		enemys_max_y = 119
+	end
+
 	y = flr(rnd(enemys_max_y))
 	x = 127
 	htbx = get_enemy_htbx_skp_pxl_width(lvl)
@@ -925,7 +960,14 @@ function add_enemy(lvl)
 	htbx_wdth = htbx[2]
 	
 	while enemy_colides_enemy(x, y, -1) do
-		x += 12
+		if avoid_placing_behind then
+			y += 12
+			if y > enemys_max_y then
+				y = 3
+			end
+		else
+			x += 12
+		end
 	end
 	
 	enemy = {}
@@ -956,18 +998,34 @@ function add_enemy(lvl)
 	enemy[11] = flr(lvl / 5) * 0.7 + 1
 	-- value
 	enemy[12] = lvl
-	--wobble
+	-- wobble
 	enemy[13] = flr(lvl / 5) + 1
-	--wobble state (1;-1)
+	-- wobble state (1;-1)
 	enemy[14] = 1
 	-- original y
 	enemy[15] = enemy[2]
-	--wobble counter
+	-- wobble counter
 	enemy[16] = 0
-	--id
+	-- id
 	enemy[17] = #enemys+1
+	-- shot_frequ
+	-- enemy[18] = 0
+	-- shot_salve
+	-- enemy[19] = 0
 	
 	add(enemys, enemy)
+end
+
+function spawn_enemy_wave()
+	if min_enemys_on_level > 0 then
+		enemy_number_this_wave = flr(rnd(4)) + 3
+		min_enemys_on_level -= enemy_number_this_wave
+
+		for i = 0, enemy_number_this_wave, 1 do
+			enemy_level = max(1, flr(rnd(5)) + (level - 4))
+			add_enemy(enemy_level, true)
+		end
+	end
 end
 
 function calc_enemy_life(lvl)
@@ -989,6 +1047,11 @@ function get_enemy_htbx_skp_pxl_width(lvl)
 end
 
 function enemy_shoot()
+	if enemy_shot_cooldown == 44 then
+		enemy_shot_cooldown = 0
+	end
+	enemy_shot_cooldown += 1
+	
 	if enemy_shot_cooldown == 6 or enemy_shot_cooldown == 12 or enemy_shot_cooldown == 18 then
 		for enemy in all(enemys) do
 	
@@ -1006,10 +1069,6 @@ function enemy_shoot()
 			end
 		end
 	end
-	if enemy_shot_cooldown == 44 then
-		enemy_shot_cooldown = 0
-	end
-	enemy_shot_cooldown += 1
 end
 
 function enemy_drop_item(enemy)
@@ -1054,47 +1113,49 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 end
 
 function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1_drone2)
-	for shot in all(enemy_shots) do
-		if player1_drone2 == 1 and pl_ship_shields > 0 or player1_drone2 == 2 and drone_shields > 0 then
-			hit_x = shot[1] - 11 <= posx and shot[1] >= posx
-		else
-			hit_x = shot[1] - 8 <= posx and shot[1] >= posx
-		end
-		hit_y = shot[2] > posy - 1 + htbx_skip_pxl and shot[2] < posy + htbx_width + htbx_skip_pxl
-		
-		if hit_x and hit_y then
-			life = 0
-			if player1_drone2 == 1 then
-				if pl_ship_shields > 0 then
-				 pl_ship_shields -= 1
-				else
-				 pl_ship_life -= shot[4]
-				end
-				life = pl_ship_life
-			elseif player1_drone2 == 2 then
-				if drone_shields > 0 then
-					drone_shields -= 1
-				else
-					drone_life -= shot[4]
-				end
-				life = drone_life
+	if player1_drone2 == 1 or (player1_drone2 == 2 and drone_tier > 0) then
+		for shot in all(enemy_shots) do
+			if player1_drone2 == 1 and pl_ship_shields > 0 or player1_drone2 == 2 and drone_shields > 0 then
+				hit_x = shot[1] - 11 <= posx and shot[1] >= posx
+			else
+				hit_x = shot[1] - 8 <= posx and shot[1] >= posx
 			end
-			sfx(7)
+			hit_y = shot[2] > posy - 1 + htbx_skip_pxl and shot[2] < posy + htbx_width + htbx_skip_pxl
 			
-			if flr(life) <= 0 then
-				create_explosion(posx, posy)
+			if hit_x and hit_y then
+				life = 0
 				if player1_drone2 == 1 then
-						death_mode = true
-						battle_mode = false
-						clear_screen()
-						gc_all()
+					if pl_ship_shields > 0 then
+					pl_ship_shields -= 1
+					else
+					pl_ship_life -= shot[4]
+					end
+					life = pl_ship_life
 				elseif player1_drone2 == 2 then
-					kill_drone()
+					if drone_shields > 0 then
+						drone_shields -= 1
+					else
+						drone_life -= shot[4]
+					end
+					life = drone_life
 				end
-			end
+				sfx(7)
+				
+				if flr(life) <= 0 then
+					create_explosion(posx, posy)
+					if player1_drone2 == 1 then
+							death_mode = true
+							battle_mode = false
+							clear_screen()
+							gc_all()
+					elseif player1_drone2 == 2 then
+						kill_drone()
+					end
+				end
 
-			create_hitmarker(shot[1], shot[2], 3)
-			del(enemy_shots, shot)
+				create_hitmarker(shot[1], shot[2], 3)
+				del(enemy_shots, shot)
+			end
 		end
 	end
 end
@@ -1364,11 +1425,21 @@ stars_counter = 0
 stars_max_y = 0
 stars = {} -- 1: x 2: y 3: speed
 stars_hyperspeed = false
+stars_hide = false
 
 function init_passing_stars()
+	set_stars_max_y()
 	for i = 1, max_stars do
 		star = {flr(rnd(127)), flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier} 
 		add(stars, star)
+	end
+end
+
+function set_stars_max_y()
+	if show_battle_stats == true then
+		stars_max_y = 105
+	else
+		stars_max_y = 127
 	end
 end
 
@@ -1380,6 +1451,7 @@ function draw_passing_stars()
 	end
 
  	if stars_counter >= stars_counter_threshold and max_stars > #stars then
+		set_stars_max_y()
 		star = {stars_start_x, flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier}
 		add(stars, star)
   		stars_counter = 0
@@ -1398,6 +1470,11 @@ function draw_passing_stars()
 			line(star[1], star[2], 128, star[2], 7)
 			star[1] -= star[3]
 		end
+	end
+
+	if stars_hide then
+		-- just paint black over then to avoid ugly star init
+		rect(0, 0, 128, 128, 0)
 	end
 end
 
@@ -1649,9 +1726,12 @@ end
 black_hole_x = 0
 
 function trading_script()
-	if trading_phase == 5 and time() - tme >= 30 then -- 30
-		all_stars_speed_ctrl(5)
-		trading_phase = 6
+	if trading_phase == 5 and time() - tme >= 4 then -- 30
+		all_stars_speed_ctrl(1)
+		trading_mode = false
+		battle_mode = true
+		init_battle = true
+		trading_phase = 0
 	elseif trading_phase == 4 and not pause_on_text then
 		-- send back to trading station
 		skip_void = true
