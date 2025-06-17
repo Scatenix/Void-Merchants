@@ -1,0 +1,322 @@
+__lua__1
+
+-- main
+-- shift + h = ♥
+
+-- TODO:
+-- 	current known bugs
+--		- some sounds are played at the wrong time
+--		- some sounds play at the wrong time when no in the first game loop
+--		- question: is the level incremented correctly?
+
+-- Game loop description:
+-- 1st void guy talks to you
+-- starting journey with lightspeed into first stage
+-- after every stage: slowly fly towards random planet, trader appears
+-- accel again from this planet with light speed
+-- next wave slightly harder
+-- repeat
+-- every 10 waves, void guy appears and says something
+-- final wave (21): hardest wave, void guy is final boss
+-- to not overcomplicate the final fight:
+--		void creature lurks in the background (draw huge face of him)
+--		and occasionally moves back, outside the right screen edge and appears
+--		as smaller (1:1 scale) and fights like a ship with maybe lvl 25 or something
+--		If feeling fancy, occasionally spawn bombs that explode and deal damage to player if in range. (do this only if he is in the background)
+
+-- Possible void creature dialog
+--	before lvl 1:
+--	after lvl 5: I see you are making progress. Very good!
+-- 	after lvl 10:
+-- 	after lvl 15:
+--  after lvl 20, before final boss:
+--			Finally you are strong enough for me to consume your strength
+
+-- SFX
+-- 0 explosion
+-- 1 big explosion
+-- 2 music part 1
+-- 3 hit sound?
+-- 4 increased shooting speed sound
+-- 5 shooting sound
+-- 6 collect item sound
+-- 7 hit sound?
+-- 8 music part 2
+-- 9 speed increase sound
+-- 10 life pickup
+-- 11 ship upgrade
+-- 12 shield increase
+-- 13 prepare for jump
+-- 14 starting thrusters for jump
+-- 15 jump
+-- 16 hyper space
+-- 17 sell
+-- 18 land
+-- 19 hyper space thrusters
+-- 20 step out of hyperspace
+-- 21 buy
+-- 22 spawn in enemies
+
+function _init()
+	clear_screen()
+	music(0)
+
+	current_planet = flr(rnd(6)) + 1
+	current_small_planet = flr(rnd(6)) + 1
+	init_battle = true
+
+	battle_mode = false
+	travel_to_battle_mode = false
+	travel_after_battle_mode = false
+	converstaion_mode = false
+	trading_mode = true
+	death_mode = false
+
+	level = 1
+	-- pause_on_text = true
+
+	-- for testing:
+	-- tme = time() - 10
+
+		-- add_enemy(1)
+		-- add_enemy(3)
+		-- add_enemy(6)
+		-- add_enemy(9)
+		-- add_enemy(14)
+		-- add_enemy(18)
+		-- add_enemy(1)
+		-- add_enemy(1)
+		-- add_enemy(1)
+		-- add_enemy(1)
+
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+		-- add_floating_item(cobalt, 70, 70)
+
+		drone_tier = 6
+
+		set_pl_ship(6)
+		set_pl_drone(drone_tier)
+
+		-- pl_ship_storage = 8
+		-- drone_storage = 6
+
+		-- pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
+end
+
+
+
+-------------------------------
+
+
+
+function _update()
+	
+	if travel_after_battle_mode then
+		ship_ctrl()
+		drone_ctrl()
+		ship_and_drone_shoot()
+		ship_burner_calculation()
+		calculate_floating_items_drift()
+		floating_items_colides_player()
+		ship_and_drone_shoot()
+
+		if jump_to_hyperspce then
+			jump_to_hyperspce_animation()
+		end
+		if arrive_in_hyperspace then
+			arrive_in_hyperspce_animation()
+		end
+		if show_trader_station_far then
+			trader_station_x -= 1
+		end
+		if show_trader_station_near then
+			if not stop_trader_station_near then
+				trader_station_x -= 0.5
+				pl_ship_x -= 0.15
+			end
+		end
+		travel_from_battle_animation_script()
+	-- end
+	elseif battle_mode then
+		if init_battle then
+			show_battle_stats = true
+			min_enemys_on_level = 10 + level
+			init_battle = false
+			tme = time()
+			spawn_enemy_wave()
+
+			-- Todo: should be done at the trader instead. just for having a playable game
+			pl_ship_life = pl_ship_max_life
+		end
+
+		-- spawn new enemy wave every 20 seconds if there are still enemies. else after 5
+		-- I think this can lead to crashes if to many enemies are created at once
+		if #enemys > 0 then
+			interval = 20
+		else
+			interval -= 0.3
+		end
+		if time() - tme >= flr(interval) then
+			spawn_enemy_wave()
+			tme += interval
+		end
+
+		ship_ctrl()
+		drone_ctrl()
+		ship_and_drone_shoot()
+		friendly_shots_hit_enemy(pl_ship_shots, pl_ship_damage, 1)
+		friendly_shots_hit_enemy(drone_shots, drone_damage, 2)
+		enemy_shots_hit_friendly(pl_ship_x, pl_ship_y, pl_ship_hitbox_skip_pixel, pl_ship_hitbox_width, 1)
+		enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixel, drone_hitbox_width, 2)
+		enemy_shoot()
+		ship_burner_calculation()
+		calculate_floating_items_drift()
+		floating_items_colides_player()
+		speed_buff_timer()
+		shot_speed_buff_timer()
+
+		if not travel_after_battle_mode and min_enemys_on_level <= 0 and #enemys <= 0 then
+			tme = time()
+			travel_after_battle_mode = true
+			current_planet = flr(rnd(6)) + 1
+			reset_buffs()
+		end
+	elseif converstaion_mode then
+		if not pause_on_text then
+			converstaion_mode = false
+			trading_mode = true
+		end
+		conv_partner = 1
+		trader_converstaion()
+		advance_textbox()
+	elseif trading_mode then
+		drone_ctrl()
+		ship_burner_calculation()
+
+		if trading_phase == 1 then
+			trader_station_x -= 0.5
+		elseif trading_phase == 2 then
+			black_hole_x -= 1
+			pl_ship_x += 0.1
+		elseif trading_phase == 4 then
+			advance_textbox()
+		elseif trading_phase == 5 then
+			trader_station_x -= 0.5
+			ship_ctrl()
+			ship_and_drone_shoot()
+		end
+
+		trading_script()
+	end
+
+	animation_counters()
+end
+
+function animation_counters()
+	-- animation_counter -> used for animations
+	if animation_counter == 21 then
+		animation_counter = 0
+	end
+	animation_counter+=1
+
+	-- medium_animation_counter -> used for animations with medium runtime
+	if medium_animation_counter == 51 then
+		medium_animation_counter = 0
+	end
+	medium_animation_counter+=1
+
+	-- long_animation_counter -> used for animations with longer runtime
+	if long_animation_counter == 101 then
+		long_animation_counter = 0
+	end
+	long_animation_counter+=1
+end
+
+-------------------------------
+
+function _draw()
+	clear_screen()
+
+----- debug section
+
+--	debug_coords()
+-- info(time())
+-- print("memory: "..stat(0).." bytes", 0, 0, 7)
+	-- info(pl_ship_speed)
+	-- if pause_on_text then
+	-- 	info("pause_on_text true", 10)
+	-- else 
+	-- 	info("pause_on_text false", 10)
+	-- end
+----------------
+
+	if death_mode == true then
+		print("you died :c\nwanna play again? :)\nrestart the game!", 30, 30, 10)
+	elseif battle_mode then
+		if initial_draw == true then
+			init_passing_stars()
+			initial_draw = false
+		end
+
+		draw_passing_stars()
+
+		if show_battle_stats then
+			draw_battle_stats()
+		end
+
+		draw_floating_items()
+		draw_enemys()
+		draw_ship()
+		draw_drone()
+
+		draw_friendly_shots(pl_ship_shots, 11)
+		draw_friendly_shots(drone_shots, 12)
+		draw_enemy_shots()
+
+		draw_hitmarkers()
+		draw_explosions()
+	elseif converstaion_mode then
+		draw_textbox()
+	elseif travel_after_battle_mode then
+		draw_passing_stars()
+		draw_floating_items()
+		draw_trader_station()
+		draw_drone()
+		draw_ship()
+		draw_friendly_shots(pl_ship_shots, 11)
+		draw_friendly_shots(drone_shots, 12)
+	elseif trading_mode then
+		draw_passing_stars()
+		if trading_phase == 4 then
+			draw_textbox()
+		else
+			if talk_to_void_creature then
+				draw_black_hole_background()
+			end
+			draw_trader_station()
+			draw_drone()
+			draw_ship()
+			if trading_phase == 5 then
+				draw_friendly_shots(pl_ship_shots, 11)
+				draw_friendly_shots(drone_shots, 12)
+			end
+			if talk_to_void_creature then
+				draw_black_hole_foreground()
+			end
+		end
+	end
+end
+-->8

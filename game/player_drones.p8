@@ -1,11 +1,12 @@
 __lua__6
 -- player drones
 
+drone_tier = 0
 drone_x = 0
 drone_y = 0
 drone_offset_y = 0
 drone_offset_x = 0
-drone_hitbox_skip_pixle = 8
+drone_hitbox_skip_pixel = 8
 drone_hitbox_width = 0
 drone_sprite = 48
 drone_damage = 00
@@ -16,14 +17,14 @@ drone_storage = 0
 drone_shots = {}
 drone_available = false
 
-function add_pl_drone(tier)
+function set_pl_drone(tier)
 	-- get attack drone
 	if tier >= 0 and tier <= 6 then
  	drone_sprite = 48 + tier
  	htbx = get_drone_htbx_skp_pxl_width(tier)
-  drone_hitbox_skip_pixle = htbx[1]
-  drone_hitbox_width = htbx[2]
-  drone_damage = flr(10 * tier * 0.1) + 1
+	drone_hitbox_skip_pixel = htbx[1]
+	drone_hitbox_width = htbx[2]
+	drone_damage = flr(10 * tier * 0.1) + 1
  	drone_life = flr(20 * tier * 0.1) + 1
  	drone_shields = flr(10 * tier * 0.1 - 1) + 1
  	drone_storage = flr(10 * tier * 0.1) + 1
@@ -34,9 +35,9 @@ function add_pl_drone(tier)
  elseif tier >= 7 and tier <= 9 then
  	drone_sprite = 6 + tier - 7
  	htbx = get_drone_htbx_skp_pxl_width(tier)
-  drone_hitbox_skip_pixle = htbx[1]
-  drone_hitbox_width = htbx[2]
-  drone_damage = 0
+	drone_hitbox_skip_pixel = htbx[1]
+	drone_hitbox_width = htbx[2]
+	drone_damage = 0
  	drone_life = flr(20 * (tier-3) * 0.1) + 1
  	drone_shields = flr(10 * (tier-6.5) * 0.2) + 1
  	drone_storage = flr(10 * tier * 0.1) + 1
@@ -75,11 +76,15 @@ function drone_ctrl()
 		drone_offset_x = 0
 	end
 	
+	if pl_ship_x <= x_left_boundry + 3 then
+		drone_offset_x = x_left_boundry + 3 - pl_ship_x
+	end
+
 	drone_x = pl_ship_x-5+drone_offset_x
 	
-	if adhs_counter <= 10 then
+	if animation_counter <= 10 then
 		drone_y = pl_ship_y-8 - drone_offset_y
-	elseif adhs_counter > 10 then
+	elseif animation_counter > 10 then
 	 	drone_y = pl_ship_y-9 - drone_offset_y
 	end
 end
@@ -97,7 +102,9 @@ function get_drone_life_as_string()
 end
 
 function kill_drone()
-	drone_hitbox_skip_pixle = 8
+	drop_items_when_drone_dies()
+	
+	drone_hitbox_skip_pixel = 8
 	drone_hitbox_width = 0
 	drone_sprite = 48
 	drone_damage = 00
@@ -107,13 +114,6 @@ function kill_drone()
 	drone_storage = 0
 	drone_shots = {}
 	drone_available = false
-	
-	if #pl_ship_items_stored > pl_ship_storage then
-		for i = pl_ship_storage+1, #pl_ship_items_stored do
-			temp_item = pl_ship_items_stored[i]
-			del(pl_ship_items_stored, temp_item)
-			--todo drop-item into void
-		end
-	end
+	drone_tier = 0
 end
 -->8

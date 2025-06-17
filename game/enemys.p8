@@ -3,10 +3,18 @@ __lua__7
 
 enemys_max_y = 0
 enemys = {}
+min_enemys_on_level = 0
 enemy_shots = {}
 enemy_shot_cooldown = 0
 
-function add_enemy(lvl)
+-- max level 20
+function add_enemy(lvl, avoid_placing_behind)
+	if show_battle_stats == true then
+		enemys_max_y = 96
+	else
+		enemys_max_y = 119
+	end
+
 	y = flr(rnd(enemys_max_y))
 	x = 127
 	htbx = get_enemy_htbx_skp_pxl_width(lvl)
@@ -14,7 +22,14 @@ function add_enemy(lvl)
 	htbx_wdth = htbx[2]
 	
 	while enemy_colides_enemy(x, y, -1) do
-		x += 12
+		if avoid_placing_behind then
+			y += 12
+			if y > enemys_max_y then
+				y = 3
+			end
+		else
+			x += 12
+		end
 	end
 	
 	enemy = {}
@@ -40,23 +55,57 @@ function add_enemy(lvl)
 	-- weapons
 	enemy[9] = flr(lvl / 5) + 1
 	-- shot_speed
-	enemy[10] = flr(lvl / 5) * 0.7 + 1
+	enemy[10] = 1 + 0.1 * lvl--flr(lvl / 5) * 0.7 + 1
 	-- speed
 	enemy[11] = flr(lvl / 5) * 0.7 + 1
 	-- value
 	enemy[12] = lvl
-	--wobble
+	-- wobble
 	enemy[13] = flr(lvl / 5) + 1
-	--wobble state (1;-1)
+	-- wobble state (1;-1)
 	enemy[14] = 1
 	-- original y
 	enemy[15] = enemy[2]
-	--wobble counter
+	-- wobble counter
 	enemy[16] = 0
-	--id
+	-- id
 	enemy[17] = #enemys+1
+	-- shot_pattern (array with vals between 1 and 60)
+	-- tells number of shots in one shot cycle, which lasts 60 frames and on which frame they are shot
+	enemy[18] = get_shot_pattern(lvl)
 	
 	add(enemys, enemy)
+end
+
+function get_shot_pattern(lvl)
+	if lvl >= 1 and lvl <= 3 then
+		return {1}
+	elseif lvl >= 4 and lvl <= 6 then
+		return {6, 12, 36}
+	elseif lvl >= 7 and lvl <= 9 then
+		return {6, 14, 36, 44}
+	elseif lvl >= 10 and lvl <= 12 then
+		return {4, 8, 12, 16, 20}
+	elseif lvl >= 13 and lvl <= 15 then
+		return {2, 4, 6, 32, 34, 36}
+	elseif lvl >= 16 and lvl <= 18 then
+		return {2, 4, 6, 8, 24, 26, 28, 30}
+	elseif lvl >= 19 and lvl <= 20 then
+		return {2, 4, 6, 24, 26, 28, 48, 50, 52}
+	end
+end
+
+function spawn_enemy_wave()
+	if min_enemys_on_level > 0 then
+		sfx(22)
+		enemy_number_this_wave = flr(rnd(4)) + 3
+		min_enemys_on_level -= enemy_number_this_wave
+
+		for i = 0, enemy_number_this_wave, 1 do
+			enemy_level = max(1, flr(rnd(5)) + (level - 4))
+			add_enemy(enemy_level, true)
+		end
+	end
 end
 
 function calc_enemy_life(lvl)
@@ -78,9 +127,15 @@ function get_enemy_htbx_skp_pxl_width(lvl)
 end
 
 function enemy_shoot()
-	if enemy_shot_cooldown == 6 or enemy_shot_cooldown == 12 or enemy_shot_cooldown == 18 then
-		for enemy in all(enemys) do
+	if enemy_shot_cooldown == 60 then
+		enemy_shot_cooldown = 0
+	end
+	enemy_shot_cooldown += 1
+
+	--if enemy_shot_cooldown == 6 or enemy_shot_cooldown == 12 or enemy_shot_cooldown == 18 then
 	
+	for enemy in all(enemys) do
+		if contains(enemy_shot_cooldown, enemy[18]) then
 			shot_mask = get_shot_mask(enemy[9])
 	
 			if play_sfx == true then
@@ -95,14 +150,22 @@ function enemy_shoot()
 			end
 		end
 	end
-	if enemy_shot_cooldown == 44 then
-		enemy_shot_cooldown = 0
-	end
-	enemy_shot_cooldown += 1
 end
 
+function contains(val, arr)
+	for i=1,#arr do
+	  if arr[i] == val then
+		return true
+	  end
+	end
+	return false
+  end
+
 function enemy_drop_item(enemy)
-	add_floating_item(speed_buff, enemy[1], enemy[2])
+	droped_item = drop_item()
+	if droped_item > 0 then
+		add_floating_item(droped_item, enemy[1], enemy[2])
+	end
 end
 
 -->8

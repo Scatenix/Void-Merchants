@@ -33,46 +33,49 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 end
 
 function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1_drone2)
-	for shot in all(enemy_shots) do
-		if player1_drone2 == 1 and pl_ship_shields > 0 or player1_drone2 == 2 and drone_shields > 0 then
-			hit_x = shot[1] - 11 <= posx and shot[1] >= posx
-		else
-			hit_x = shot[1] - 8 <= posx and shot[1] >= posx
-		end
-		hit_y = shot[2] > posy - 1 + htbx_skip_pxl and shot[2] < posy + htbx_width + htbx_skip_pxl
-		
-		if hit_x and hit_y then
-			life = 0
-			if player1_drone2 == 1 then
-				if pl_ship_shields > 0 then
-				 pl_ship_shields -= 1
-				else
-				 pl_ship_life -= shot[4]
-				end
-				life = pl_ship_life
-			elseif player1_drone2 == 2 then
-				if drone_shields > 0 then
-					drone_shields -= 1
-				else
-					drone_life -= shot[4]
-				end
-				life = drone_life
+	if player1_drone2 == 1 or (player1_drone2 == 2 and drone_tier > 0) then
+		for shot in all(enemy_shots) do
+			if player1_drone2 == 1 and pl_ship_shields > 0 or player1_drone2 == 2 and drone_shields > 0 then
+				hit_x = shot[1] - 11 <= posx and shot[1] >= posx
+			else
+				hit_x = shot[1] - 8 <= posx and shot[1] >= posx
 			end
-			sfx(7)
+			hit_y = shot[2] > posy - 1 + htbx_skip_pxl and shot[2] < posy + htbx_width + htbx_skip_pxl
 			
-			if flr(life) <= 0 then
-				create_explosion(posx, posy)
+			if hit_x and hit_y then
+				life = 0
 				if player1_drone2 == 1 then
-						death_screen = true
-						clear_screen()
-						gc_all()
+					if pl_ship_shields > 0 then
+					pl_ship_shields -= 1
+					else
+					pl_ship_life -= shot[4]
+					end
+					life = pl_ship_life
 				elseif player1_drone2 == 2 then
-					kill_drone()
+					if drone_shields > 0 then
+						drone_shields -= 1
+					else
+						drone_life -= shot[4]
+					end
+					life = drone_life
 				end
-			end
+				sfx(7)
+				
+				if flr(life) <= 0 then
+					create_explosion(posx, posy)
+					if player1_drone2 == 1 then
+							death_mode = true
+							battle_mode = false
+							clear_screen()
+							gc_all()
+					elseif player1_drone2 == 2 then
+						kill_drone()
+					end
+				end
 
-			create_hitmarker(shot[1], shot[2], 3)
-			del(enemy_shots, shot)
+				create_hitmarker(shot[1], shot[2], 3)
+				del(enemy_shots, shot)
+			end
 		end
 	end
 end
@@ -118,8 +121,7 @@ function floating_items_colides_player()
 		end
 
 		if hit_x_ship and hit_y_ship or hit_x_drone and hit_y_drone then
-			del(floating_items, item)
-			interpret_item(item[3])
+			interpret_item(item)
 		end
 	end
 end
