@@ -25,6 +25,7 @@ __lua__
 --		and occasionally moves back, outside the right screen edge and appears
 --		as smaller (1:1 scale) and fights like a ship with maybe lvl 25 or something
 --		If feeling fancy, occasionally spawn bombs that explode and deal damage to player if in range. (do this only if he is in the background)
+--		Fight is essentially level 20, but with the boss. Game does not allow level being higher than 20
 
 -- Possible void creature dialog
 --	before lvl 1:
@@ -67,11 +68,11 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	battle_mode = false
+	battle_mode = true
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = true
+	trading_mode = false
 	death_mode = false
 
 	level = 1
@@ -111,6 +112,9 @@ function _init()
 
 		set_pl_ship(6)
 		set_pl_drone(drone_tier)
+		-- pl_ship_max_life = 9999
+		-- pl_ship_life = 9999
+		-- drone_life = 9999
 
 		-- pl_ship_storage = 8
 		-- drone_storage = 6
@@ -167,7 +171,7 @@ function _update()
 		-- spawn new enemy wave every 20 seconds if there are still enemies. else after 5
 		-- I think this can lead to crashes if to many enemies are created at once
 		if #enemys > 0 then
-			interval = 20
+			interval = 23
 		else
 			interval -= 0.3
 		end
@@ -254,9 +258,13 @@ function _draw()
 
 ----- debug section
 
---	debug_coords()
--- info(time())
--- print("memory: "..stat(0).." bytes", 0, 0, 7)
+	-- print("memory: "..stat(0).." KiB", 0, 0, 7)
+	-- print("pico cpu: " ..stat(1), 0, 8, 7)
+	-- print("sys cpu: " ..stat(2), 0, 16, 7)
+
+	-- debug_coords()
+	-- info(time())
+	-- print("memory: "..stat(0).." bytes", 0, 0, 7)
 	-- info(pl_ship_speed)
 	-- if pause_on_text then
 	-- 	info("pause_on_text true", 10)
@@ -1000,7 +1008,9 @@ enemy_shots = {}
 enemy_shot_cooldown = 0
 
 -- max level 20
-function add_enemy(lvl, avoid_placing_behind)
+-- try_avoid_placing_behind: Try to not place an enemy behind another enemy.
+--							 Places behind anyways if not avoidable because of to many enemies.
+function add_enemy(lvl, try_avoid_placing_behind)
 	if show_battle_stats == true then
 		enemys_max_y = 96
 	else
@@ -1013,8 +1023,16 @@ function add_enemy(lvl, avoid_placing_behind)
 	htbx_skp_pxl = htbx[1]
 	htbx_wdth = htbx[2]
 	
+	-- This counts how often we already tried to unsucessfully place an enemy
+	-- If we tried more then 10 times, just place it behind an enemy
+	-- Without this, the game can freeze in an infinite loop, because it is not able to find a place for an enemy
+	local placement_tries = 0
 	while enemy_colides_enemy(x, y, -1) do
-		if avoid_placing_behind then
+		if placement_tries > 10 then
+			add_enemy(lvl, false)
+			return
+		elseif try_avoid_placing_behind then
+			placement_tries += 1
 			y += 12
 			if y > enemys_max_y then
 				y = 3
@@ -1090,7 +1108,8 @@ end
 function spawn_enemy_wave()
 	if min_enemys_on_level > 0 then
 		sfx(22)
-		enemy_number_this_wave = flr(rnd(4)) + 3
+		-- have always at least 2 enemies with up to 4 more (random). 1 more enemy ever 5 levels
+		enemy_number_this_wave = 2 + flr(rnd(4)) + flr(level * 0.2)
 		min_enemys_on_level -= enemy_number_this_wave
 
 		for i = 0, enemy_number_this_wave, 1 do

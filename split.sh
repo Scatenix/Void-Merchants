@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# does currently not split correctly
+
 if [ $# -ne 1 ]; then
     echo "False usage of Script:"
     echo "args: [file.p8]"
