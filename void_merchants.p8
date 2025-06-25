@@ -231,8 +231,9 @@ function _update()
 	animation_counters()
 end
 
+-- frame counted animation counters. Easier to handle than time() based variables.
 function animation_counters()
-	-- animation_counter -> used for animations
+	-- animation_counter -> used for animations with short runtime
 	if animation_counter == 21 then
 		animation_counter = 0
 	end
@@ -415,7 +416,7 @@ end
 
 function draw_hitmarkers()
 	for mark in all(hitmarkers) do
-		col = 0
+		local col = 0
 		if mark[4] == 1 then
 			col = 11
 		elseif mark[4] == 2 then
@@ -466,7 +467,7 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	print(conv_text_4, 5, 33, 7)
 
 	-- drawing "waiting for input" indicator
-	waiting_indicator_woble = 0
+	local waiting_indicator_woble = 0
 	if animation_counter > 10 then
 		waiting_indicator_woble = 1
 	end
@@ -561,16 +562,19 @@ function draw_battle_stats()
 	print("dr:", 79, 110, 7)
 	print(get_drone_life_as_string(), 90, 110, 8)
 
+	local draw_drone_shield_offset_y
 	if drone_life < 4 then
-		drplusy = 90 + drone_life * 8
+		draw_drone_shield_offset_y = 90 + drone_life * 8
 	elseif drone_life < 10 then
-		drplusy = 98
+		draw_drone_shield_offset_y = 98
 	else
-		drplusy = 102
+		draw_drone_shield_offset_y = 102
 	end
 
-	print("+", drplusy, 110, 12)
-	print(drone_shields, drplusy + 4, 110, 12)
+	if drone_shields > 0 then
+		print("+", draw_drone_shield_offset_y, 110, 12)
+		print(drone_shields, draw_drone_shield_offset_y + 4, 110, 12)
+	end
 
 	print("stg:", 5, 119, 7)
 	print(get_free_storage(), 20, 119, 13)
@@ -590,8 +594,8 @@ end
 
 function draw_ship()
 	if jump_wobble and animation_counter % 3 == 0 then
-		x_rand = flr(rnd(3)) - 1;
-		y_rand = flr(rnd(3)) - 1;
+		local x_rand = flr(rnd(3)) - 1;
+		local y_rand = flr(rnd(3)) - 1;
 		spr(pl_ship_sprite, pl_ship_x + x_rand, pl_ship_y + y_rand)
 		spr(249 + pl_ship_shields, pl_ship_x + 9 + x_rand, pl_ship_y + y_rand, 1, 1, true, false)
 	else
@@ -623,8 +627,8 @@ end
 
 function draw_drone()
 	if jump_wobble and animation_counter % 3 == 0 then
-		x_rand = flr(rnd(3)) - 1;
-		y_rand = flr(rnd(3)) - 1;
+		local x_rand = flr(rnd(3)) - 1;
+		local y_rand = flr(rnd(3)) - 1;
 		spr(drone_sprite, drone_x + x_rand, drone_y + y_rand)
 		spr(249 + drone_shields, drone_x + 9 + x_rand, drone_y + y_rand, 1, 1, true, false)
 	else
@@ -761,7 +765,7 @@ end
 
 -- shotmask is used to tell at which positions shots come out of the enemy. -1 means no shot
 function get_shot_mask(weapons)
-	shot_mask = {}
+	local shot_mask = {}
 	
 	if weapons == 0 then
 		shot_mask = {-1, -1, -1, -1, -1}
@@ -785,28 +789,28 @@ function get_shot_mask(weapons)
 end
 
 function ship_and_drone_shoot()
-	shot_freq = 10 / pl_ship_shot_speed
+	local shot_freq = 10 / pl_ship_shot_speed
 	if shot_freq <= pl_ship_shot_timer then
 		pl_ship_can_shoot = true
 	end
 
 	if btn(4) and pl_ship_can_shoot == true then
-		shot_mask = get_shot_mask(pl_ship_weapons)
+		local shot_mask = get_shot_mask(pl_ship_weapons)
 		if play_sfx == true then
 			sfx(5)
 		end
 
 		for shm in all(shot_mask) do
 			if shm != -1 then
-				shot = {pl_ship_x + 10, pl_ship_y + shm}
+				local shot = {pl_ship_x + 10, pl_ship_y + shm}
 				add(pl_ship_shots, shot)
 			end
 		end
 
-		shot_mask = get_shot_mask(drone_weapons)
+		local shot_mask = get_shot_mask(drone_weapons)
 		for shm in all(shot_mask) do
 			if shm != -1 then
-				shot = {drone_x + 10, drone_y + shm -2}
+				local shot = {drone_x + 10, drone_y + shm -2}
 				add(drone_shots, shot)
 			end
 		end
@@ -848,26 +852,26 @@ function ship_ctrl()
 end
 
 function get_ship_life_as_string()
-	ship_life = ""
-		if pl_ship_life < 4 then
-			for i = 1, pl_ship_life do
-				ship_life = ship_life .. "♥"
-			end
-		else
-			ship_life = " " .. pl_ship_life
+	local ship_life = ""
+	if pl_ship_life < 4 then
+		for i = 1, pl_ship_life do
+			ship_life = ship_life .. "♥"
 		end
+	else
+		ship_life = " " .. pl_ship_life
+	end
 	return ship_life
 end
 
 function get_ship_shields_as_string()
-	ship_shields = ""
-		if pl_ship_shields < 4 then
-			for i = 1, pl_ship_shields do
-				ship_shields = ship_shields .. "◆"
-			end
-		else
-			ship_shields = " " .. pl_ship_shields
+	local ship_shields = ""
+	if pl_ship_shields < 4 then
+		for i = 1, pl_ship_shields do
+			ship_shields = ship_shields .. "◆"
 		end
+	else
+		ship_shields = " " .. pl_ship_shields
+	end
 	return ship_shields
 end
 
@@ -972,14 +976,14 @@ function drone_ctrl()
 end
 
 function get_drone_life_as_string()
-	 drone_life_string = ""
-	 	if drone_life < 4 then
-			for i = 1, drone_life do
-				drone_life_string = drone_life_string .. "♥"
-			end
-		else
-		 	drone_life_string = " " .. drone_life
+	local drone_life_string = ""
+	if drone_life < 4 then
+		for i = 1, drone_life do
+			drone_life_string = drone_life_string .. "♥"
 		end
+	else
+		drone_life_string = " " .. drone_life
+	end
 	return drone_life_string
 end
 
@@ -1017,11 +1021,11 @@ function add_enemy(lvl, try_avoid_placing_behind)
 		enemys_max_y = 119
 	end
 
-	y = flr(rnd(enemys_max_y))
-	x = 127
-	htbx = get_enemy_htbx_skp_pxl_width(lvl)
-	htbx_skp_pxl = htbx[1]
-	htbx_wdth = htbx[2]
+	local y = flr(rnd(enemys_max_y))
+	local x = 127
+	local htbx = get_enemy_htbx_skp_pxl_width(lvl)
+	local htbx_skp_pxl = htbx[1]
+	local htbx_wdth = htbx[2]
 	
 	-- This counts how often we already tried to unsucessfully place an enemy
 	-- If we tried more then 10 times, just place it behind an enemy
@@ -1109,11 +1113,11 @@ function spawn_enemy_wave()
 	if min_enemys_on_level > 0 then
 		sfx(22)
 		-- have always at least 2 enemies with up to 4 more (random). 1 more enemy ever 5 levels
-		enemy_number_this_wave = 2 + flr(rnd(4)) + flr(level * 0.2)
+		local enemy_number_this_wave = 2 + flr(rnd(4)) + flr(level * 0.2)
 		min_enemys_on_level -= enemy_number_this_wave
 
 		for i = 0, enemy_number_this_wave, 1 do
-			enemy_level = max(1, flr(rnd(5)) + (level - 4))
+			local enemy_level = max(1, flr(rnd(5)) + (level - 4))
 			add_enemy(enemy_level, true)
 		end
 	end
@@ -1147,7 +1151,7 @@ function enemy_shoot()
 	
 	for enemy in all(enemys) do
 		if contains(enemy_shot_cooldown, enemy[18]) then
-			shot_mask = get_shot_mask(enemy[9])
+			local shot_mask = get_shot_mask(enemy[9])
 	
 			if play_sfx == true then
 				sfx(5)
@@ -1155,7 +1159,7 @@ function enemy_shoot()
 	
 			for shm in all(shot_mask) do
 				if shm != -1 then
-					shot = {enemy[1] -3, enemy[2] + shm, enemy[10], enemy[6]}
+					local shot = {enemy[1] -3, enemy[2] + shm, enemy[10], enemy[6]}
 					add(enemy_shots, shot)
 				end
 			end
@@ -1173,7 +1177,7 @@ function contains(val, arr)
   end
 
 function enemy_drop_item(enemy)
-	droped_item = drop_item()
+	local droped_item = drop_item()
 	if droped_item > 0 then
 		add_floating_item(droped_item, enemy[1], enemy[2])
 	end
@@ -1187,12 +1191,13 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 	info("htbx")
 	for shot in all(shot_array) do
 		for enemy in all(enemys) do
+			local hit_x
 			if enemy[7] > 0 then
 				hit_x = shot[1] + 5 >= enemy[1] and shot[1] <= enemy[1] + 7
 			else
 				hit_x = shot[1] + 2 >= enemy[1] and shot[1] <= enemy[1] + 7
 			end -- upper ship part _and_ lower ship part
-			hit_y = shot[2] >= enemy[2] + enemy[3] and shot[2] < enemy[2] + enemy[4] + enemy[3] + 1
+			local hit_y = shot[2] >= enemy[2] + enemy[3] and shot[2] < enemy[2] + enemy[4] + enemy[3] + 1
 			
 			if hit_x and hit_y then
 				if enemy[8] > 0 then
@@ -1216,15 +1221,16 @@ end
 function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1_drone2)
 	if player1_drone2 == 1 or (player1_drone2 == 2 and drone_tier > 0) then
 		for shot in all(enemy_shots) do
+			local hit_x
 			if player1_drone2 == 1 and pl_ship_shields > 0 or player1_drone2 == 2 and drone_shields > 0 then
 				hit_x = shot[1] - 11 <= posx and shot[1] >= posx
 			else
 				hit_x = shot[1] - 8 <= posx and shot[1] >= posx
 			end
-			hit_y = shot[2] > posy - 1 + htbx_skip_pxl and shot[2] < posy + htbx_width + htbx_skip_pxl
+			local hit_y = shot[2] > posy - 1 + htbx_skip_pxl and shot[2] < posy + htbx_width + htbx_skip_pxl
 			
 			if hit_x and hit_y then
-				life = 0
+				local life = 0
 				if player1_drone2 == 1 then
 					if pl_ship_shields > 0 then
 					pl_ship_shields -= 1
@@ -1261,19 +1267,6 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 	end
 end
 
--- probably not needed anymore... just keeping for safety
---function new_enemy_colides_enemy(posx, posy)
---	for enemy in all(enemys) do
---		hity = enemy[2] - 8 < posy and enemy[2] + 8 > posy
---		hitx = enemy[1] - 8 < posx and enemy[1] + 8 > posx
---		if hity and hitx then
-----		if hitx then
---	  		return true
---	 end
---	end
---	return false
---end
-
 function enemy_colides_enemy(posx, posy, id)
 	for enemy in all(enemys) do
 		if id != enemy[17] then
@@ -1289,13 +1282,14 @@ end
 
 
 function floating_items_colides_player()
-		hit_x_drone = false
-		hit_y_drone = false
+	local hit_x_drone = false
+	local hit_y_drone = false
 
 	for item in all(floating_items) do
-		hit_x_ship = item[1] <= pl_ship_x+8 and item[1] >= pl_ship_x or item[1]+8 <= pl_ship_x+8 and item[1]+8 >= pl_ship_x
-		hit_y_ship = item[2] <= pl_ship_y+8 and item[2] >= pl_ship_y or item[2]+8 <= pl_ship_y+8 and item[2]+8 >= pl_ship_y
+		local hit_x_ship = item[1] <= pl_ship_x+8 and item[1] >= pl_ship_x or item[1]+8 <= pl_ship_x+8 and item[1]+8 >= pl_ship_x
+		local hit_y_ship = item[2] <= pl_ship_y+8 and item[2] >= pl_ship_y or item[2]+8 <= pl_ship_y+8 and item[2]+8 >= pl_ship_y
 
+		local hit_x_drone, hit_y_drone
 		if drone_available then
 			hit_x_drone = item[1] <= drone_x+drone_hitbox_width and item[1] >= drone_x or item[1]+8 <= drone_x+drone_hitbox_width and item[1]+8 >= drone_x
 			hit_y_drone = item[2] <= drone_y+drone_hitbox_width and item[2] >= drone_y or item[2]+8 <= drone_y+drone_hitbox_width and item[2]+8 >= drone_y
@@ -1350,7 +1344,7 @@ s_cobalt = "cobalt"
 
 function add_floating_item(item_type, x, y)
 	if item_type > 0 then
-		item = {}
+		local item = {}
 		item[1] = x
 		item[2] = y
 		-- sprite and id
@@ -1422,7 +1416,7 @@ end
 
 function speed_buff_timer()
 	if pl_ship_speed_buff_time > 0 then
-		delta = time() - pl_ship_speed_buff_time
+		local delta = time() - pl_ship_speed_buff_time
 		if delta >= speed_buff_time then
 			sfx(9, -2)
 			pl_ship_speed = pl_ship_default_speed
@@ -1433,7 +1427,7 @@ end
 
 function shot_speed_buff_timer()
 	if pl_ship_shot_speed_buff_time > 0 then
-		delta = time() - pl_ship_shot_speed_buff_time
+		local delta = time() - pl_ship_shot_speed_buff_time
 		if delta >= shot_speed_buff_time then
 			sfx(4, -2)
 			pl_ship_shot_speed = pl_ship_default_shot_speed
@@ -1453,7 +1447,7 @@ end
 
 -- calculate drop (random chance)
 function drop_item()
-	num = rnd(1000)
+	local num = rnd(1000)
 	if num >= 995 then    --0.5%
 		return void_crystal
 	elseif num >=985 then --1%
@@ -1562,7 +1556,7 @@ function draw_passing_stars()
 
  	if stars_counter >= stars_counter_threshold and max_stars > #stars then
 		set_stars_max_y()
-		star = {stars_start_x, flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier}
+		local star = {stars_start_x, flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier}
 		add(stars, star)
   		stars_counter = 0
  	end
@@ -1611,6 +1605,8 @@ end
 -->8
 -- data_ops
 
+-- started implementing saving of current game state
+
 -- call once at _init
 function init_data_ops()
 	cartdata("void_merchants_4e40baa22f0e407277e79304514550b9e952ccef")
@@ -1636,21 +1632,21 @@ function debug_coords()
 	print("drone_y:" .. drone_y, 10, 40, 12)
 end
 
-function info(text, val, plusy)
-		if plusy == nil then
-			plusy = 0
+function info(text, val, plus_y)
+		if plus_y == nil then
+			plus_y = 0
 		end
 		if val == nil then
 			val = ""
 		end
-	print(text .. ": " .. val, 5, 5+plusy, 7)
+	print(text .. ": " .. val, 5, 5+plus_y, 7)
 end
 
 function show_stored_items()
-	bla = 0
+	y = 0
 	for i in all(pl_items_stored) do
-		info("i" .. bla .. ": ", i, bla)
-		bla+=7
+		info("i" .. y .. ": ", i, y)
+		y+=7
 	end
 end
 -->8
