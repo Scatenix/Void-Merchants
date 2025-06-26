@@ -90,14 +90,14 @@ function drone_ctrl()
 end
 
 function get_drone_life_as_string()
-	 drone_life_string = ""
-	 	if drone_life < 4 then
-			for i = 1, drone_life do
-				drone_life_string = drone_life_string .. "♥"
-			end
-		else
-		 	drone_life_string = " " .. drone_life
+	local drone_life_string = ""
+	if drone_life < 4 then
+		for i = 1, drone_life do
+			drone_life_string = drone_life_string .. "♥"
 		end
+	else
+		drone_life_string = " " .. drone_life
+	end
 	return drone_life_string
 end
 

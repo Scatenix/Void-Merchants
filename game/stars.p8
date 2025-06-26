@@ -37,7 +37,7 @@ function draw_passing_stars()
 
  	if stars_counter >= stars_counter_threshold and max_stars > #stars then
 		set_stars_max_y()
-		star = {stars_start_x, flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier}
+		local star = {stars_start_x, flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier}
 		add(stars, star)
   		stars_counter = 0
  	end

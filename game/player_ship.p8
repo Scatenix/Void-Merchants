@@ -57,7 +57,7 @@ end
 
 -- shotmask is used to tell at which positions shots come out of the enemy. -1 means no shot
 function get_shot_mask(weapons)
-	shot_mask = {}
+	local shot_mask = {}
 	
 	if weapons == 0 then
 		shot_mask = {-1, -1, -1, -1, -1}
@@ -81,28 +81,28 @@ function get_shot_mask(weapons)
 end
 
 function ship_and_drone_shoot()
-	shot_freq = 10 / pl_ship_shot_speed
+	local shot_freq = 10 / pl_ship_shot_speed
 	if shot_freq <= pl_ship_shot_timer then
 		pl_ship_can_shoot = true
 	end
 
 	if btn(4) and pl_ship_can_shoot == true then
-		shot_mask = get_shot_mask(pl_ship_weapons)
+		local shot_mask = get_shot_mask(pl_ship_weapons)
 		if play_sfx == true then
 			sfx(5)
 		end
 
 		for shm in all(shot_mask) do
 			if shm != -1 then
-				shot = {pl_ship_x + 10, pl_ship_y + shm}
+				local shot = {pl_ship_x + 10, pl_ship_y + shm}
 				add(pl_ship_shots, shot)
 			end
 		end
 
-		shot_mask = get_shot_mask(drone_weapons)
+		local shot_mask = get_shot_mask(drone_weapons)
 		for shm in all(shot_mask) do
 			if shm != -1 then
-				shot = {drone_x + 10, drone_y + shm -2}
+				local shot = {drone_x + 10, drone_y + shm -2}
 				add(drone_shots, shot)
 			end
 		end
@@ -144,26 +144,26 @@ function ship_ctrl()
 end
 
 function get_ship_life_as_string()
-	ship_life = ""
-		if pl_ship_life < 4 then
-			for i = 1, pl_ship_life do
-				ship_life = ship_life .. "♥"
-			end
-		else
-			ship_life = " " .. pl_ship_life
+	local ship_life = ""
+	if pl_ship_life < 4 then
+		for i = 1, pl_ship_life do
+			ship_life = ship_life .. "♥"
 		end
+	else
+		ship_life = " " .. pl_ship_life
+	end
 	return ship_life
 end
 
 function get_ship_shields_as_string()
-	ship_shields = ""
-		if pl_ship_shields < 4 then
-			for i = 1, pl_ship_shields do
-				ship_shields = ship_shields .. "◆"
-			end
-		else
-			ship_shields = " " .. pl_ship_shields
+	local ship_shields = ""
+	if pl_ship_shields < 4 then
+		for i = 1, pl_ship_shields do
+			ship_shields = ship_shields .. "◆"
 		end
+	else
+		ship_shields = " " .. pl_ship_shields
+	end
 	return ship_shields
 end
 

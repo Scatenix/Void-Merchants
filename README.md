@@ -14,3 +14,8 @@ Currently known bugs:
     - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here.
 - Not a bug but important: Explain short names like wps, sts, and so on
 - Not a bug but important: Explain controls (move, shoot, advance dialog)
+- Minor: Player and Drone are not always completely in bounds (edges might be 2-3 pixel outside)
+    - Might sometimes be caused by speed higher than 1, resulting in calculating to much in one direction
+- Minor: After the last enemy has been defeated, all shots still on the screen will not hit the player or drone
+- Minor: Slow Stars in the background remain for a long time after they were already accellerated
+    - When adjusting star speed, existing stars need to become as fast as newly spawned stars

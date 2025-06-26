@@ -41,7 +41,7 @@ s_cobalt = "cobalt"
 
 function add_floating_item(item_type, x, y)
 	if item_type > 0 then
-		item = {}
+		local item = {}
 		item[1] = x
 		item[2] = y
 		-- sprite and id
@@ -113,7 +113,7 @@ end
 
 function speed_buff_timer()
 	if pl_ship_speed_buff_time > 0 then
-		delta = time() - pl_ship_speed_buff_time
+		local delta = time() - pl_ship_speed_buff_time
 		if delta >= speed_buff_time then
 			sfx(9, -2)
 			pl_ship_speed = pl_ship_default_speed
@@ -124,7 +124,7 @@ end
 
 function shot_speed_buff_timer()
 	if pl_ship_shot_speed_buff_time > 0 then
-		delta = time() - pl_ship_shot_speed_buff_time
+		local delta = time() - pl_ship_shot_speed_buff_time
 		if delta >= shot_speed_buff_time then
 			sfx(4, -2)
 			pl_ship_shot_speed = pl_ship_default_shot_speed
@@ -144,7 +144,7 @@ end
 
 -- calculate drop (random chance)
 function drop_item()
-	num = rnd(1000)
+	local num = rnd(1000)
 	if num >= 995 then    --0.5%
 		return void_crystal
 	elseif num >=985 then --1%

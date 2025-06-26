@@ -6,12 +6,13 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 	info("htbx")
 	for shot in all(shot_array) do
 		for enemy in all(enemys) do
+			local hit_x
 			if enemy[7] > 0 then
 				hit_x = shot[1] + 5 >= enemy[1] and shot[1] <= enemy[1] + 7
 			else
 				hit_x = shot[1] + 2 >= enemy[1] and shot[1] <= enemy[1] + 7
 			end -- upper ship part _and_ lower ship part
-			hit_y = shot[2] >= enemy[2] + enemy[3] and shot[2] < enemy[2] + enemy[4] + enemy[3] + 1
+			local hit_y = shot[2] >= enemy[2] + enemy[3] and shot[2] < enemy[2] + enemy[4] + enemy[3] + 1
 			
 			if hit_x and hit_y then
 				if enemy[8] > 0 then
@@ -35,15 +36,16 @@ end
 function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1_drone2)
 	if player1_drone2 == 1 or (player1_drone2 == 2 and drone_tier > 0) then
 		for shot in all(enemy_shots) do
+			local hit_x
 			if player1_drone2 == 1 and pl_ship_shields > 0 or player1_drone2 == 2 and drone_shields > 0 then
 				hit_x = shot[1] - 11 <= posx and shot[1] >= posx
 			else
 				hit_x = shot[1] - 8 <= posx and shot[1] >= posx
 			end
-			hit_y = shot[2] > posy - 1 + htbx_skip_pxl and shot[2] < posy + htbx_width + htbx_skip_pxl
+			local hit_y = shot[2] > posy - 1 + htbx_skip_pxl and shot[2] < posy + htbx_width + htbx_skip_pxl
 			
 			if hit_x and hit_y then
-				life = 0
+				local life = 0
 				if player1_drone2 == 1 then
 					if pl_ship_shields > 0 then
 					pl_ship_shields -= 1
@@ -80,19 +82,6 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 	end
 end
 
--- probably not needed anymore... just keeping for safety
---function new_enemy_colides_enemy(posx, posy)
---	for enemy in all(enemys) do
---		hity = enemy[2] - 8 < posy and enemy[2] + 8 > posy
---		hitx = enemy[1] - 8 < posx and enemy[1] + 8 > posx
---		if hity and hitx then
-----		if hitx then
---	  		return true
---	 end
---	end
---	return false
---end
-
 function enemy_colides_enemy(posx, posy, id)
 	for enemy in all(enemys) do
 		if id != enemy[17] then
@@ -108,13 +97,14 @@ end
 
 
 function floating_items_colides_player()
-		hit_x_drone = false
-		hit_y_drone = false
+	local hit_x_drone = false
+	local hit_y_drone = false
 
 	for item in all(floating_items) do
-		hit_x_ship = item[1] <= pl_ship_x+8 and item[1] >= pl_ship_x or item[1]+8 <= pl_ship_x+8 and item[1]+8 >= pl_ship_x
-		hit_y_ship = item[2] <= pl_ship_y+8 and item[2] >= pl_ship_y or item[2]+8 <= pl_ship_y+8 and item[2]+8 >= pl_ship_y
+		local hit_x_ship = item[1] <= pl_ship_x+8 and item[1] >= pl_ship_x or item[1]+8 <= pl_ship_x+8 and item[1]+8 >= pl_ship_x
+		local hit_y_ship = item[2] <= pl_ship_y+8 and item[2] >= pl_ship_y or item[2]+8 <= pl_ship_y+8 and item[2]+8 >= pl_ship_y
 
+		local hit_x_drone, hit_y_drone
 		if drone_available then
 			hit_x_drone = item[1] <= drone_x+drone_hitbox_width and item[1] >= drone_x or item[1]+8 <= drone_x+drone_hitbox_width and item[1]+8 >= drone_x
 			hit_y_drone = item[2] <= drone_y+drone_hitbox_width and item[2] >= drone_y or item[2]+8 <= drone_y+drone_hitbox_width and item[2]+8 >= drone_y

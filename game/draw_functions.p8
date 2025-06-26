@@ -15,7 +15,7 @@ end
 
 function draw_hitmarkers()
 	for mark in all(hitmarkers) do
-		col = 0
+		local col = 0
 		if mark[4] == 1 then
 			col = 11
 		elseif mark[4] == 2 then
@@ -66,7 +66,7 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	print(conv_text_4, 5, 33, 7)
 
 	-- drawing "waiting for input" indicator
-	waiting_indicator_woble = 0
+	local waiting_indicator_woble = 0
 	if animation_counter > 10 then
 		waiting_indicator_woble = 1
 	end
@@ -161,16 +161,19 @@ function draw_battle_stats()
 	print("dr:", 79, 110, 7)
 	print(get_drone_life_as_string(), 90, 110, 8)
 
+	local draw_drone_shield_offset_y
 	if drone_life < 4 then
-		drplusy = 90 + drone_life * 8
+		draw_drone_shield_offset_y = 90 + drone_life * 8
 	elseif drone_life < 10 then
-		drplusy = 98
+		draw_drone_shield_offset_y = 98
 	else
-		drplusy = 102
+		draw_drone_shield_offset_y = 102
 	end
 
-	print("+", drplusy, 110, 12)
-	print(drone_shields, drplusy + 4, 110, 12)
+	if drone_shields > 0 then
+		print("+", draw_drone_shield_offset_y, 110, 12)
+		print(drone_shields, draw_drone_shield_offset_y + 4, 110, 12)
+	end
 
 	print("stg:", 5, 119, 7)
 	print(get_free_storage(), 20, 119, 13)
@@ -190,8 +193,8 @@ end
 
 function draw_ship()
 	if jump_wobble and animation_counter % 3 == 0 then
-		x_rand = flr(rnd(3)) - 1;
-		y_rand = flr(rnd(3)) - 1;
+		local x_rand = flr(rnd(3)) - 1;
+		local y_rand = flr(rnd(3)) - 1;
 		spr(pl_ship_sprite, pl_ship_x + x_rand, pl_ship_y + y_rand)
 		spr(249 + pl_ship_shields, pl_ship_x + 9 + x_rand, pl_ship_y + y_rand, 1, 1, true, false)
 	else
@@ -223,8 +226,8 @@ end
 
 function draw_drone()
 	if jump_wobble and animation_counter % 3 == 0 then
-		x_rand = flr(rnd(3)) - 1;
-		y_rand = flr(rnd(3)) - 1;
+		local x_rand = flr(rnd(3)) - 1;
+		local y_rand = flr(rnd(3)) - 1;
 		spr(drone_sprite, drone_x + x_rand, drone_y + y_rand)
 		spr(249 + drone_shields, drone_x + 9 + x_rand, drone_y + y_rand, 1, 1, true, false)
 	else

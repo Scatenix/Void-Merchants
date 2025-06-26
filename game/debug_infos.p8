@@ -11,21 +11,21 @@ function debug_coords()
 	print("drone_y:" .. drone_y, 10, 40, 12)
 end
 
-function info(text, val, plusy)
-		if plusy == nil then
-			plusy = 0
+function info(text, val, plus_y)
+		if plus_y == nil then
+			plus_y = 0
 		end
 		if val == nil then
 			val = ""
 		end
-	print(text .. ": " .. val, 5, 5+plusy, 7)
+	print(text .. ": " .. val, 5, 5+plus_y, 7)
 end
 
 function show_stored_items()
-	bla = 0
+	y = 0
 	for i in all(pl_items_stored) do
-		info("i" .. bla .. ": ", i, bla)
-		bla+=7
+		info("i" .. y .. ": ", i, y)
+		y+=7
 	end
 end
 -->8

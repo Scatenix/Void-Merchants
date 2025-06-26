@@ -23,6 +23,7 @@ __lua__1
 --		and occasionally moves back, outside the right screen edge and appears
 --		as smaller (1:1 scale) and fights like a ship with maybe lvl 25 or something
 --		If feeling fancy, occasionally spawn bombs that explode and deal damage to player if in range. (do this only if he is in the background)
+--		Fight is essentially level 20, but with the boss. Game does not allow level being higher than 20
 
 -- Possible void creature dialog
 --	before lvl 1:
@@ -65,11 +66,11 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	battle_mode = false
+	battle_mode = true
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = true
+	trading_mode = false
 	death_mode = false
 
 	level = 1
@@ -105,10 +106,13 @@ function _init()
 		-- add_floating_item(cobalt, 70, 70)
 		-- add_floating_item(cobalt, 70, 70)
 
-		drone_tier = 6
+		drone_tier = 2
 
-		set_pl_ship(6)
+		set_pl_ship(1)
 		set_pl_drone(drone_tier)
+		-- pl_ship_max_life = 9999
+		-- pl_ship_life = 9999
+		-- drone_life = 9999
 
 		-- pl_ship_storage = 8
 		-- drone_storage = 6
@@ -165,7 +169,7 @@ function _update()
 		-- spawn new enemy wave every 20 seconds if there are still enemies. else after 5
 		-- I think this can lead to crashes if to many enemies are created at once
 		if #enemys > 0 then
-			interval = 20
+			interval = 23
 		else
 			interval -= 0.3
 		end
@@ -225,8 +229,9 @@ function _update()
 	animation_counters()
 end
 
+-- frame counted animation counters. Easier to handle than time() based variables.
 function animation_counters()
-	-- animation_counter -> used for animations
+	-- animation_counter -> used for animations with short runtime
 	if animation_counter == 21 then
 		animation_counter = 0
 	end
@@ -252,9 +257,13 @@ function _draw()
 
 ----- debug section
 
---	debug_coords()
--- info(time())
--- print("memory: "..stat(0).." bytes", 0, 0, 7)
+	-- print("memory: "..stat(0).." KiB", 0, 0, 7)
+	-- print("pico cpu: " ..stat(1), 0, 8, 7)
+	-- print("sys cpu: " ..stat(2), 0, 16, 7)
+
+	-- debug_coords()
+	-- info(time())
+	-- print("memory: "..stat(0).." bytes", 0, 0, 7)
 	-- info(pl_ship_speed)
 	-- if pause_on_text then
 	-- 	info("pause_on_text true", 10)

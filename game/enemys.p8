@@ -8,21 +8,31 @@ enemy_shots = {}
 enemy_shot_cooldown = 0
 
 -- max level 20
-function add_enemy(lvl, avoid_placing_behind)
+-- try_avoid_placing_behind: Try to not place an enemy behind another enemy.
+--							 Places behind anyways if not avoidable because of to many enemies.
+function add_enemy(lvl, try_avoid_placing_behind)
 	if show_battle_stats == true then
 		enemys_max_y = 96
 	else
 		enemys_max_y = 119
 	end
 
-	y = flr(rnd(enemys_max_y))
-	x = 127
-	htbx = get_enemy_htbx_skp_pxl_width(lvl)
-	htbx_skp_pxl = htbx[1]
-	htbx_wdth = htbx[2]
+	local y = flr(rnd(enemys_max_y))
+	local x = 127
+	local htbx = get_enemy_htbx_skp_pxl_width(lvl)
+	local htbx_skp_pxl = htbx[1]
+	local htbx_wdth = htbx[2]
 	
+	-- This counts how often we already tried to unsucessfully place an enemy
+	-- If we tried more then 10 times, just place it behind an enemy
+	-- Without this, the game can freeze in an infinite loop, because it is not able to find a place for an enemy
+	local placement_tries = 0
 	while enemy_colides_enemy(x, y, -1) do
-		if avoid_placing_behind then
+		if placement_tries > 10 then
+			add_enemy(lvl, false)
+			return
+		elseif try_avoid_placing_behind then
+			placement_tries += 1
 			y += 12
 			if y > enemys_max_y then
 				y = 3
@@ -98,11 +108,12 @@ end
 function spawn_enemy_wave()
 	if min_enemys_on_level > 0 then
 		sfx(22)
-		enemy_number_this_wave = flr(rnd(4)) + 3
+		-- have always at least 2 enemies with up to 4 more (random). 1 more enemy ever 5 levels
+		local enemy_number_this_wave = 2 + flr(rnd(4)) + flr(level * 0.2)
 		min_enemys_on_level -= enemy_number_this_wave
 
 		for i = 0, enemy_number_this_wave, 1 do
-			enemy_level = max(1, flr(rnd(5)) + (level - 4))
+			local enemy_level = max(1, flr(rnd(5)) + (level - 4))
 			add_enemy(enemy_level, true)
 		end
 	end
@@ -136,7 +147,7 @@ function enemy_shoot()
 	
 	for enemy in all(enemys) do
 		if contains(enemy_shot_cooldown, enemy[18]) then
-			shot_mask = get_shot_mask(enemy[9])
+			local shot_mask = get_shot_mask(enemy[9])
 	
 			if play_sfx == true then
 				sfx(5)
@@ -144,7 +155,7 @@ function enemy_shoot()
 	
 			for shm in all(shot_mask) do
 				if shm != -1 then
-					shot = {enemy[1] -3, enemy[2] + shm, enemy[10], enemy[6]}
+					local shot = {enemy[1] -3, enemy[2] + shm, enemy[10], enemy[6]}
 					add(enemy_shots, shot)
 				end
 			end
@@ -162,7 +173,7 @@ function contains(val, arr)
   end
 
 function enemy_drop_item(enemy)
-	droped_item = drop_item()
+	local droped_item = drop_item()
 	if droped_item > 0 then
 		add_floating_item(droped_item, enemy[1], enemy[2])
 	end
