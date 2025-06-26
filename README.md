@@ -8,7 +8,7 @@ All the code, sprites, sounds, and music were entirely created by me but with so
 
 ![VoidMerchantsPreview](https://github.com/user-attachments/assets/8e84f286-647b-49c6-badc-f8cfba2bcc5f)
 
-Play the web version now! (TODO: insert link)
+Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merchants/)
 
 Control with arrow keys to move, C to shoot, V to advance text in conversations.
 
@@ -47,7 +47,7 @@ You can read more about it on the official FAQ: https://www.lexaloffle.com/pico-
 
 # Running the Game
 
-Play the web version - (TODO: insert link)
+Play the web version - [Void Merchants](https://scatenix.github.io/Void-Merchants/)
 
 Note: The default sound volume can be a bit loud. I recommend lowering your browser's volume before starting.
 
@@ -88,6 +88,7 @@ Currently about 2000 of 8192 tokens are left for the game code.
     - Also, Drone should be nearer towards the player on the Y-axis
 - Minor: Sounds or music sometimes skips
     - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here.
+- Minor: Sounds for buffs (faster shooting and flying) keeps playing if picked up right before starting to travel to the merchant  
 - Minor: Player and Drone are not always completely in bounds (edges might be 2-3 pixels outside the visible screen)
     - Probably caused by speed higher than 1, resulting in calculating too far in one direction
 - Minor: After the last enemy of the level has been defeated, all shots still on the screen will not hit the player or drone
