@@ -56,3 +56,4 @@ function trading_script()
 	end
 end
 
+-->8

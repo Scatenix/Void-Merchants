@@ -59,7 +59,8 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	battle_mode = true
+	titlescreen_mode = true
+	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
@@ -67,7 +68,8 @@ function _init()
 	death_mode = false
 
 	level = 1
-	pause_on_text = true
+	--pause_on_text = true
+	init_titlescreen = true
 
 	-- for testing:
 	-- tme = time() - 10
@@ -142,7 +144,42 @@ function _update()
 			end
 		end
 		travel_from_battle_animation_script()
-	-- end
+	elseif titlescreen_mode then
+		if init_titlescreen then
+			init_titlescreen = false
+			
+			-- set ship and drone
+			pl_ship_x = 20
+			pl_ship_y = 96
+			
+			add_enemy(14)
+			-- set x, y, life, shield, speed, wobble_state
+			enemies[1][1] = 100
+			enemies[1][2] = 96
+			enemies[1][7] = 1
+			enemies[1][8] = 0
+			enemies[1][11] = 1
+			prevent_enemy_moving_on_x = true
+		end
+		drone_ctrl()
+		ship_and_drone_shoot()
+		friendly_shots_hit_enemy(pl_ship_shots, pl_ship_damage, 1)
+		ship_burner_calculation()
+
+		-- Give the player some time before enemies spawn
+		if #enemies <= 0 then
+			ship_ctrl()
+			if not wait_after_titlescreen then
+				tme = time()
+				wait_after_titlescreen = true
+			end
+		end
+		if wait_after_titlescreen and time() - tme >= 1.5 then
+			battle_mode = true
+			prevent_enemy_moving_on_x = false
+			titlescreen_mode = false
+			wait_after_titlescreen = false
+		end
 	elseif battle_mode then
 		if init_battle then
 			show_battle_stats = true
@@ -261,8 +298,19 @@ function _draw()
 	-- end
 ----------------
 
-	if death_mode == true then
+	if death_mode then
 		print("you died :c\nwanna play again? :)\nrestart the game!", 30, 30, 10)
+	elseif titlescreen_mode then
+		draw_passing_stars()
+		draw_titlescreen()
+		draw_enemies()
+		draw_ship()
+		draw_drone()
+		draw_friendly_shots(pl_ship_shots, 11)
+		draw_friendly_shots(drone_shots, 12)
+		draw_enemy_shots()
+		draw_hitmarkers()
+		draw_explosions()
 	elseif battle_mode then
 		if initial_draw == true then
 			init_passing_stars()

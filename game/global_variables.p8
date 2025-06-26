@@ -23,6 +23,9 @@ max_pl_dr_weapons = 5
 max_drones = 6
 max_pl_extra_damage = 6
 
+titlescreen_mode = false
+init_titlescreen = false
+wait_after_titlescreen = false
 battle_mode = false
 travel_to_battle_mode = false
 travel_after_battle_mode = false
