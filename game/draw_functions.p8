@@ -125,6 +125,7 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	rect(20, 74, 23, 75, 0)
 end
 
+-- Draws some randomly appearing particles with the same colors as the black hole
 function draw_void_noise()
 	-- TODO: implement
 	-- min y = 44

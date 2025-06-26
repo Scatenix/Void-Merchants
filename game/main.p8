@@ -2,13 +2,7 @@ __lua__1
 -- main
 -- shift + h = ♥
 
--- TODO:
--- 	current known bugs
---		- some sounds are played at the wrong time
---		- some sounds play at the wrong time when no in the first game loop
---		- question: is the level incremented correctly?
-
--- Game loop description:
+-- Game loop description (To Be):
 -- 1st void guy talks to you
 -- starting journey with lightspeed into first stage
 -- after every stage: slowly fly towards random planet, trader appears
@@ -73,7 +67,7 @@ function _init()
 	death_mode = false
 
 	level = 1
-	-- pause_on_text = true
+	pause_on_text = true
 
 	-- for testing:
 	-- tme = time() - 10
@@ -157,7 +151,7 @@ function _update()
 			tme = time()
 			spawn_enemy_wave()
 
-			-- Todo: should be done at the trader instead. just for having a playable game
+			-- Todo: should be done at the trader instead. just for having a playable game for now
 			pl_ship_life = pl_ship_max_life
 		end
 

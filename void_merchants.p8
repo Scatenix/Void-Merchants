@@ -4,13 +4,7 @@ __lua__
 -- main
 -- shift + h = ♥
 
--- TODO:
--- 	current known bugs
---		- some sounds are played at the wrong time
---		- some sounds play at the wrong time when no in the first game loop
---		- question: is the level incremented correctly?
-
--- Game loop description:
+-- Game loop description (To Be):
 -- 1st void guy talks to you
 -- starting journey with lightspeed into first stage
 -- after every stage: slowly fly towards random planet, trader appears
@@ -159,7 +153,7 @@ function _update()
 			tme = time()
 			spawn_enemy_wave()
 
-			-- Todo: should be done at the trader instead. just for having a playable game
+			-- Todo: should be done at the trader instead. just for having a playable game for now
 			pl_ship_life = pl_ship_max_life
 		end
 
@@ -521,6 +515,7 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	rect(20, 74, 23, 75, 0)
 end
 
+-- Draws some randomly appearing particles with the same colors as the black hole
 function draw_void_noise()
 	-- TODO: implement
 	-- min y = 44
