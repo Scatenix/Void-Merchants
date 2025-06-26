@@ -1,4 +1,4 @@
-![VoidMerchantsPreview](https://github.com/user-attachments/assets/6c998ae0-fd3c-4352-afb7-b12071b8a2a6)![VoidMerchantsPreview](https://github.com/user-attachments/assets/6c998ae0-fd3c-4352-afb7-b12071b8a2a6)# Void Merchants
+# Void Merchants
 
 Void Merchants is a Space Invaders-inspired action game built in PICO-8. Blast enemies, collect resources and trade your way to upgrades as you progress through increasingly difficult space battles!
 
