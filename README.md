@@ -86,8 +86,9 @@ Currently about 2000 of 8192 tokens are left for the game code.
 - Major: Game balancing is very bad at the moment
     - For example, level 1 enemies deal 2 damage (should really be 1)
     - Also, Drone should be nearer towards the player on the Y-axis
+- Minor: Shooting speed gets doubled in the traveling phase. Will be reset on the next battle, though
 - Minor: Sounds or music sometimes skips
-    - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here.
+    - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here
 - Minor: Sounds for buffs (faster shooting and flying) keeps playing if picked up right before starting to travel to the merchant  
 - Minor: Player and Drone are not always completely in bounds (edges might be 2-3 pixels outside the visible screen)
     - Probably caused by speed higher than 1, resulting in calculating too far in one direction
