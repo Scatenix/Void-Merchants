@@ -11,7 +11,6 @@ pl_ship_base_damage=0
 pl_ship_life=0
 pl_ship_max_life=0
 pl_ship_shields=0
-pl_ship_shields=0--sris 250-255
 pl_ship_weapons=0
 pl_ship_shot_speed=0 -- actual projectile speed and fire rate
 pl_ship_speed=0 -- float
@@ -24,25 +23,25 @@ pl_ship_can_shoot = false
 pl_ship_tier = 1
 pl_ship_speed_buff_time = 0
 pl_ship_shot_speed_buff_time = 0
+pl_ship_damage_upgrades = 0
 
 function set_pl_ship(tier)
 	pl_ship_sprite=tier-1
 	htbx = get_ship_htbx_skp_pxl_width(tier)
 	pl_ship_hitbox_skip_pixel = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
-	pl_ship_damage=2*tier
-	pl_ship_base_damage=pl_ship_damage
-	pl_ship_life=3*tier
+	pl_ship_damage=2*tier+pl_ship_damage_upgrades
+	pl_ship_base_damage=2*tier
+	pl_ship_life=5*tier
 	pl_ship_max_life=pl_ship_life
 	pl_ship_shields=flr(tier/2)
 	pl_ship_max_shield=pl_ship_shields
-	pl_ship_weapons=flr(tier/4)+1
+	-- pl_ship_weapons=flr(tier/4)+1
 	pl_ship_shot_speed=tier/3+1
 	pl_ship_speed=1+tier*0.2
 	pl_ship_default_shot_speed=tier/3+1
 	pl_ship_default_speed=1+tier*0.2
 	pl_ship_storage=7
-	pl_ship_tier=tier
 end
 
 function get_ship_htbx_skp_pxl_width(tier)
@@ -99,11 +98,13 @@ function ship_and_drone_shoot()
 			end
 		end
 
-		local shot_mask = get_shot_mask(drone_weapons)
-		for shm in all(shot_mask) do
-			if shm != -1 then
-				local shot = {drone_x + 10, drone_y + shm -2}
-				add(drone_shots, shot)
+		if drone_available then
+			local shot_mask = get_shot_mask(drone_weapons)
+			for shm in all(shot_mask) do
+				if shm != -1 then
+					local shot = {drone_x + 10, drone_y + shm -2}
+					add(drone_shots, shot)
+				end
 			end
 		end
 

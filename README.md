@@ -96,6 +96,7 @@ Currently about 2000 of 8192 tokens are left for the game code.
     - When adjusting star speed, existing stars need to become as fast as newly spawned stars
 - Minor: Down-scaled planets look terrible
 - Minor: Travel mode can execute after dying
+- Minor: Stars at the beginning of the travel mode are not calculated correctly, but only after completing the first level
 
 # Pending Improvements
 

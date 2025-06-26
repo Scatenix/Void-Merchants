@@ -9,8 +9,8 @@ drone_offset_x = 0
 drone_hitbox_skip_pixel = 8
 drone_hitbox_width = 0
 drone_sprite = 48
-drone_damage = 00
-drone_weapons = 1
+drone_damage = 0
+drone_weapons = 0
 drone_life = 0
 drone_max_life = 0
 drone_shields = 0
@@ -22,33 +22,39 @@ drone_available = false
 drone_type_attack = true
 
 function set_pl_drone(tier)
+	if tier == 1 and drone_available then
+		drone_weapons = 1
+	end
+
+	if tier == 0 then
+		drone_available = false
 	-- get attack drone
-	if tier >= 0 and tier <= 6 and drone_type_attack then
- 	drone_sprite = 48 + tier
- 	htbx = get_drone_htbx_skp_pxl_width(tier)
-	drone_hitbox_skip_pixel = htbx[1]
-	drone_hitbox_width = htbx[2]
-	drone_damage = flr(10 * tier * 0.1) + 1
- 	drone_life = flr(20 * tier * 0.1) + 1
-	drone_max_life = flr(20 * tier * 0.1) + 1
- 	drone_shields = flr(10 * tier * 0.1 - 1) + 1
-	drone_max_shields = flr(10 * tier * 0.1 - 1) + 1
- 	drone_storage = flr(10 * tier * 0.1) + 1
- 	drone_available = true
- 	--drone_weapons = flr(1 * tier * 0.5) + 1
+	elseif tier >= 0 and tier <= 6 and drone_type_attack then
+		drone_sprite = 48 + tier
+		htbx = get_drone_htbx_skp_pxl_width(tier)
+		drone_hitbox_skip_pixel = htbx[1]
+		drone_hitbox_width = htbx[2]
+		drone_damage = flr(10 * tier * 0.1) + 1
+		drone_life = flr(20 * tier * 0.1) + 1
+		drone_max_life = flr(20 * tier * 0.1) + 1
+		drone_shields = flr(10 * tier * 0.1 - 1) + 1
+		drone_max_shields = flr(10 * tier * 0.1 - 1) + 1
+		drone_storage = flr(10 * tier * 0.1) + 1
+		drone_available = true
+		-- drone_weapons = flr(1 * tier * 0.5) + 1
 
 	-- get storage drone
- elseif tier >= 0 and tier <= 3 and not drone_type_attack then
- 	drone_sprite = 5 + tier
- 	htbx = get_drone_htbx_skp_pxl_width(tier)
-	drone_hitbox_skip_pixel = htbx[1]
-	drone_hitbox_width = htbx[2]
-	drone_damage = 0
- 	drone_life = flr(20 * (tier-3) * 0.1) + 1
- 	drone_shields = flr(10 * (tier-6.5) * 0.2) + 1
- 	drone_storage = flr(10 * tier * 0.1) + 1
- 	drone_available = true
- 	drone_weapons = 0
+	elseif tier >= 0 and tier <= 3 and not drone_type_attack then
+		drone_sprite = 5 + tier
+		htbx = get_drone_htbx_skp_pxl_width(tier)
+		drone_hitbox_skip_pixel = htbx[1]
+		drone_hitbox_width = htbx[2]
+		drone_damage = 0
+		drone_life = flr(20 * (tier-3) * 0.1) + 1
+		drone_shields = flr(10 * (tier-6.5) * 0.2) + 1
+		drone_storage = flr(10 * tier * 0.1) + 1
+		drone_available = true
+		drone_weapons = 0
 	end
 end
 

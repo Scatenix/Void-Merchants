@@ -62,19 +62,25 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = false
+	titlescreen_mode = true
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = true
+	trading_mode = false
 	death_mode = false
 
-	level = 1
-	pause_on_text = true
 	init_titlescreen = true
 
+	level = 1
+	pl_credits = 200
+
+	set_pl_ship(1)
+	pl_ship_weapons = 1
+	set_pl_drone(0)
+
 	-- for testing:
+	-- pause_on_text = true
 	-- tme = time() - 10
 	-- add_enemy(1)
 	-- add_enemy(3)
@@ -87,45 +93,39 @@ function _init()
 	-- add_enemy(1)
 	-- add_enemy(1)
 
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(credit[1], 70, 70)
+	-- add_floating_item(credit[1], 73, 73)
+	-- add_floating_item(credit[1], 75, 75)
+	-- add_floating_item(credit[1], 76, 76)
+	-- add_floating_item(credit[1], 78, 78)
 	-- add_floating_item(cobalt, 70, 70)
 	-- add_floating_item(cobalt, 70, 70)
 
 	--add_floating_item(drone_inc, 70, 70)
 	
-	drone_tier = 4
+	-- drone_tier = 4
 
-	set_pl_ship(6)
+	-- set_pl_ship(6)
 	
-	set_pl_drone(drone_tier)
+	-- set_pl_drone(drone_tier)
+	-- drone_shields -= 2
+	-- pl_ship_shields -= 2
 
-	store_item({0, 0, scrap[1]}, scrap[2])
+	-- store_item({0, 0, scrap[1]}, scrap[2])
 	-- store_item({0, 0, copper[1]}, copper[2])
 	-- store_item({0, 0, gold[1]}, gold[2])
-	store_item({0, 0, parts_crate[1]}, parts_crate[2])
+	-- store_item({0, 0, parts_crate[1]}, parts_crate[2])
 	-- store_item({0, 0, cobalt[1]}, cobalt[2])
 	-- store_item({0, 0, platinum[1]}, platinum[2])
 	-- store_item({0, 0, void_fragment[1]}, void_fragment[2])
 	-- store_item({0, 0, void_crystal[1]}, void_crystal[2])
-	store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
-	store_item({0, 0, drone_inc[1]}, drone_inc[2])
-	store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
-	pl_credits = 9999
+	-- store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
+	-- store_item({0, 0, drone_inc[1]}, drone_inc[2])
+	-- store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
+	-- pl_credits = 9000
 	-- pl_ship_max_life = 9999
-	pl_ship_life = 4
-	drone_life = 1
+	-- pl_ship_life = 4
+	-- drone_life = 1
 	-- drone_life = 9999
 
 	-- pl_ship_storage = 8
@@ -137,7 +137,6 @@ end
 -------------------------------
 
 function _update()
-	
 	if travel_after_battle_mode then
 		ship_ctrl()
 		drone_ctrl()
@@ -336,6 +335,8 @@ function _draw()
 		if initial_draw == true then
 			init_passing_stars()
 			initial_draw = false
+			show_level = true
+			show_level_frames_left = 100
 		end
 
 		draw_passing_stars()
@@ -356,6 +357,14 @@ function _draw()
 		draw_hitmarkers()
 		draw_explosions()
 		draw_money_pickups()
+
+		if show_level then
+			print("level " ..level, 52, 20, 10)
+			show_level_frames_left -= 1
+		end
+		if show_level_frames_left <= 0 then
+			show_level = false
+		end
 	elseif converstaion_mode then
 		draw_textbox()
 	elseif travel_after_battle_mode then
@@ -398,6 +407,9 @@ end
 tme = 0 -- here to track times with time()
 
 level = 1
+show_level = false
+show_level_frames_left = 0
+
 init_battle = false
 show_battle_stats = false
 animation_counter = 0
@@ -811,7 +823,6 @@ pl_ship_base_damage=0
 pl_ship_life=0
 pl_ship_max_life=0
 pl_ship_shields=0
-pl_ship_shields=0--sris 250-255
 pl_ship_weapons=0
 pl_ship_shot_speed=0 -- actual projectile speed and fire rate
 pl_ship_speed=0 -- float
@@ -824,25 +835,25 @@ pl_ship_can_shoot = false
 pl_ship_tier = 1
 pl_ship_speed_buff_time = 0
 pl_ship_shot_speed_buff_time = 0
+pl_ship_damage_upgrades = 0
 
 function set_pl_ship(tier)
 	pl_ship_sprite=tier-1
 	htbx = get_ship_htbx_skp_pxl_width(tier)
 	pl_ship_hitbox_skip_pixel = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
-	pl_ship_damage=2*tier
-	pl_ship_base_damage=pl_ship_damage
-	pl_ship_life=3*tier
+	pl_ship_damage=2*tier+pl_ship_damage_upgrades
+	pl_ship_base_damage=2*tier
+	pl_ship_life=5*tier
 	pl_ship_max_life=pl_ship_life
 	pl_ship_shields=flr(tier/2)
 	pl_ship_max_shield=pl_ship_shields
-	pl_ship_weapons=flr(tier/4)+1
+	-- pl_ship_weapons=flr(tier/4)+1
 	pl_ship_shot_speed=tier/3+1
 	pl_ship_speed=1+tier*0.2
 	pl_ship_default_shot_speed=tier/3+1
 	pl_ship_default_speed=1+tier*0.2
 	pl_ship_storage=7
-	pl_ship_tier=tier
 end
 
 function get_ship_htbx_skp_pxl_width(tier)
@@ -899,11 +910,13 @@ function ship_and_drone_shoot()
 			end
 		end
 
-		local shot_mask = get_shot_mask(drone_weapons)
-		for shm in all(shot_mask) do
-			if shm != -1 then
-				local shot = {drone_x + 10, drone_y + shm -2}
-				add(drone_shots, shot)
+		if drone_available then
+			local shot_mask = get_shot_mask(drone_weapons)
+			for shm in all(shot_mask) do
+				if shm != -1 then
+					local shot = {drone_x + 10, drone_y + shm -2}
+					add(drone_shots, shot)
+				end
 			end
 		end
 
@@ -987,8 +1000,8 @@ drone_offset_x = 0
 drone_hitbox_skip_pixel = 8
 drone_hitbox_width = 0
 drone_sprite = 48
-drone_damage = 00
-drone_weapons = 1
+drone_damage = 0
+drone_weapons = 0
 drone_life = 0
 drone_max_life = 0
 drone_shields = 0
@@ -1000,33 +1013,39 @@ drone_available = false
 drone_type_attack = true
 
 function set_pl_drone(tier)
+	if tier == 1 and drone_available then
+		drone_weapons = 1
+	end
+
+	if tier == 0 then
+		drone_available = false
 	-- get attack drone
-	if tier >= 0 and tier <= 6 and drone_type_attack then
- 	drone_sprite = 48 + tier
- 	htbx = get_drone_htbx_skp_pxl_width(tier)
-	drone_hitbox_skip_pixel = htbx[1]
-	drone_hitbox_width = htbx[2]
-	drone_damage = flr(10 * tier * 0.1) + 1
- 	drone_life = flr(20 * tier * 0.1) + 1
-	drone_max_life = flr(20 * tier * 0.1) + 1
- 	drone_shields = flr(10 * tier * 0.1 - 1) + 1
-	drone_max_shields = flr(10 * tier * 0.1 - 1) + 1
- 	drone_storage = flr(10 * tier * 0.1) + 1
- 	drone_available = true
- 	--drone_weapons = flr(1 * tier * 0.5) + 1
+	elseif tier >= 0 and tier <= 6 and drone_type_attack then
+		drone_sprite = 48 + tier
+		htbx = get_drone_htbx_skp_pxl_width(tier)
+		drone_hitbox_skip_pixel = htbx[1]
+		drone_hitbox_width = htbx[2]
+		drone_damage = flr(10 * tier * 0.1) + 1
+		drone_life = flr(20 * tier * 0.1) + 1
+		drone_max_life = flr(20 * tier * 0.1) + 1
+		drone_shields = flr(10 * tier * 0.1 - 1) + 1
+		drone_max_shields = flr(10 * tier * 0.1 - 1) + 1
+		drone_storage = flr(10 * tier * 0.1) + 1
+		drone_available = true
+		-- drone_weapons = flr(1 * tier * 0.5) + 1
 
 	-- get storage drone
- elseif tier >= 0 and tier <= 3 and not drone_type_attack then
- 	drone_sprite = 5 + tier
- 	htbx = get_drone_htbx_skp_pxl_width(tier)
-	drone_hitbox_skip_pixel = htbx[1]
-	drone_hitbox_width = htbx[2]
-	drone_damage = 0
- 	drone_life = flr(20 * (tier-3) * 0.1) + 1
- 	drone_shields = flr(10 * (tier-6.5) * 0.2) + 1
- 	drone_storage = flr(10 * tier * 0.1) + 1
- 	drone_available = true
- 	drone_weapons = 0
+	elseif tier >= 0 and tier <= 3 and not drone_type_attack then
+		drone_sprite = 5 + tier
+		htbx = get_drone_htbx_skp_pxl_width(tier)
+		drone_hitbox_skip_pixel = htbx[1]
+		drone_hitbox_width = htbx[2]
+		drone_damage = 0
+		drone_life = flr(20 * (tier-3) * 0.1) + 1
+		drone_shields = flr(10 * (tier-6.5) * 0.2) + 1
+		drone_storage = flr(10 * tier * 0.1) + 1
+		drone_available = true
+		drone_weapons = 0
 	end
 end
 
@@ -1953,6 +1972,9 @@ price_per_drone_hull_point = 10
 price_increase_per_weapon = 50
 price_increase_per_drone = 100
 price_increase_per_weapon_dmg = 50
+price_per_ship_shield = 25
+price_per_drone_shield = 50
+price_increase_per_ship_tier = 500
 
 function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30
@@ -2049,15 +2071,22 @@ function draw_tradescreen()
 	print("sell your upgrades", 10, 20, 7)
 	print("(" ..calc_player_upgrades_price(false).. ")", 83, 20, 10)
 
-	print("repair ship hull ", 10, 28, 7)
-	print("(" ..(pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point.. ")", 75, 28, 10)
-	
+	if pl_ship_life < pl_ship_max_life then
+		print("repair ship hull ", 10, 28, 7)
+		print("(" ..(pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point.. ")", 75, 28, 10)
+	else
+		print("upgrade ship ", 10, 28, 7)
+		print("(" ..pl_ship_tier*price_increase_per_ship_tier.. ")", 59, 28, 10)
+	end
+
 	print("repair drones", 10, 36, 7)
 	print("(" ..(drone_max_life-drone_life)*price_per_drone_hull_point.. ")", 63, 36, 10)
 
 	print("restore ship shield", 10, 44, 7)
+	print("(" ..(pl_ship_max_shield-pl_ship_shields)*price_per_ship_shield.. ")", 87, 44, 10)
 
 	print("restore drone shield", 10, 52, 7)
+	print("(" ..(drone_max_shields-drone_shields)*price_per_drone_shield.. ")", 91, 52, 10)
 
 	print("install stored upgrades", 10, 60, 7)
 	print("(" ..get_number_of_stored_upgrades(false).. ")", 103, 60, 10)
@@ -2120,14 +2149,26 @@ function trade()
 			if price == 0 then
 				sfx(23)
 			end
-		elseif trade_cursor_pos == 3 then -- repair ship hull
-			local price = (pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point
-			if pl_ship_max_life-pl_ship_life > 0 and pl_credits >= price then
-				pl_ship_life = pl_ship_max_life
-				pl_credits -= price
-				sfx(10)
+		elseif trade_cursor_pos == 3 then -- repair ship hull or upgrade ship
+			if pl_ship_life < pl_ship_max_life then
+				local price = (pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point
+				if pl_ship_max_life-pl_ship_life > 0 and pl_credits >= price then
+					pl_ship_life = pl_ship_max_life
+					pl_credits -= price
+					sfx(10)
+				else
+					sfx(23)
+				end
 			else
-				sfx(23)
+				local price = pl_ship_tier*price_increase_per_ship_tier
+				if pl_ship_tier < 6 and pl_credits >= price then
+					pl_ship_tier += 1
+					set_pl_ship(pl_ship_tier)
+					pl_credits -= price
+					sfx(12)
+				else
+					sfx(23)
+				end
 			end
 		elseif trade_cursor_pos == 4 then -- repair drones
 			local price = (drone_max_life-drone_life)*price_per_drone_hull_point
@@ -2139,7 +2180,21 @@ function trade()
 				sfx(23)
 			end
 		elseif trade_cursor_pos == 5 then -- restore ship shield point
+			price = (pl_ship_max_shield-pl_ship_shields)*price_per_ship_shield
+			if pl_ship_shields < pl_ship_max_shield and pl_credits >= price then
+				pl_ship_shields += 1
+				sfx(12)
+			else
+				sfx(23)
+			end
 		elseif trade_cursor_pos == 6 then -- restore drone shield point
+			price = (drone_max_shields-drone_shields)*price_per_drone_shield
+			if drone_shields < drone_max_shields and pl_credits >= price then
+				drone_shields += 1
+				sfx(12)
+			else
+				sfx(23)
+			end
 		elseif trade_cursor_pos == 7 then -- install stored upgrades
 			local upgrades = get_number_of_stored_upgrades(true)
 			if upgrades == 0 then
@@ -2151,7 +2206,8 @@ function trade()
 			local price = attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage
 			if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage and pl_credits >= price then
 				sfx(11)
-				pl_ship_damage+=1
+				pl_ship_damage += 1
+				pl_ship_damage_upgrades += 1
 				pl_credits -= price
 			else
 				sfx(23)
@@ -2160,11 +2216,11 @@ function trade()
 			local price = weapons_inc[2]+price_increase_per_weapon*(pl_ship_weapons+drone_weapons)
 			if pl_ship_weapons < max_pl_dr_weapons and pl_credits >= price then
 				sfx(11)
-				pl_ship_weapons+=1
+				pl_ship_weapons += 1
 				pl_credits -= price
 			elseif drone_weapons < max_pl_dr_weapons and pl_credits >= price then
 				sfx(11)
-				drone_weapons+=1
+				drone_weapons += 1
 				pl_credits -= price
 			else
 				sfx(23)
@@ -2192,6 +2248,7 @@ function trade()
 				drone_type_attack = not drone_type_attack
 				set_pl_drone(drone_tier)
 			end
+			sfx(12)
 			drone_life = dl
 			drone_shields = ds
 		end
@@ -2211,7 +2268,7 @@ function calc_player_goods_price(sell)
 		end
 	end
 	if sell then
-		pl_credits += price
+		add_credits(price)
 	end
 	return price
 end
@@ -2229,7 +2286,7 @@ function calc_player_upgrades_price(sell)
 		end
 	end
 	if sell then
-		pl_credits += price
+		add_credits(price)
 	end
 	return price
 end
@@ -2271,8 +2328,10 @@ function draw_titlescreen()
 	sspr(32, 112, 16, 16, 5, 4, 32, 32)
 	-- black hole
 	sspr(64, 72, 16, 16, 48, 55, 32, 32)
-	-- moon
-	spr(132, 96, 22, 2, 2)
+	-- small planet
+	-- spr(0, 96, 22, 2, 2)
+	sspr(small_planets[current_small_planet][1], small_planets[current_small_planet][2], 16, 16, 96, 22, 16, 16)
+
 	
 	if wait_after_titlescreen then
 		print("prepare!", 48, 110, 10)	
@@ -2287,38 +2346,38 @@ end
 
 
 __gfx__
-0000000000000000000000005500dd000055500005d55dd00000000000566c000000000000000000000000000000aaaaaaaa0000000000000000033333300000
-00000000005d000000050000005d00d0005ddd000a66655d0000000000d55600005dd55000000000000000000aaaaaaaaaaaaaa0000000000003333333333000
-00dd00000dddd00005d55000a055500d95566660a99855dc0000000098dd550005d66cc0000000000000000aaaaaaaaaaaaaaaaaa00000000033333333333300
-05556d00a95566d0a98d56500985c600a985c77d0d566dc700000000000d00000d66ddd000000000000000aaaaaaaaaaaaaaaaaaaa0000000333ccc333333330
-a985ccd0085ddccd0a98dcc50985c600a985cccd0d566dcc000566c0000566c005d66d500000000000000aaaaaaaa999aaaaaaaaaaa00000033ccc3333333330
-05556d00a95566d0a98d5650a055500d95566660a99855dc000d5560000d5560985dd550000000000000aaaaaaa99aaaaa999aaaaaaa000033ccc333333c3333
-00dd00000dddd00005d55000005d00d0005ddd000a66655d089dd550098dd55000d5500000000000000aaaaaaa9aaaaaaaaaaaa99aaaa00033cc3333333ccc33
-00000000005d0000000500005500dd000055500005d55dd00000d0000000d000000000000000000000aaa9aaaaaaaaaaaa9aaaaa99aaaa003333333333333c33
-0000000000000000000000005500dd000055500005d55dd00006d00000555d00055511000000000000aaa9aa99aaaaaaaa99aaaaaaaaaa0033333c3333333333
-00000000005d000000050000005d00d0005ddd000966655d006ddd005055d60005555100000000000aaaaaaa9aaaaaaaaaa9aaaaaaaaaaa03333333333333333
-00dd00000dddd00005d550009055500da5566660a88955dc06d111d055dddd6607777600000000000aaaaaaaaaaaaaaa9aa9aa9aaaaaaaa0333333333c333333
-05556d009a5566d0a98d56500985c6009895c77d0d566dc7061818d00555dddd55555110000000000aaaaaaaaaaaaaaa9aaaaa999aaaaaa00333333ccc333330
-9895ccd0095ddccd0aa9dcc50895c600a985cccd0d566dcc06d111d004cc9cc00aaa990000000000aaaaaaaaaaa9999a9aaaaaaa9aaaaaaa033333cccc333330
+0000000000000000000000005500dd000055500005d55dd00000000000566c000000000000000000000000000000aaaaaaaa00000000000000000bbbbbb00000
+00000000005d000000050000005d00d0005ddd000a66655d0000000000d55600005dd55000000000000000000aaaaaaaaaaaaaa000000000000bbbbbbbbbb000
+00dd00000dddd00005d55000a055500d95566660a99855dc0000000098dd550005d66cc0000000000000000aaaaaaaaaaaaaaaaaa000000000bbbbbbbbbbbb00
+05556d00a95566d0a98d56500985c600a985c77d0d566dc700000000000d00000d66ddd000000000000000aaaaaaaaaaaaaaaaaaaa0000000bbbcccbbbbbbb30
+a985ccd0085ddccd0a98dcc50985c600a985cccd0d566dcc000566c0000566c005d66d500000000000000aaaaaaaa999aaaaaaaaaaa000000bbcccbbbbbbbb30
+05556d00a95566d0a98d5650a055500d95566660a99855dc000d5560000d5560985dd550000000000000aaaaaaa99aaaaa999aaaaaaa0000bbcccbbbbbbcbb33
+00dd00000dddd00005d55000005d00d0005ddd000a66655d089dd550098dd55000d5500000000000000aaaaaaa9aaaaaaaaaaaa99aaaa000bbccbbbbbbbcc133
+00000000005d0000000500005500dd000055500005d55dd00000d0000000d000000000000000000000aaa9aaaaaaaaaaaa9aaaaa99aaaa00bbbbbbbbbbbbb133
+0000000000000000000000005500dd000055500005d55dd00006d00000555d00055511000000000000aaa9aa99aaaaaaaa99aaaaaaaaaa00bbbbbcbbbbbbb333
+00000000005d000000050000005d00d0005ddd000966655d006ddd005055d60005555100000000000aaaaaaa9aaaaaaaaaa9aaaaaaaaaaa0bbbbbbbbbbbb3333
+00dd00000dddd00005d550009055500da5566660a88955dc06d111d055dddd6607777600000000000aaaaaaaaaaaaaaa9aa9aa9aaaaaaaa0bbbbbbbbbcb33333
+05556d009a5566d0a98d56500985c6009895c77d0d566dc7061818d00555dddd55555110000000000aaaaaaaaaaaaaaa9aaaaa999aaaaaa00bbbbbbcc1333330
+9895ccd0095ddccd0aa9dcc50895c600a985cccd0d566dcc06d111d004cc9cc00aaa990000000000aaaaaaaaaaa9999a9aaaaaaa9aaaaaaa0bbbbb1111333330
 05556d00a85566d0989d5650a055500da5566660998955dc06dd11dd844499900cdacd0000000000aaaaaaaaaaa9aaaa9aaaaaaaaaaaaaaa0033333333333300
 00dd00000dddd00005d55000005d00d0005ddd000a66655d066dddd1249055a09dd9dd4000000000aaaa9aaaaaaaaaaaaaaa99aaaaa99aaa0003333333333000
 00000000005d0000000500005500dd000055500005d55dd00066dd112299aaa00994440000000000aaaa9aa99aaaaaaaaaaa9aaaaaaa9aaa0000033333300000
 0000000000000000000000005500dd000055500005d55dd00606d111022288800077600000000000aaaaaaaa9aaaaaaaaaaa9aaaaaaa9aaa00000cccccc00000
-00000000005d000000050000005d00d0005ddd000966655d006dd111092888a0057c650000000000aaaaaaaa99aaaa9aaaaaaaaaaaaaaaaa000cccccccccc000
-00dd00000dddd00005d550009055500d95566660989955dc0060d11090188c0a755c556000000000aaaaaaaaa99aaa999aaaaaaaaaaaaaaa00cccccccccccc00
-05556d00895566d0a89d56500995c600a895c77d0d566dc706000d1190111c09755c550600000000aaaa9aaaaa99aaaaaaaaaaaaaaaaaaaa0cccccccccccccc0
-aa85ccd0095ddccd09a9dcc50895c6009995cccd0d566dcc006010105511cc5507515506000000000aaa9aaaaaaaaaaaaaaa9aaaaaaaaaa00cccccccccccccc0
-05556d00a85566d0a98d5650a055500da5566660a88955dc000001005049a405057a9506000000000aaa9aaaaaaaaaaaaa999aaa9aaaaaa0cccccccccccccccc
-00dd00000dddd00005d55000005d00d0005ddd000966655d000d000000dddd00005950a9000000000aaa99aaaaaaaaaaa99aaaa99aaaaaa0cccccccaa66ccccc
-00000000005d0000000500005500dd000055500005d55dd00600000000d00d00005550090000000000aaaaaaaaaaaaaaaaaaaa99aaaaaa00cccccca55a6acccc
-0000000000000000000dd000000dd0000000000000d000000000000000000000000000000000000000aaaaaaa9aaaaaaaaaaaa9aaaaaaa00ccccccca66666acc
-000000000000000000950000009500000000000005dd000000000050000000000000000000000000000aaaaaaa9aaaaaaaaaaaaaaaaaa000cccccccccca6cccc
-0000000000000000000dd000000dd00000000d00a95000d000005d000000000000000000000000000000aaaaaaa99aaaaaaa9999aaaa0000cccccccccccccccc
-0000000000000dd000000000000000dd00005dd005dd05dd0a5ddddd00000000000000000000000000000aaaaaaa9aaaaaa9aaaaaaa000000cccccccccccccc0
-000000000000950000000dd00dd00950000a950000d0a95000955600000000000000000000000000000000aaaaaaaaaaaaaaaaaaaa0000000cccccccccccccc0
-0000000000000dd000009500950000dd00005dd0000005dd0a5ddddd0000000000000000000000000000000aaaaaaaaaaaaaaaaaa000000000cccccccccccc00
-000000000000000000000dd00dd0000000000d00000000d000005d00000000000000000000000000000000000aaaaaaaaaaaaaa000000000000cccccccccc000
-00000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000aaaaaaaa00000000000000000cccccc00000
+00000000005d000000050000005d00d0005ddd000966655d006dd111092888a0057c650000000000aaaaaaaa99aaaa9aaaaaaaaaaaaaaaaa000ccccc6cccc000
+00dd00000dddd00005d550009055500d95566660989955dc0060d11090188c0a755c556000000000aaaaaaaaa99aaa999aaaaaaaaaaaaaaa00ccccc6accccc00
+05556d00895566d0a89d56500995c600a895c77d0d566dc706000d1190111c09755c550600000000aaaa9aaaaa99aaaaaaaaaaaaaaaaaaaa0ccccc655acccc10
+aa85ccd0095ddccd09a9dcc50895c6009995cccd0d566dcc006010105511cc5507515506000000000aaa9aaaaaaaaaaaaaaa9aaaaaaaaaa00ccccccaaccccc10
+05556d00a85566d0a98d5650a055500da5566660a88955dc000001005049a405057a9506000000000aaa9aaaaaaaaaaaaa999aaa9aaaaaa0ccccccccccccc111
+00dd00000dddd00005d55000005d00d0005ddd000966655d000d000000dddd00005950a9000000000aaa99aaaaaaaaaaa99aaaa99aaaaaa0ccaacccaa66cc111
+00000000005d0000000500005500dd000055500005d55dd00600000000d00d00005550090000000000aaaaaaaaaaaaaaaaaaaa99aaaaaa00c655cca55a691111
+0000000000000000000dd000000dd0000000000000d000000000000000000000000000000000000000aaaaaaa9aaaaaaaaaaaa9aaaaaaa00caacccca66555911
+000000000000000000950000009500000000000005dd000000000050000000000000000000000000000aaaaaaa9aaaaaaaaaaaaaaaaaa000cccccccccc951111
+0000000000000000000dd000000dd00000000d00a95000d000005d000000000000000000000000000000aaaaaaa99aaaaaaa9999aaaa0000cccccccccc111111
+0000000000000dd000000000000000dd00005dd005dd05dd0a5ddddd00000000000000000000000000000aaaaaaa9aaaaaa9aaaaaaa000000cccccccc1111110
+000000000000950000000dd00dd00950000a950000d0a95000955600000000000000000000000000000000aaaaaaaaaaaaaaaaaaaa0000000ccccc1111111110
+0000000000000dd000009500950000dd00005dd0000005dd0a5ddddd0000000000000000000000000000000aaaaaaaaaaaaaaaaaa00000000011111111111100
+000000000000000000000dd00dd0000000000d00000000d000005d00000000000000000000000000000000000aaaaaaaaaaaaaa0000000000001111111111000
+00000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000aaaaaaaa0000000000000000011111100000
 000000000000bbbbbbbb000000000000000000000000cccccccc00000000000000000000000099999999000000000000000000000000dddddddd000000000000
 000000000bbbbbbbbbbbbbb000000000000000000cccccccccccccc00000000000000000099999999999999000000000000000000dddddddddddddd000000000
 0000000bbbbbb33bbbbbbbbbb000000000000007ccccccccccccccccc0000000000000055999999999999999900000000000000dddddddddddddddddd0000000
@@ -2354,35 +2413,35 @@ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcccc33333ccc3333333cccc3cccccccc9999999999999999
 000000000000222222220000000000000000066666600000000001111110000000000000000000000600000000000000000a000000aa0aa00999099009000080
 0000000002222222222222200000000000066666666660000001111d11111000000000000000000006000000000a000000a9a0a00a99a9a0a988889a00980098
 000000022222222222888222200000000066666666666600001111dd1111110000000000000000000600000000a99a000a999a00a999989a9898888989000000
-000000222222222222288888220000000666656665566660011111111d1111100000000000000000060000000a9899a00a98889aa98889899888898000000009
-00000222222222222222288882200000066656565665666001111d111dddd11000000000000000000600000000a989a000a989900a99889a0888888900000000
-0000222222222222222222888822000066666566566566661111d1111111111100000000000000000600000000099a000a9999a0a99898909089898a99000098
-000222222222e222222222288822200066666666655666651111d11111111111666666660000006606000000000aa000000aaa00aa99999a9a98889980900009
-002222222eeee22222eeee228882220066666666666666561111111111dd111100000000000000060600000000000000000000000aaa09a009a909a009009080
-00222222eeee22222eeee22288822200666666666655666511ddd1111dd11d110020100d00e0200c000000000000e20000000000000000000000000000000000
-0222222eeee22222eeee22228882222066665566656656661111111111111d11d00002222220000003b3b00000000e2000000000000000000000000000000000
-022222eeee22222eeee2222228822220666566566566566611111dd111111111000222eeee222010003b3b000000e2000080800006dddd600d666d000d666d00
-022222eee222222eee22222222222220066566566655666001111d11111111102022eeecceee220e0003b3b00e2000000878880056cc776606757600067dd600
-22222eee222222eee222222222222222066655666666666001111d11111d1110002eeccccccee200003b3b0000e200000888880055cccc56065bb60006957600
-22222eee222222eee2222222882222220066666656666600001111111ddd1100022ecc1111cce22003b3b0000e200e200088800005dddd5006757600067dd600
-22222eee222222ee22222288882222820006666565666000000111111111100002eec110011cee2000000000000000e200080000000000000d666d000d666d00
-222222ee222222ee22222888822222880000066656600000000001111110000002ecc100001cce210000000000000e2000000000000000000000000000000000
+0000002222222222222888882200000006666566655666d0011111111d1111100000000000000000060000000a9899a00a98889aa98889899888898000000009
+0000022222222222222228888220000006665656566566d001111d111dddd11000000000000000000600000000a989a000a989900a99889a0888888900000000
+0000222222222222222222888822000066666566566566dd1111d1111111111100000000000000000600000000099a000a9999a0a99898909089898a99000098
+000222222222e222222222288822200066666666655666d51111d11111111111666666660000006606000000000aa000000aaa00aa99999a9a98889980900009
+002222222eeee22222eeee22888222006666666666666d5d1111111111dd111100000000000000060600000000000000000000000aaa09a009a909a009009080
+00222222eeee22222eeee222888222006666666666556dd511ddd1111dd11d110020100d00e0200c000000000000e20000000000000000000000000000000000
+0222222eeee22222eeee2222888222206666556665665ddd1111111111111d11d00002222220000003b3b00000000e2000000000000000000000000000000000
+022222eeee22222eeee222222882222066656656656d5ddd11111dd111111111000222eeee222010003b3b000000e2000080800006dddd600d666d000d666d00
+022222eee222222eee22222222222220066566566655ddd001111d11111111102022eeecceee220e0003b3b00e2000000878880056cc776606757600067dd600
+22222eee222222eee222222222222222066655ddddddddd001111d11111d1110002eeccccccee200003b3b0000e200000888880055cccc56065bb60006957600
+22222eee222222eee22222228822222200dddddd5ddddd00001111111ddd1100022ecc1111cce22003b3b0000e200e200088800005dddd5006757600067dd600
+22222eee222222ee2222228888222282000dddd5d5ddd000000111111111100002eec110011cee2000000000000000e200080000000000000d666d000d666d00
+222222ee222222ee222228888222228800000ddd5dd00000000001111110000002ecc100001cce210000000000000e2000000000000000000000000000000000
 2222222e222222e22222888822222228000005585550000000000eeeeee0000002ecc100001cce20000000000000000000000000000000000000000000000000
 22882222222222e222288822222222280005558555555000000ee8eeeeeee000d2eec110011cee20000000000000000000000000000000000000000000000000
 2288822222222222222882222ee22222005558988555850000eee88eeeeeee00022ecc1111cce22e0a0a77000000000000999000000600000004900000067000
-2228822222222222222222222ee2222205555585585885500eeeee8888eeeee0002eeccccccee2000a9aaa70000aaa0000908800005560000044490000667700
-022888888888222222222222eee2222005585585555885500eeeeeeee88eeee00022eeecceee220209499aa0000a990000a00800000556000044490000677700
-02222888888222222222222eee2222205558555555888855eeeeee8eee8eeeeee00222eeee222000090999000006660000aaa800005606000004400000077000
-02222222222222222222222ee2222220558855555899a855eeee8e8eee8ee8ee02000222222000c0000000000000000000000000000000000000000000000000
-002222222222222222222eeee22222005899855558999885eee88e88ee8ee8ee000100e0c00d2000000000000000000000000000000000000000000000000000
-002222222eeeeee222eeeeee2222220058998855589a9888eee8eee8eeeee8ee0000000000000000000000000000000000c0000000c000000000000000000000
-00022222222eeeeeeeeeeee2222220005588558885888855ee88eee88eeeeeee000000000d5555d0000000000000000000000000010201000000000000000000
-00002222222eeeeeeeeeee22222200005588558855585855ee8eeeee8eeee8ee0009a000056666500001c00000067000000e0100002e20c00000000000000000
-0000022222222222222222222220000005855589855585500eeeeeeeee8888e00099aa000566555000111c0000667700c022e0000222e2000000000000000000
-0000002222222222222222222200000005555558555855500eee8eeee88eeee0009aaa000555665000111c000067770000022e00c02220000000000000000000
-000000022222222222222ee220000000005555855555550000ee888eeeeeee00000aa000056666500001100000077000012e0e00010200100000000000000000
-000000000222222222eeee80000000000005558555555000000eeeeeeeeee000000000000d5555d00000000000000000000010c0000c00000000000000000000
-00000000000022222888000000000000000005555550000000000eeeeee00000000000000000000000000000000000000c000000000001000000000000000000
+2228822222222222222222222ee2222205555585585885500eeeee8888eeee20002eeccccccee2000a9aaa70000aaa0000908800005560000044490000667700
+022888888888222222222222eee2222005585585555885500eeeeeeee88eee200022eeecceee220209499aa0000a990000a00800000556000044490000677700
+02222888888222222222222eee2222205558555555888855eeeeee8eee8eee22e00222eeee222000090999000006660000aaa800005606000004400000077000
+02222222222222222222222ee2222220558855555899a855eeee8e8eee8ee82202000222222000c0000000000000000000000000000000000000000000000000
+002222222222222222222eeee22222005899855558999885eee88e88ee8ee822000100e0c00d2000000000000000000000000000000000000000000000000000
+002222222eeeeee222eeeeee2222220058998855589a9888eee8eee8eeee28220000000000000000000000000000000000c0000000c000000000000000000000
+00022222222eeeeeeeeeeee2222220005588558885888855ee88eee88eee2222000000000d5555d0000000000000000000000000010201000000000000000000
+00002222222eeeeeeeeeee22222200005588558855585855ee8eeeee8ee228220009a000056666500001c00000067000000e0100002e20c00000000000000000
+0000022222222222222222222220000005855589855585500eeeeeeeee8888200099aa000566555000111c0000667700c022e0000222e2000000000000000000
+0000002222222222222222222200000005555558555855500eee8ee228822220009aaa000555665000111c000067770000022e00c02220000000000000000000
+000000022222222222222ee22000000000555585555555000022888222222200000aa000056666500001100000077000012e0e00010200100000000000000000
+000000000222222222eeee800000000000055585555550000002222222222000000000000d5555d00000000000000000000010c0000c00000000000000000000
+0000000000002222288800000000000000000555555000000000022222200000000000000000000000000000000000000c000000000001000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000006000000006000000dd0000000000000000000000000000000000000000d000
 00000000000000000000000000000000000000000000000000000000000000000859a00000859a000859a000000000000000000000000000000050000005d000
 0000000000000000000000000000000000000000000000000000000000008800006000000006000000dd00000005500000055000000d00000005550000ddd500

@@ -3,6 +3,9 @@ __lua__2
 tme = 0 -- here to track times with time()
 
 level = 1
+show_level = false
+show_level_frames_left = 0
+
 init_battle = false
 show_battle_stats = false
 animation_counter = 0

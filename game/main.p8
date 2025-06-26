@@ -60,19 +60,25 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = false
+	titlescreen_mode = true
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = true
+	trading_mode = false
 	death_mode = false
 
-	level = 1
-	pause_on_text = true
 	init_titlescreen = true
 
+	level = 1
+	pl_credits = 200
+
+	set_pl_ship(1)
+	pl_ship_weapons = 1
+	set_pl_drone(0)
+
 	-- for testing:
+	-- pause_on_text = true
 	-- tme = time() - 10
 	-- add_enemy(1)
 	-- add_enemy(3)
@@ -85,45 +91,39 @@ function _init()
 	-- add_enemy(1)
 	-- add_enemy(1)
 
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(credit[1], 70, 70)
+	-- add_floating_item(credit[1], 73, 73)
+	-- add_floating_item(credit[1], 75, 75)
+	-- add_floating_item(credit[1], 76, 76)
+	-- add_floating_item(credit[1], 78, 78)
 	-- add_floating_item(cobalt, 70, 70)
 	-- add_floating_item(cobalt, 70, 70)
 
 	--add_floating_item(drone_inc, 70, 70)
 	
-	drone_tier = 4
+	-- drone_tier = 4
 
-	set_pl_ship(6)
+	-- set_pl_ship(6)
 	
-	set_pl_drone(drone_tier)
+	-- set_pl_drone(drone_tier)
+	-- drone_shields -= 2
+	-- pl_ship_shields -= 2
 
-	store_item({0, 0, scrap[1]}, scrap[2])
+	-- store_item({0, 0, scrap[1]}, scrap[2])
 	-- store_item({0, 0, copper[1]}, copper[2])
 	-- store_item({0, 0, gold[1]}, gold[2])
-	store_item({0, 0, parts_crate[1]}, parts_crate[2])
+	-- store_item({0, 0, parts_crate[1]}, parts_crate[2])
 	-- store_item({0, 0, cobalt[1]}, cobalt[2])
 	-- store_item({0, 0, platinum[1]}, platinum[2])
 	-- store_item({0, 0, void_fragment[1]}, void_fragment[2])
 	-- store_item({0, 0, void_crystal[1]}, void_crystal[2])
-	store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
-	store_item({0, 0, drone_inc[1]}, drone_inc[2])
-	store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
-	pl_credits = 9999
+	-- store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
+	-- store_item({0, 0, drone_inc[1]}, drone_inc[2])
+	-- store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
+	-- pl_credits = 9000
 	-- pl_ship_max_life = 9999
-	pl_ship_life = 4
-	drone_life = 1
+	-- pl_ship_life = 4
+	-- drone_life = 1
 	-- drone_life = 9999
 
 	-- pl_ship_storage = 8
@@ -135,7 +135,6 @@ end
 -------------------------------
 
 function _update()
-	
 	if travel_after_battle_mode then
 		ship_ctrl()
 		drone_ctrl()
@@ -334,6 +333,8 @@ function _draw()
 		if initial_draw == true then
 			init_passing_stars()
 			initial_draw = false
+			show_level = true
+			show_level_frames_left = 100
 		end
 
 		draw_passing_stars()
@@ -354,6 +355,14 @@ function _draw()
 		draw_hitmarkers()
 		draw_explosions()
 		draw_money_pickups()
+
+		if show_level then
+			print("level " ..level, 52, 20, 10)
+			show_level_frames_left -= 1
+		end
+		if show_level_frames_left <= 0 then
+			show_level = false
+		end
 	elseif converstaion_mode then
 		draw_textbox()
 	elseif travel_after_battle_mode then
