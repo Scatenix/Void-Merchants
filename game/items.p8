@@ -76,7 +76,7 @@ function interpret_item(item)
 			pl_ship_damage += 1
 			del(floating_items, item)
 		else
-			store_item(item)
+			store_item(item, attack_damage_inc[2])
 		end
 	elseif item[3] == drone_inc[1] then
 		if drone_tier < max_drones then
@@ -85,7 +85,7 @@ function interpret_item(item)
 			set_pl_drone(drone_tier)
 			del(floating_items, item)
 		else
-			store_item(item)
+			store_item(item, drone_inc[2])
 		end
 	elseif item[3] == weapons_inc[1] then
 		if pl_ship_weapons < max_pl_dr_weapons then
@@ -97,19 +97,26 @@ function interpret_item(item)
 			drone_weapons+=1
 			del(floating_items, item)
 		else
-			store_item(item)
+			store_item(item, drone_inc[2])
 		end
 	elseif item[3] == credit[1] then
 		sfx(17)
 		add_credits(credit[2])
+		add_money_pickup(credit[2])
+		
 		del(floating_items, item)
 	elseif item[3] == super_credit[1] then
 		sfx(17)
 		add_credits(super_credit[2])
+		add_money_pickup(super_credit[2])
 		del(floating_items, item)
 	else
-		store_item(item)
+		store_item(item, super_credit[2])
 	end
+end
+
+function add_money_pickup(money)
+	add(money_pickups, {credit[2], pl_ship_x, pl_ship_y, money_pickup_animation_frames})
 end
 
 function speed_buff_timer()

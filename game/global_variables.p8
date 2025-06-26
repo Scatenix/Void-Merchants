@@ -44,6 +44,9 @@ trading_phase = 0
 talk_to_void_creature = false
 skip_void = false
 
+money_pickups = {} -- amount, x, y, animation_frames_remainung
+money_pickup_animation_frames = 50
+
 current_planet = 1
 planets = {
 	{80, 0},

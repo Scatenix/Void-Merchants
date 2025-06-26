@@ -61,11 +61,11 @@ function _init()
 	init_battle = true
 
 	titlescreen_mode = false
-	battle_mode = false
+	battle_mode = true
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = true
+	trading_mode = false
 	death_mode = false
 
 	level = 1
@@ -107,19 +107,19 @@ function _init()
 
 	set_pl_ship(6)
 	
-	set_pl_drone(9)
+	set_pl_drone(4)
 
-	store_item(scrap[1], scrap[2])
-	-- store_item(copper[1], copper[2])
-	-- store_item(gold[1], gold[2])
-	store_item(parts_crate[1], parts_crate[2])
-	-- store_item(cobalt[1], cobalt[2])
-	-- store_item(platinum[1], platinum[2])
-	-- store_item(void_fragment[1], void_fragment[2])
-	-- store_item(void_crystal[1], void_crystal[2])
-	store_item(attack_damage_inc[1], attack_damage_inc[2])
-	store_item(drone_inc[1], drone_inc[2])
-	store_item(weapons_inc[1], weapons_inc[2])
+	store_item({0, 0, scrap[1]}, scrap[2])
+	-- store_item({0, 0, copper[1]}, copper[2])
+	-- store_item({0, 0, gold[1]}, gold[2])
+	store_item({0, 0, parts_crate[1]}, parts_crate[2])
+	-- store_item({0, 0, cobalt[1]}, cobalt[2])
+	-- store_item({0, 0, platinum[1]}, platinum[2])
+	-- store_item({0, 0, void_fragment[1]}, void_fragment[2])
+	-- store_item({0, 0, void_crystal[1]}, void_crystal[2])
+	store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
+	store_item({0, 0, drone_inc[1]}, drone_inc[2])
+	store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
 	pl_credits = 70
 	-- pl_ship_max_life = 9999
 	pl_ship_life = 4
@@ -204,9 +204,6 @@ function _update()
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
-
-			-- Todo: should be done at the trader instead. just for having a playable game for now
-			pl_ship_life = pl_ship_max_life
 		end
 
 		-- spawn new enemy wave every 20 seconds if there are still enemies. else after 5
@@ -355,6 +352,7 @@ function _draw()
 
 		draw_hitmarkers()
 		draw_explosions()
+		draw_money_pickups()
 	elseif converstaion_mode then
 		draw_textbox()
 	elseif travel_after_battle_mode then
@@ -365,6 +363,7 @@ function _draw()
 		draw_ship()
 		draw_friendly_shots(pl_ship_shots, 11)
 		draw_friendly_shots(drone_shots, 12)
+		draw_money_pickups()
 	elseif trading_mode then
 		if trading_phase == 0 then
 			draw_tradescreen()

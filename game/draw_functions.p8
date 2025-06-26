@@ -1,6 +1,18 @@
 __lua__3
 -- draw functions
 
+function draw_money_pickups()
+	for mp in all(money_pickups) do
+		spr(credit[1], mp[2] - 8, flr(mp[3]) - 17)
+		print(" " ..pl_credits.. " +" ..mp[1], mp[2] - 5, flr(mp[3]) - 15, 3)
+		if mp[4] <= 0 then
+			del(money_pickups, mp)
+		end
+		mp[3] -= 0.1
+		mp[4] -= 1
+	end
+end
+
 function draw_explosions()
 	for exp in all(explosions) do
 		spr(exp[3], exp[1], exp[2])

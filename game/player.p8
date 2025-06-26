@@ -19,7 +19,7 @@ show_enemy_life = true
 function store_item(item, price)
 	if get_free_storage() > 0 then
 		sfx(6)
-		add(pl_items_stored, {item, price})
+		add(pl_items_stored, {item[3], price})
 		del(floating_items, item)
 	end
 end

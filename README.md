@@ -104,6 +104,7 @@ Currently about 2000 of 8192 tokens are left for the game code.
 - Add a title screen!
 - Add the possibility to restart the game on the death screen
 - Show on which level the player is (yellow text in the top center at the start of each level for a few seconds?)
+- Make the moon on the start screen random (there are 5 or 6 other small planets/moons)
 
 # License
 

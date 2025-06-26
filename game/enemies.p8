@@ -177,7 +177,7 @@ function enemy_drop_item(enemy)
 	if not titlescreen_mode then
 		local droped_item = drop_item()
 		if droped_item[1] > 0 then
-			add_floating_item(droped_item[1], enemy[1], enemy[2], drop_item[2])
+			add_floating_item(droped_item[1], enemy[1], enemy[2], droped_item[2])
 		end
 	end
 end
