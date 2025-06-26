@@ -5,6 +5,10 @@ trade_finished = false
 trade_cursor_pos = 0
 selling_upgrades_multiplier = 0.8
 price_per_ship_hull_point = 5
+price_per_drone_hull_point = 10
+price_increase_per_weapon = 50
+price_increase_per_drone = 100
+price_increase_per_weapon_dmg = 50
 
 function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30
@@ -105,15 +109,39 @@ function draw_tradescreen()
 	print("(" ..(pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point.. ")", 75, 28, 10)
 	
 	print("repair drones", 10, 36, 7)
-	print("restore ship shield point", 10, 44, 7)
-	print("restore drone shield point", 10, 52, 7)
+	print("(" ..(drone_max_life-drone_life)*price_per_drone_hull_point.. ")", 63, 36, 10)
+
+	print("restore ship shield", 10, 44, 7)
+
+	print("restore drone shield", 10, 52, 7)
+
 	print("install stored upgrades", 10, 60, 7)
-	print("install stronger weapons", 10, 68, 7)
-	print("install new weapon", 10, 76, 7)
-	print("buy drone", 10, 84, 7)
-	if drone_type == 0 then
+	print("(" ..get_number_of_stored_upgrades(false).. ")", 103, 60, 10)
+
+	if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
+		print("install stronger weapons", 10, 68, 7)
+		print("(" ..attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage.. ")", 107, 68, 10)
+	else
+		print("install stronger weapons", 10, 68, 5)
+	end
+
+	if pl_ship_weapons < max_pl_dr_weapons or drone_weapons < max_pl_dr_weapons then
+		print("install new weapon", 10, 76, 7)
+		print("(" ..weapons_inc[2]+price_increase_per_weapon*(pl_ship_weapons+drone_weapons).. ")", 83, 76, 10)
+	else
+		print("install new weapon", 10, 76, 5)
+	end
+
+	if drone_tier < max_drones then
+		print("buy drone", 10, 84, 7)
+		print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 47, 84, 10)
+	else
+		print("buy drone", 10, 84, 5)
+	end
+
+	if drone_type_attack then
 		print("convert drones to cargo", 10, 92, 7)
-	elseif drone_type == 1 then
+	else
 		print("convert drones to attack", 10, 92, 7)
 	end
 
@@ -158,13 +186,70 @@ function trade()
 				sfx(23)
 			end
 		elseif trade_cursor_pos == 4 then -- repair drones
+			local price = (drone_max_life-drone_life)*price_per_drone_hull_point
+			if drone_max_life-drone_life > 0 and pl_credits >= price then
+				drone_life = drone_max_life
+				pl_credits -= price
+				sfx(10)
+			else
+				sfx(23)
+			end
 		elseif trade_cursor_pos == 5 then -- restore ship shield point
 		elseif trade_cursor_pos == 6 then -- restore drone shield point
 		elseif trade_cursor_pos == 7 then -- install stored upgrades
+			local upgrades = get_number_of_stored_upgrades(true)
+			if upgrades == 0 then
+				sfx(23)
+			else
+				sfx(11)
+			end
 		elseif trade_cursor_pos == 8 then -- install stronger weapons
+			local price = attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage
+			if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage and pl_credits >= price then
+				sfx(11)
+				pl_ship_damage+=1
+				pl_credits -= price
+			else
+				sfx(23)
+			end
 		elseif trade_cursor_pos == 9 then -- install new weapon
+			local price = weapons_inc[2]+price_increase_per_weapon*(pl_ship_weapons+drone_weapons)
+			if pl_ship_weapons < max_pl_dr_weapons and pl_credits >= price then
+				sfx(11)
+				pl_ship_weapons+=1
+				pl_credits -= price
+			elseif drone_weapons < max_pl_dr_weapons and pl_credits >= price then
+				sfx(11)
+				drone_weapons+=1
+				pl_credits -= price
+			else
+				sfx(23)
+			end
 		elseif trade_cursor_pos == 10 then -- buy drone
+			price = drone_inc[2]+price_increase_per_drone*drone_tier
+			if drone_tier < max_drones and pl_credits >= price then
+				sfx(11)
+				drone_tier+=1
+				set_pl_drone(drone_tier)
+				pl_credits -= price
+			else
+				sfx(23)
+			end
 		elseif trade_cursor_pos == 11 then -- convert drones
+			dl = drone_life
+			ds = drone_shields
+			if drone_type_attack then
+				max_drones = 3
+				drone_tier = min(3, drone_tier)
+				drone_type_attack = not drone_type_attack
+				set_pl_drone(drone_tier)
+			else
+				max_drones = 6
+				drone_type_attack = not drone_type_attack
+				set_pl_drone(drone_tier)
+			end
+			drone_life = dl
+			drone_shields = ds
 		end
 	end
 end
@@ -203,6 +288,31 @@ function calc_player_upgrades_price(sell)
 		pl_credits += price
 	end
 	return price
+end
+
+-- if equip is true, try to equip upgrades directly
+function get_number_of_stored_upgrades(equip)
+	local count = 0
+	for item in all(pl_items_stored) do
+		if item[1] >= 158 and item[1] <= 170 then 
+			local skip = false
+			if item[1] == drone_inc[1] and drone_tier >= max_drones then
+				skip = true
+			elseif item[1] == weapons_inc[1] and pl_ship_weapons+drone_weapons >= max_pl_dr_weapons*2 then
+				skip = true
+			elseif item[1] == attack_damage_inc[1] and pl_ship_damage-pl_ship_base_damage >= max_pl_extra_damage then
+				skip = true
+			end
+			if not skip then
+				count += 1
+				if equip then
+					interpret_item({0, 0, item[1]})
+					del(pl_items_stored, item)
+				end
+			end
+		end
+	end
+	return count
 end
 
 -->8

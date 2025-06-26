@@ -61,11 +61,11 @@ function _init()
 	init_battle = true
 
 	titlescreen_mode = false
-	battle_mode = true
+	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = false
+	trading_mode = true
 	death_mode = false
 
 	level = 1
@@ -103,11 +103,11 @@ function _init()
 
 	--add_floating_item(drone_inc, 70, 70)
 	
-	-- drone_tier = 1
+	drone_tier = 4
 
 	set_pl_ship(6)
 	
-	set_pl_drone(4)
+	set_pl_drone(drone_tier)
 
 	store_item({0, 0, scrap[1]}, scrap[2])
 	-- store_item({0, 0, copper[1]}, copper[2])
@@ -120,9 +120,10 @@ function _init()
 	store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
 	store_item({0, 0, drone_inc[1]}, drone_inc[2])
 	store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
-	pl_credits = 70
+	pl_credits = 9999
 	-- pl_ship_max_life = 9999
 	pl_ship_life = 4
+	drone_life = 1
 	-- drone_life = 9999
 
 	-- pl_ship_storage = 8

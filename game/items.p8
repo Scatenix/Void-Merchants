@@ -15,9 +15,9 @@ life_up = {156, 0, "life up"}
 shield_up = {157, 50, "shield up"} -- can only be bought
 
 -- stat increases {sprite, price, name}
-attack_damage_inc = {158, 100, "damage upgrade"}
+attack_damage_inc = {158, 50, "damage upgrade"}
 drone_inc = {159, 100, "drone upgrade"}
-weapons_inc = {170, 100, "weapon upgrade"}
+weapons_inc = {170, 50, "weapon upgrade"}
 
 -- trading items {sprite, price, name}
 credit = {171, 1, "credit"}

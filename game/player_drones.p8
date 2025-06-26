@@ -10,32 +10,36 @@ drone_hitbox_skip_pixel = 8
 drone_hitbox_width = 0
 drone_sprite = 48
 drone_damage = 00
-drone_weapons = 0
+drone_weapons = 1
 drone_life = 0
+drone_max_life = 0
 drone_shields = 0
+drone_max_shields = 0
 drone_storage = 0
 drone_shots = {}
 drone_available = false
 -- 0: attack; 1: cargo
-drone_type = 0
+drone_type_attack = true
 
 function set_pl_drone(tier)
 	-- get attack drone
-	if tier >= 0 and tier <= 6 then
+	if tier >= 0 and tier <= 6 and drone_type_attack then
  	drone_sprite = 48 + tier
  	htbx = get_drone_htbx_skp_pxl_width(tier)
 	drone_hitbox_skip_pixel = htbx[1]
 	drone_hitbox_width = htbx[2]
 	drone_damage = flr(10 * tier * 0.1) + 1
  	drone_life = flr(20 * tier * 0.1) + 1
+	drone_max_life = flr(20 * tier * 0.1) + 1
  	drone_shields = flr(10 * tier * 0.1 - 1) + 1
+	drone_max_shields = flr(10 * tier * 0.1 - 1) + 1
  	drone_storage = flr(10 * tier * 0.1) + 1
  	drone_available = true
- 	drone_weapons = flr(1 * tier * 0.5) + 1
+ 	--drone_weapons = flr(1 * tier * 0.5) + 1
 
 	-- get storage drone
- elseif tier >= 7 and tier <= 9 then
- 	drone_sprite = 6 + tier - 7
+ elseif tier >= 0 and tier <= 3 and not drone_type_attack then
+ 	drone_sprite = 5 + tier
  	htbx = get_drone_htbx_skp_pxl_width(tier)
 	drone_hitbox_skip_pixel = htbx[1]
 	drone_hitbox_width = htbx[2]
@@ -68,7 +72,7 @@ end
 
 function drone_ctrl()
 	if pl_ship_y < 7 then
-		drone_offset_y = 2 * (pl_ship_y - 7)
+		drone_offset_y = 1.5 * (pl_ship_y - 7)
 		drone_offset_x = flr(drone_offset_y / 1.5)
 		if drone_offset_x < -5 then
 	  		drone_offset_x = 0 - pl_ship_y * 2
@@ -82,12 +86,12 @@ function drone_ctrl()
 		drone_offset_x = x_left_boundry + 3 - pl_ship_x
 	end
 
-	drone_x = pl_ship_x-5+drone_offset_x
+	drone_x = pl_ship_x-11+drone_offset_x
 	
 	if animation_counter <= 10 then
-		drone_y = pl_ship_y-8 - drone_offset_y
+		drone_y = pl_ship_y-4 - drone_offset_y
 	elseif animation_counter > 10 then
-	 	drone_y = pl_ship_y-9 - drone_offset_y
+	 	drone_y = pl_ship_y-5 - drone_offset_y
 	end
 end
 
