@@ -24,7 +24,8 @@ end
 function show_stored_items()
 	y = 0
 	for i in all(pl_items_stored) do
-		info("i" .. y .. ": ", i, y)
+		info("i" .. y .. ": ", i[1], y)
+		spr(i[1], 50, y+4)
 		y+=7
 	end
 end

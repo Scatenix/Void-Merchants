@@ -95,6 +95,7 @@ Currently about 2000 of 8192 tokens are left for the game code.
 - Minor: Slow Stars in the background remain for a long time after they were already accelerated
     - When adjusting star speed, existing stars need to become as fast as newly spawned stars
 - Minor: Down-scaled planets look terrible
+- Minor: Travel mode can execute after dying
 
 # Pending Improvements
 

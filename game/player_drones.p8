@@ -16,6 +16,8 @@ drone_shields = 0
 drone_storage = 0
 drone_shots = {}
 drone_available = false
+-- 0: attack; 1: cargo
+drone_type = 0
 
 function set_pl_drone(tier)
 	-- get attack drone

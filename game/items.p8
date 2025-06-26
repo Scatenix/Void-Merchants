@@ -3,81 +3,74 @@ __lua__9
 
 floating_items = {}
 
--- buff
-speed_buff = 184
-s_speed_buff = "speed buff"
-shot_speed_buff = 185
-s_shot_speed_buff = "shot speed buff"
-life_up = 170
-s_life_up = "life up"
-shield_up = 189 -- can only be bought
-s_shield_up = "shield up"
+-- buffs are at 154 to 157
+-- upgrades are at 158 to 170
+-- credits are at 171 to 172
+-- trading goods are at 173 to 189
 
--- stat increases
-attack_damage_inc = 186
-s_attack_damage_inc = "damage upgrade"
-drone_inc = 158
-s_drone_inc = "drone upgrade"
-weapons_inc = 174
-s_weapons_inc = "weapon upgrade"
+-- buff {sprite, price, name}
+speed_buff = {154, 0, "speed buff"}
+shot_speed_buff = {155, 0, "shot speed buff"}
+life_up = {156, 0, "life up"}
+shield_up = {157, 50, "shield up"} -- can only be bought
 
--- trading items
-parts_crate = 154
-s_parts_crate = "parts crate"
-scrap = 155
-s_scrap = "scrap"
-void_crystal = 157
-s_void_crystal = "void crystal"
-gold = 171
-s_gold = "gold"
-copper = 188
-s_copper = "copper"
-platinum = 172
-s_platinum = "platinum"
-void_fragment = 173
-s_void_fragment = "void fragment"
-cobalt = 187
-s_cobalt = "cobalt"
+-- stat increases {sprite, price, name}
+attack_damage_inc = {158, 100, "damage upgrade"}
+drone_inc = {159, 100, "drone upgrade"}
+weapons_inc = {170, 100, "weapon upgrade"}
 
-function add_floating_item(item_type, x, y)
+-- trading items {sprite, price, name}
+credit = {171, 1, "credit"}
+scrap = {173, 10, "scrap"}
+copper = {174, 20, "copper"}
+gold = {184, 40, "gold"}
+parts_crate = {185, 50, "parts crate"}
+cobalt = {186, 65, "cobalt"}
+platinum = {187, 80, "platinum"}
+void_fragment = {188, 100, "void fragment"}
+super_credit = {172, 100, "super credit"}
+void_crystal = {189, 200, "void crystal"}
+
+function add_floating_item(item_type, x, y, price)
 	if item_type > 0 then
 		local item = {}
 		item[1] = x
 		item[2] = y
 		-- sprite and id
 		item[3] = item_type
+		item[4] = price
 		add(floating_items, item)
 	end
 end
 
 function interpret_item(item)
-	if item[3] == speed_buff then
+	if item[3] == speed_buff[1] then
 		if pl_ship_speed_buff_time == 0 then
 			sfx(9)
 			pl_ship_speed *= 2
 			pl_ship_speed_buff_time = time()
 			del(floating_items, item)
 		end
-	elseif item[3] == shot_speed_buff then
+	elseif item[3] == shot_speed_buff[1] then
 		if pl_ship_shot_speed_buff_time == 0 then
 			sfx(4)
 			pl_ship_shot_speed *= 2
 			pl_ship_shot_speed_buff_time = time()
 			del(floating_items, item)
 		end
-	elseif item[3] == life_up then
+	elseif item[3] == life_up[1] then
 		if pl_ship_life < pl_ship_max_life then
 			sfx(10)
 			pl_ship_life += 1
 			del(floating_items, item)
 		end
-	elseif item[3] == shield_up then
+	elseif item[3] == shield_up[1] then
 		if pl_ship_shields < pl_ship_max_shield then
 			sfx(12)
 			pl_ship_shields += 1
 			del(floating_items, item)
 		end
-	elseif item[3] == attack_damage_inc then
+	elseif item[3] == attack_damage_inc[1] then
 		if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
 			sfx(11)
 			pl_ship_damage += 1
@@ -85,7 +78,7 @@ function interpret_item(item)
 		else
 			store_item(item)
 		end
-	elseif item[3] == drone_inc then
+	elseif item[3] == drone_inc[1] then
 		if drone_tier < max_drones then
 			sfx(11)
 			drone_tier+=1
@@ -94,7 +87,7 @@ function interpret_item(item)
 		else
 			store_item(item)
 		end
-	elseif item[3] == weapons_inc then
+	elseif item[3] == weapons_inc[1] then
 		if pl_ship_weapons < max_pl_dr_weapons then
 			sfx(11)
 			pl_ship_weapons+=1
@@ -106,6 +99,14 @@ function interpret_item(item)
 		else
 			store_item(item)
 		end
+	elseif item[3] == credit[1] then
+		sfx(17)
+		add_credits(credit[2])
+		del(floating_items, item)
+	elseif item[3] == super_credit[1] then
+		sfx(17)
+		add_credits(super_credit[2])
+		del(floating_items, item)
 	else
 		store_item(item)
 	end
@@ -147,34 +148,38 @@ function drop_item()
 	local num = rnd(1000)
 	if num >= 995 then    --0.5%
 		return void_crystal
-	elseif num >=985 then --1%
-		return drone_inc
+	elseif num >= 985 then --1%
+		return super_credit
 	elseif num >=975 then --1%
-		return weapons_inc
+		return drone_inc
 	elseif num >=965 then --1%
+		return weapons_inc
+	elseif num >=955 then --1%
 		return attack_damage_inc
-	elseif num >=945 then --2%
+	elseif num >=935 then --2%
 		return void_fragment
-	elseif num >=920 then --2,5%
+	elseif num >=910 then --2,5%
 		return platinum
-	elseif num >=890 then --3%
+	elseif num >=880 then --3%
 		return life_up
-	elseif num >=860 then --3%
+	elseif num >=850 then --3%
 		return cobalt
-	elseif num >=825 then --3,5%
+	elseif num >=815 then --3,5%
 		return parts_crate
-	elseif num >=785 then --4%
+	elseif num >=775 then --4%
 		return gold
-	elseif num >=735 then --5%
+	elseif num >=725 then --5%
 		return speed_buff
-	elseif num >=675 then --6%
+	elseif num >=665 then --6%
 		return copper
-	elseif num >=605 then --7%
+	elseif num >=595 then --7%
 		return shot_speed_buff
-	elseif num >=500 then --10,5%
+	elseif num >=490 then --10,5%
 		return scrap
-	else --50%
-		return -1
+	elseif num >=390 then --10%
+		return credit
+	else --39%
+		return {-1, 0, "nothing"} -- no drop
 	end
 end
 

@@ -44,12 +44,13 @@ __lua__1
 -- 14 starting thrusters for jump
 -- 15 jump
 -- 16 hyper space
--- 17 sell
+-- 17 sell / money pickup
 -- 18 land
 -- 19 hyper space thrusters
 -- 20 step out of hyperspace
 -- 21 buy
 -- 22 spawn in enemies
+-- 23 cannot perform action (used at trading)
 
 function _init()
 	clear_screen()
@@ -59,62 +60,75 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = true
+	titlescreen_mode = false
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = false
+	trading_mode = true
 	death_mode = false
 
 	level = 1
-	--pause_on_text = true
+	pause_on_text = true
 	init_titlescreen = true
 
 	-- for testing:
 	-- tme = time() - 10
+	-- add_enemy(1)
+	-- add_enemy(3)
+	-- add_enemy(6)
+	-- add_enemy(9)
+	-- add_enemy(14)
+	-- add_enemy(18)
+	-- add_enemy(1)
+	-- add_enemy(1)
+	-- add_enemy(1)
+	-- add_enemy(1)
 
-		-- add_enemy(1)
-		-- add_enemy(3)
-		-- add_enemy(6)
-		-- add_enemy(9)
-		-- add_enemy(14)
-		-- add_enemy(18)
-		-- add_enemy(1)
-		-- add_enemy(1)
-		-- add_enemy(1)
-		-- add_enemy(1)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
 
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
+	--add_floating_item(drone_inc, 70, 70)
+	
+	-- drone_tier = 1
 
-		--add_floating_item(drone_inc, 70, 70)
-		
-		-- drone_tier = 1
+	set_pl_ship(6)
+	
+	set_pl_drone(9)
 
-		set_pl_ship(1)
-		-- set_pl_drone(drone_tier)
-		-- pl_ship_max_life = 9999
-		-- pl_ship_life = 9999
-		-- drone_life = 9999
+	store_item(scrap[1], scrap[2])
+	-- store_item(copper[1], copper[2])
+	-- store_item(gold[1], gold[2])
+	store_item(parts_crate[1], parts_crate[2])
+	-- store_item(cobalt[1], cobalt[2])
+	-- store_item(platinum[1], platinum[2])
+	-- store_item(void_fragment[1], void_fragment[2])
+	-- store_item(void_crystal[1], void_crystal[2])
+	store_item(attack_damage_inc[1], attack_damage_inc[2])
+	store_item(drone_inc[1], drone_inc[2])
+	store_item(weapons_inc[1], weapons_inc[2])
+	pl_credits = 70
+	-- pl_ship_max_life = 9999
+	pl_ship_life = 4
+	-- drone_life = 9999
 
-		-- pl_ship_storage = 8
-		-- drone_storage = 6
+	-- pl_ship_storage = 8
+	-- drone_storage = 6
 
-		-- pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
+	-- pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
 end
 
 -------------------------------
@@ -128,6 +142,8 @@ function _update()
 		ship_burner_calculation()
 		calculate_floating_items_drift()
 		floating_items_colides_player()
+		speed_buff_timer()
+		shot_speed_buff_timer()
 
 		if jump_to_hyperspce then
 			jump_to_hyperspce_animation()
@@ -234,7 +250,10 @@ function _update()
 		trader_converstaion()
 		advance_textbox()
 	elseif trading_mode then
-		drone_ctrl()
+		-- if not trading_phase == 0 then
+		-- 	drone_ctrl()
+		-- 	ship_burner_calculation()
+		-- end
 		ship_burner_calculation()
 
 		if trading_phase == 1 then
@@ -246,6 +265,7 @@ function _update()
 			advance_textbox()
 		elseif trading_phase == 5 then
 			trader_station_x -= 0.5
+			drone_ctrl()
 			ship_ctrl()
 			ship_and_drone_shoot()
 		end
@@ -281,9 +301,9 @@ end
 
 function _draw()
 	clear_screen()
-
+	
 ----- debug section
-
+	-- show_stored_items()
 	-- print("memory: "..stat(0).." KiB", 0, 0, 7)
 	-- print("pico cpu: " ..stat(1), 0, 8, 7)
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
@@ -346,22 +366,27 @@ function _draw()
 		draw_friendly_shots(pl_ship_shots, 11)
 		draw_friendly_shots(drone_shots, 12)
 	elseif trading_mode then
-		draw_passing_stars()
-		if trading_phase == 4 then
-			draw_textbox()
+		if trading_phase == 0 then
+			draw_tradescreen()
+			draw_battle_stats()
 		else
-			if talk_to_void_creature then
-				draw_black_hole_background()
-			end
-			draw_trader_station()
-			draw_drone()
-			draw_ship()
-			if trading_phase == 5 then
-				draw_friendly_shots(pl_ship_shots, 11)
-				draw_friendly_shots(drone_shots, 12)
-			end
-			if talk_to_void_creature then
-				draw_black_hole_foreground()
+			draw_passing_stars()
+			if trading_phase == 4 then
+				draw_textbox()
+			else
+				if talk_to_void_creature then
+					draw_black_hole_background()
+				end
+				draw_trader_station()
+				draw_drone()
+				draw_ship()
+				if trading_phase == 5 then
+					draw_friendly_shots(pl_ship_shots, 11)
+					draw_friendly_shots(drone_shots, 12)
+				end
+				if talk_to_void_creature then
+					draw_black_hole_foreground()
+				end
 			end
 		end
 	end

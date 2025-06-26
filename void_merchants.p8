@@ -46,12 +46,13 @@ __lua__
 -- 14 starting thrusters for jump
 -- 15 jump
 -- 16 hyper space
--- 17 sell
+-- 17 sell / money pickup
 -- 18 land
 -- 19 hyper space thrusters
 -- 20 step out of hyperspace
 -- 21 buy
 -- 22 spawn in enemies
+-- 23 cannot perform action (used at trading)
 
 function _init()
 	clear_screen()
@@ -61,62 +62,75 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = true
+	titlescreen_mode = false
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = false
+	trading_mode = true
 	death_mode = false
 
 	level = 1
-	--pause_on_text = true
+	pause_on_text = true
 	init_titlescreen = true
 
 	-- for testing:
 	-- tme = time() - 10
+	-- add_enemy(1)
+	-- add_enemy(3)
+	-- add_enemy(6)
+	-- add_enemy(9)
+	-- add_enemy(14)
+	-- add_enemy(18)
+	-- add_enemy(1)
+	-- add_enemy(1)
+	-- add_enemy(1)
+	-- add_enemy(1)
 
-		-- add_enemy(1)
-		-- add_enemy(3)
-		-- add_enemy(6)
-		-- add_enemy(9)
-		-- add_enemy(14)
-		-- add_enemy(18)
-		-- add_enemy(1)
-		-- add_enemy(1)
-		-- add_enemy(1)
-		-- add_enemy(1)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
+	-- add_floating_item(cobalt, 70, 70)
 
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
-		-- add_floating_item(cobalt, 70, 70)
+	--add_floating_item(drone_inc, 70, 70)
+	
+	-- drone_tier = 1
 
-		--add_floating_item(drone_inc, 70, 70)
-		
-		-- drone_tier = 1
+	set_pl_ship(6)
+	
+	set_pl_drone(9)
 
-		set_pl_ship(1)
-		-- set_pl_drone(drone_tier)
-		-- pl_ship_max_life = 9999
-		-- pl_ship_life = 9999
-		-- drone_life = 9999
+	store_item(scrap[1], scrap[2])
+	-- store_item(copper[1], copper[2])
+	-- store_item(gold[1], gold[2])
+	store_item(parts_crate[1], parts_crate[2])
+	-- store_item(cobalt[1], cobalt[2])
+	-- store_item(platinum[1], platinum[2])
+	-- store_item(void_fragment[1], void_fragment[2])
+	-- store_item(void_crystal[1], void_crystal[2])
+	store_item(attack_damage_inc[1], attack_damage_inc[2])
+	store_item(drone_inc[1], drone_inc[2])
+	store_item(weapons_inc[1], weapons_inc[2])
+	pl_credits = 70
+	-- pl_ship_max_life = 9999
+	pl_ship_life = 4
+	-- drone_life = 9999
 
-		-- pl_ship_storage = 8
-		-- drone_storage = 6
+	-- pl_ship_storage = 8
+	-- drone_storage = 6
 
-		-- pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
+	-- pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
 end
 
 -------------------------------
@@ -130,6 +144,8 @@ function _update()
 		ship_burner_calculation()
 		calculate_floating_items_drift()
 		floating_items_colides_player()
+		speed_buff_timer()
+		shot_speed_buff_timer()
 
 		if jump_to_hyperspce then
 			jump_to_hyperspce_animation()
@@ -236,7 +252,10 @@ function _update()
 		trader_converstaion()
 		advance_textbox()
 	elseif trading_mode then
-		drone_ctrl()
+		-- if not trading_phase == 0 then
+		-- 	drone_ctrl()
+		-- 	ship_burner_calculation()
+		-- end
 		ship_burner_calculation()
 
 		if trading_phase == 1 then
@@ -248,6 +267,7 @@ function _update()
 			advance_textbox()
 		elseif trading_phase == 5 then
 			trader_station_x -= 0.5
+			drone_ctrl()
 			ship_ctrl()
 			ship_and_drone_shoot()
 		end
@@ -283,9 +303,9 @@ end
 
 function _draw()
 	clear_screen()
-
+	
 ----- debug section
-
+	-- show_stored_items()
 	-- print("memory: "..stat(0).." KiB", 0, 0, 7)
 	-- print("pico cpu: " ..stat(1), 0, 8, 7)
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
@@ -348,22 +368,27 @@ function _draw()
 		draw_friendly_shots(pl_ship_shots, 11)
 		draw_friendly_shots(drone_shots, 12)
 	elseif trading_mode then
-		draw_passing_stars()
-		if trading_phase == 4 then
-			draw_textbox()
+		if trading_phase == 0 then
+			draw_tradescreen()
+			draw_battle_stats()
 		else
-			if talk_to_void_creature then
-				draw_black_hole_background()
-			end
-			draw_trader_station()
-			draw_drone()
-			draw_ship()
-			if trading_phase == 5 then
-				draw_friendly_shots(pl_ship_shots, 11)
-				draw_friendly_shots(drone_shots, 12)
-			end
-			if talk_to_void_creature then
-				draw_black_hole_foreground()
+			draw_passing_stars()
+			if trading_phase == 4 then
+				draw_textbox()
+			else
+				if talk_to_void_creature then
+					draw_black_hole_background()
+				end
+				draw_trader_station()
+				draw_drone()
+				draw_ship()
+				if trading_phase == 5 then
+					draw_friendly_shots(pl_ship_shots, 11)
+					draw_friendly_shots(drone_shots, 12)
+				end
+				if talk_to_void_creature then
+					draw_black_hole_foreground()
+				end
 			end
 		end
 	end
@@ -719,27 +744,34 @@ function draw_enemies()
 	end
 end
 -->8
--- player itself
+-- player
 
 pl_credits = 0
 pl_items_stored = {}
 reputation = 0
 
+function add_credits(credits)
+	pl_credits += credits
+	if pl_credits > 9999 then
+		pl_credits = 9999
+	end
+end
+
 -- perks
 
 show_enemy_life = true
 
-function store_item(item)
+function store_item(item, price)
 	if get_free_storage() > 0 then
 		sfx(6)
-		add(pl_items_stored, item[3])
+		add(pl_items_stored, {item, price})
 		del(floating_items, item)
 	end
 end
 
 function drop_items_when_drone_dies()
 	for i=#pl_items_stored, pl_ship_storage+1, -1 do
-		add_floating_item(pl_items_stored[i], drone_x - 6*(i-pl_ship_storage-1) , drone_y - 4 + rnd(8))
+		add_floating_item(pl_items_stored[i][1], drone_x - 6*(i-pl_ship_storage-1) , drone_y - 4 + rnd(8), pl_items_stored[i][2])
 		deli(pl_items_stored, i)
 	end
 end
@@ -947,6 +979,8 @@ drone_shields = 0
 drone_storage = 0
 drone_shots = {}
 drone_available = false
+-- 0: attack; 1: cargo
+drone_type = 0
 
 function set_pl_drone(tier)
 	-- get attack drone
@@ -1225,8 +1259,8 @@ function contains(val, arr)
 function enemy_drop_item(enemy)
 	if not titlescreen_mode then
 		local droped_item = drop_item()
-		if droped_item > 0 then
-			add_floating_item(droped_item, enemy[1], enemy[2])
+		if droped_item[1] > 0 then
+			add_floating_item(droped_item[1], enemy[1], enemy[2], drop_item[2])
 		end
 	end
 end
@@ -1354,81 +1388,74 @@ end
 
 floating_items = {}
 
--- buff
-speed_buff = 184
-s_speed_buff = "speed buff"
-shot_speed_buff = 185
-s_shot_speed_buff = "shot speed buff"
-life_up = 170
-s_life_up = "life up"
-shield_up = 189 -- can only be bought
-s_shield_up = "shield up"
+-- buffs are at 154 to 157
+-- upgrades are at 158 to 170
+-- credits are at 171 to 172
+-- trading goods are at 173 to 189
 
--- stat increases
-attack_damage_inc = 186
-s_attack_damage_inc = "damage upgrade"
-drone_inc = 158
-s_drone_inc = "drone upgrade"
-weapons_inc = 174
-s_weapons_inc = "weapon upgrade"
+-- buff {sprite, price, name}
+speed_buff = {154, 0, "speed buff"}
+shot_speed_buff = {155, 0, "shot speed buff"}
+life_up = {156, 0, "life up"}
+shield_up = {157, 50, "shield up"} -- can only be bought
 
--- trading items
-parts_crate = 154
-s_parts_crate = "parts crate"
-scrap = 155
-s_scrap = "scrap"
-void_crystal = 157
-s_void_crystal = "void crystal"
-gold = 171
-s_gold = "gold"
-copper = 188
-s_copper = "copper"
-platinum = 172
-s_platinum = "platinum"
-void_fragment = 173
-s_void_fragment = "void fragment"
-cobalt = 187
-s_cobalt = "cobalt"
+-- stat increases {sprite, price, name}
+attack_damage_inc = {158, 100, "damage upgrade"}
+drone_inc = {159, 100, "drone upgrade"}
+weapons_inc = {170, 100, "weapon upgrade"}
 
-function add_floating_item(item_type, x, y)
+-- trading items {sprite, price, name}
+credit = {171, 1, "credit"}
+scrap = {173, 10, "scrap"}
+copper = {174, 20, "copper"}
+gold = {184, 40, "gold"}
+parts_crate = {185, 50, "parts crate"}
+cobalt = {186, 65, "cobalt"}
+platinum = {187, 80, "platinum"}
+void_fragment = {188, 100, "void fragment"}
+super_credit = {172, 100, "super credit"}
+void_crystal = {189, 200, "void crystal"}
+
+function add_floating_item(item_type, x, y, price)
 	if item_type > 0 then
 		local item = {}
 		item[1] = x
 		item[2] = y
 		-- sprite and id
 		item[3] = item_type
+		item[4] = price
 		add(floating_items, item)
 	end
 end
 
 function interpret_item(item)
-	if item[3] == speed_buff then
+	if item[3] == speed_buff[1] then
 		if pl_ship_speed_buff_time == 0 then
 			sfx(9)
 			pl_ship_speed *= 2
 			pl_ship_speed_buff_time = time()
 			del(floating_items, item)
 		end
-	elseif item[3] == shot_speed_buff then
+	elseif item[3] == shot_speed_buff[1] then
 		if pl_ship_shot_speed_buff_time == 0 then
 			sfx(4)
 			pl_ship_shot_speed *= 2
 			pl_ship_shot_speed_buff_time = time()
 			del(floating_items, item)
 		end
-	elseif item[3] == life_up then
+	elseif item[3] == life_up[1] then
 		if pl_ship_life < pl_ship_max_life then
 			sfx(10)
 			pl_ship_life += 1
 			del(floating_items, item)
 		end
-	elseif item[3] == shield_up then
+	elseif item[3] == shield_up[1] then
 		if pl_ship_shields < pl_ship_max_shield then
 			sfx(12)
 			pl_ship_shields += 1
 			del(floating_items, item)
 		end
-	elseif item[3] == attack_damage_inc then
+	elseif item[3] == attack_damage_inc[1] then
 		if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
 			sfx(11)
 			pl_ship_damage += 1
@@ -1436,7 +1463,7 @@ function interpret_item(item)
 		else
 			store_item(item)
 		end
-	elseif item[3] == drone_inc then
+	elseif item[3] == drone_inc[1] then
 		if drone_tier < max_drones then
 			sfx(11)
 			drone_tier+=1
@@ -1445,7 +1472,7 @@ function interpret_item(item)
 		else
 			store_item(item)
 		end
-	elseif item[3] == weapons_inc then
+	elseif item[3] == weapons_inc[1] then
 		if pl_ship_weapons < max_pl_dr_weapons then
 			sfx(11)
 			pl_ship_weapons+=1
@@ -1457,6 +1484,14 @@ function interpret_item(item)
 		else
 			store_item(item)
 		end
+	elseif item[3] == credit[1] then
+		sfx(17)
+		add_credits(credit[2])
+		del(floating_items, item)
+	elseif item[3] == super_credit[1] then
+		sfx(17)
+		add_credits(super_credit[2])
+		del(floating_items, item)
 	else
 		store_item(item)
 	end
@@ -1498,34 +1533,38 @@ function drop_item()
 	local num = rnd(1000)
 	if num >= 995 then    --0.5%
 		return void_crystal
-	elseif num >=985 then --1%
-		return drone_inc
+	elseif num >= 985 then --1%
+		return super_credit
 	elseif num >=975 then --1%
-		return weapons_inc
+		return drone_inc
 	elseif num >=965 then --1%
+		return weapons_inc
+	elseif num >=955 then --1%
 		return attack_damage_inc
-	elseif num >=945 then --2%
+	elseif num >=935 then --2%
 		return void_fragment
-	elseif num >=920 then --2,5%
+	elseif num >=910 then --2,5%
 		return platinum
-	elseif num >=890 then --3%
+	elseif num >=880 then --3%
 		return life_up
-	elseif num >=860 then --3%
+	elseif num >=850 then --3%
 		return cobalt
-	elseif num >=825 then --3,5%
+	elseif num >=815 then --3,5%
 		return parts_crate
-	elseif num >=785 then --4%
+	elseif num >=775 then --4%
 		return gold
-	elseif num >=735 then --5%
+	elseif num >=725 then --5%
 		return speed_buff
-	elseif num >=675 then --6%
+	elseif num >=665 then --6%
 		return copper
-	elseif num >=605 then --7%
+	elseif num >=595 then --7%
 		return shot_speed_buff
-	elseif num >=500 then --10,5%
+	elseif num >=490 then --10,5%
 		return scrap
-	else --50%
-		return -1
+	elseif num >=390 then --10%
+		return credit
+	else --39%
+		return {-1, 0, "nothing"} -- no drop
 	end
 end
 
@@ -1693,7 +1732,8 @@ end
 function show_stored_items()
 	y = 0
 	for i in all(pl_items_stored) do
-		info("i" .. y .. ": ", i, y)
+		info("i" .. y .. ": ", i[1], y)
+		spr(i[1], 50, y+4)
 		y+=7
 	end
 end
@@ -1879,6 +1919,10 @@ end
 -->8
 -- trading
 black_hole_x = 0
+trade_finished = false
+trade_cursor_pos = 0
+selling_upgrades_multiplier = 0.8
+price_per_ship_hull_point = 5
 
 function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30
@@ -1889,6 +1933,7 @@ function trading_script()
 		show_trader_station_near = false
 		show_trader_station_far = false
 		trading_phase = 0
+		trade_finished = false
 	elseif trading_phase == 4 and not pause_on_text then
 		-- send back to trading station
 		skip_void = true
@@ -1910,28 +1955,172 @@ function trading_script()
 		trading_phase = 2
 	elseif trading_phase == 0 then
 		all_stars_speed_ctrl(0.2)
+		if not trade_finished then
 		-- trade
 		-- ...
-
-		show_trader_station_near = true
-		pl_ship_x = 64
-		pl_ship_y = 64
-		-- leaving to the void creature
-		if level % 5 == 0 and not skip_void then
-			tme = time()
-			talk_to_void_creature = true
-			black_hole_x = 200
-			trading_phase = 1
-			trader_station_x = -24
+		-- trade_finished = true
+			trade()
+			show_battle_stats = true
 		else
-			tme = time()
-			skip_void = false
-			trading_phase = 5
-			level += 1
-			trader_station_x = -24
-			talk_to_void_creature = false
+			show_battle_stats = false
+			show_trader_station_near = true
+			pl_ship_x = 64
+			pl_ship_y = 64
+			-- leaving to the void creature
+			if level % 5 == 0 and not skip_void then
+				tme = time()
+				talk_to_void_creature = true
+				black_hole_x = 200
+				trading_phase = 1
+				trader_station_x = -24
+			else
+				tme = time()
+				skip_void = false
+				trading_phase = 5
+				level += 1
+				trader_station_x = -24
+				talk_to_void_creature = false
+			end
 		end
 	end
+end
+
+function draw_tradescreen()
+	-- corners
+	spr(137, 0, -6, 1, 1, true)
+	spr(137, 0, 98, 1, 1, true, true)
+	spr(137, 120, -6, 1, 1)
+	spr(137, 120, 98, 1, 1, false, true)
+
+	-- horizontal bars
+	for i = 2, 122, 8 do
+		spr(136, i, -6)
+		spr(136, i, 98, 1, 1, false, true)
+	end
+
+	-- vertical bars
+	for i = 2, 96, 8 do
+		spr(138, -1, i)
+		spr(138, 126, i)
+	end
+
+	-- extra dots for vertical bars
+	-- line(0, 7, 0, 7, 6)
+	-- line(127, 7, 127, 7, 6)
+	
+	print("leave", 10, 4, 9)
+	spr(credit[1], 98, 2)
+	print(" " ..pl_credits, 104, 4, 10)
+	spr(parts_crate[1], 98, 10)
+	print(" " ..#pl_items_stored, 104, 12, 13)
+	print("sell your goods", 10, 12, 7)
+	print("(" ..calc_player_goods_price(false).. ")", 71, 12, 10)
+
+	print("sell your upgrades", 10, 20, 7)
+	print("(" ..calc_player_upgrades_price(false).. ")", 83, 20, 10)
+
+	print("repair ship hull ", 10, 28, 7)
+	print("(" ..(pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point.. ")", 75, 28, 10)
+	
+	print("repair drones", 10, 36, 7)
+	print("restore ship shield point", 10, 44, 7)
+	print("restore drone shield point", 10, 52, 7)
+	print("install stored upgrades", 10, 60, 7)
+	print("install stronger weapons", 10, 68, 7)
+	print("install new weapon", 10, 76, 7)
+	print("buy drone", 10, 84, 7)
+	if drone_type == 0 then
+		print("convert drones to cargo", 10, 92, 7)
+	elseif drone_type == 1 then
+		print("convert drones to attack", 10, 92, 7)
+	end
+
+	print("❎", 2, 4 + 8*trade_cursor_pos, 13)
+end
+
+function trade()
+	if btnp(2) then
+		if trade_cursor_pos > 0 then
+			trade_cursor_pos -= 1
+		else
+			trade_cursor_pos = 11
+		end
+	end
+	if btnp(3) then
+		if trade_cursor_pos < 11 then
+			trade_cursor_pos += 1
+		else
+			trade_cursor_pos = 0
+		end
+	end
+	if btnp(5) then
+		if trade_cursor_pos == 0 then -- leave
+			trade_finished = true
+		elseif trade_cursor_pos == 1 then -- sell all goods
+			local price = calc_player_goods_price(true)
+			if price == 0 then
+				sfx(23)
+			end
+		elseif trade_cursor_pos == 2 then -- sell all upgrades
+			price = calc_player_upgrades_price(true)
+			if price == 0 then
+				sfx(23)
+			end
+		elseif trade_cursor_pos == 3 then -- repair ship hull
+			local price = (pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point
+			if pl_ship_max_life-pl_ship_life > 0 and pl_credits >= price then
+				pl_ship_life = pl_ship_max_life
+				pl_credits -= price
+				sfx(10)
+			else
+				sfx(23)
+			end
+		elseif trade_cursor_pos == 4 then -- repair drones
+		elseif trade_cursor_pos == 5 then -- restore ship shield point
+		elseif trade_cursor_pos == 6 then -- restore drone shield point
+		elseif trade_cursor_pos == 7 then -- install stored upgrades
+		elseif trade_cursor_pos == 8 then -- install stronger weapons
+		elseif trade_cursor_pos == 9 then -- install new weapon
+		elseif trade_cursor_pos == 10 then -- buy drone
+		elseif trade_cursor_pos == 11 then -- convert drones
+		end
+	end
+end
+
+-- if sell = true, sell items directly
+function calc_player_goods_price(sell)
+	local price = 0
+	for item in all(pl_items_stored) do
+		if item[1] >= 173 then
+			price += item[2]
+			if sell then
+				sfx(17)
+				del(pl_items_stored, item)
+			end
+		end
+	end
+	if sell then
+		pl_credits += price
+	end
+	return price
+end
+
+-- if sell = true, sell items directly
+function calc_player_upgrades_price(sell)
+	local price = 0
+	for item in all(pl_items_stored) do
+		if item[1] >= 158 and item[1] <= 170 then 
+			price += ceil(item[2] * selling_upgrades_multiplier)
+			if sell then
+				sfx(17)
+				del(pl_items_stored, item)
+			end
+		end
+	end
+	if sell then
+		pl_credits += price
+	end
+	return price
 end
 
 -->8
@@ -2034,30 +2223,30 @@ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcccc33333ccc3333333cccc3cccccccc9999999999999999
 0000222222222222222222888822000066666566566566661111d1111111111100000000000000000600000000099a000a9999a0a99898909089898a99000098
 000222222222e222222222288822200066666666655666651111d11111111111666666660000006606000000000aa000000aaa00aa99999a9a98889980900009
 002222222eeee22222eeee228882220066666666666666561111111111dd111100000000000000060600000000000000000000000aaa09a009a909a009009080
-00222222eeee22222eeee22288822200666666666655666511ddd1111dd11d110020100d00e0200c000000000000000000000000000000000000000000000000
-0222222eeee22222eeee22228882222066665566656656661111111111111d11d0000222222000000d5555d00000000000000000000800000000000000000000
-022222eeee22222eeee2222228822220666566566566566611111dd111111111000222eeee222010056666500006000000999000008780000d666d0000000000
-022222eee222222eee22222222222220066566566655666001111d11111111102022eeecceee220e05665550005560000090880008887800067dd60000000000
-22222eee222222eee222222222222222066655666666666001111d11111d1110002eeccccccee200055566500005560000a00800008880000695760000000000
-22222eee222222eee2222222882222220066666656666600001111111ddd1100022ecc1111cce220056666500056060000aaa80000080000067dd60000000000
-22222eee222222ee22222288882222820006666565666000000111111111100002eec110011cee200d5555d00000000000000000000000000d666d0000000000
-222222ee222222ee22222888822222880000066656600000000001111110000002ecc100001cce21000000000000000000000000000000000000000000000000
+00222222eeee22222eeee22288822200666666666655666511ddd1111dd11d110020100d00e0200c000000000000e20000000000000000000000000000000000
+0222222eeee22222eeee22228882222066665566656656661111111111111d11d00002222220000003b3b00000000e2000000000000000000000000000000000
+022222eeee22222eeee2222228822220666566566566566611111dd111111111000222eeee222010003b3b000000e2000080800006dddd600d666d000d666d00
+022222eee222222eee22222222222220066566566655666001111d11111111102022eeecceee220e0003b3b00e2000000878880056cc776606757600067dd600
+22222eee222222eee222222222222222066655666666666001111d11111d1110002eeccccccee200003b3b0000e200000888880055cccc56065bb60006957600
+22222eee222222eee2222222882222220066666656666600001111111ddd1100022ecc1111cce22003b3b0000e200e200088800005dddd5006757600067dd600
+22222eee222222ee22222288882222820006666565666000000111111111100002eec110011cee2000000000000000e200080000000000000d666d000d666d00
+222222ee222222ee22222888822222880000066656600000000001111110000002ecc100001cce210000000000000e2000000000000000000000000000000000
 2222222e222222e22222888822222228000005585550000000000eeeeee0000002ecc100001cce20000000000000000000000000000000000000000000000000
 22882222222222e222288822222222280005558555555000000ee8eeeeeee000d2eec110011cee20000000000000000000000000000000000000000000000000
-2288822222222222222882222ee22222005558988555850000eee88eeeeeee00022ecc1111cce22e008080000009a000000670000005d0000d666d0000000000
-2228822222222222222222222ee2222205555585585885500eeeee8888eeeee0002eeccccccee200087888000099aa00006677000055dd000675760000000000
-022888888888222222222222eee2222005585585555885500eeeeeeee88eeee00022eeecceee220208888800009aaa0000677700005ddd00065bb60000000000
-02222888888222222222222eee2222205558555555888855eeeeee8eee8eeeeee00222eeee22200000888000000aa00000077000000dd0000675760000000000
-02222222222222222222222ee2222220558855555899a855eeee8e8eee8ee8ee02000222222000c0000800000000000000000000000000000d666d0000000000
+2288822222222222222882222ee22222005558988555850000eee88eeeeeee00022ecc1111cce22e0a0a77000000000000999000000600000004900000067000
+2228822222222222222222222ee2222205555585585885500eeeee8888eeeee0002eeccccccee2000a9aaa70000aaa0000908800005560000044490000667700
+022888888888222222222222eee2222005585585555885500eeeeeeee88eeee00022eeecceee220209499aa0000a990000a00800000556000044490000677700
+02222888888222222222222eee2222205558555555888855eeeeee8eee8eeeeee00222eeee222000090999000006660000aaa800005606000004400000077000
+02222222222222222222222ee2222220558855555899a855eeee8e8eee8ee8ee02000222222000c0000000000000000000000000000000000000000000000000
 002222222222222222222eeee22222005899855558999885eee88e88ee8ee8ee000100e0c00d2000000000000000000000000000000000000000000000000000
-002222222eeeeee222eeeeee2222220058998855589a9888eee8eee8eeeee8ee000000000000e200000000000000000000000000000000000000000000000000
-00022222222eeeeeeeeeeee2222220005588558885888855ee88eee88eeeeeee03b3b00000000e20000000000000000000000000000000000000000000000000
-00002222222eeeeeeeeeee22222200005588558855585855ee8eeeee8eeee8ee003b3b000000e2000a0a77000001c0000004900006dddd600000000000000000
-0000022222222222222222222220000005855589855585500eeeeeeeee8888e00003b3b00e2000000a9aaa7000111c000044490056cc77660000000000000000
-0000002222222222222222222200000005555558555855500eee8eeee88eeee0003b3b0000e2000009499aa000111c000044490055cccc560000000000000000
-000000022222222222222ee220000000005555855555550000ee888eeeeeee0003b3b0000e200e2009099900000110000004400005dddd500000000000000000
-000000000222222222eeee80000000000005558555555000000eeeeeeeeee00000000000000000e2000000000000000000000000000000000000000000000000
-00000000000022222888000000000000000005555550000000000eeeeee000000000000000000e20000000000000000000000000000000000000000000000000
+002222222eeeeee222eeeeee2222220058998855589a9888eee8eee8eeeee8ee0000000000000000000000000000000000c0000000c000000000000000000000
+00022222222eeeeeeeeeeee2222220005588558885888855ee88eee88eeeeeee000000000d5555d0000000000000000000000000010201000000000000000000
+00002222222eeeeeeeeeee22222200005588558855585855ee8eeeee8eeee8ee0009a000056666500001c00000067000000e0100002e20c00000000000000000
+0000022222222222222222222220000005855589855585500eeeeeeeee8888e00099aa000566555000111c0000667700c022e0000222e2000000000000000000
+0000002222222222222222222200000005555558555855500eee8eeee88eeee0009aaa000555665000111c000067770000022e00c02220000000000000000000
+000000022222222222222ee220000000005555855555550000ee888eeeeeee00000aa000056666500001100000077000012e0e00010200100000000000000000
+000000000222222222eeee80000000000005558555555000000eeeeeeeeee000000000000d5555d00000000000000000000010c0000c00000000000000000000
+00000000000022222888000000000000000005555550000000000eeeeee00000000000000000000000000000000000000c000000000001000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000006000000006000000dd0000000000000000000000000000000000000000d000
 00000000000000000000000000000000000000000000000000000000000000000859a00000859a000859a000000000000000000000000000000050000005d000
 0000000000000000000000000000000000000000000000000000000000008800006000000006000000dd00000005500000055000000d00000005550000ddd500
@@ -2247,7 +2436,7 @@ aa140000206712067120671206712067120671206712067120671206712067120671206712067120
 001000002237322353213531e3331e3031e3031e3031e3031e3030000300003000030000300003000030000300003000030000300003000030000300003000030000300003000030000300003000030000300003
 0010000006a760aa061da061aa0615606116060e6060c6060c6060670604706037060170600706000060000600006000060000600006000060000600006000060000600006000060000600006000060000600006
 000800002c3532a353293332931329303293030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+001000000d4530d453213031e3031e3031e3031e3031e3031e3030000300003000030000300003000030000300003000030000300003000030000300003000030000300003000030000300003000030000300003
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
