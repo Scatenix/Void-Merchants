@@ -154,7 +154,7 @@ function _update()
 	elseif battle_mode then
 		if init_battle then
 			show_battle_stats = true
-			min_enemys_on_level = 10 + level
+			min_enemies_on_level = 10 + level
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -165,7 +165,7 @@ function _update()
 
 		-- spawn new enemy wave every 20 seconds if there are still enemies. else after 5
 		-- I think this can lead to crashes if to many enemies are created at once
-		if #enemys > 0 then
+		if #enemies > 0 then
 			interval = 23
 		else
 			interval -= 0.3
@@ -189,7 +189,7 @@ function _update()
 		speed_buff_timer()
 		shot_speed_buff_timer()
 
-		if not travel_after_battle_mode and min_enemys_on_level <= 0 and #enemys <= 0 then
+		if not travel_after_battle_mode and min_enemies_on_level <= 0 and #enemies <= 0 then
 			tme = time()
 			travel_after_battle_mode = true
 			current_planet = flr(rnd(6)) + 1
@@ -284,7 +284,7 @@ function _draw()
 		end
 
 		draw_floating_items()
-		draw_enemys()
+		draw_enemies()
 		draw_ship()
 		draw_drone()
 
@@ -632,8 +632,8 @@ function draw_drone()
 	end
 end
 
-function draw_enemys()
-	for enemy in all(enemys) do
+function draw_enemies()
+	for enemy in all(enemies) do
 		spr(enemy[5], enemy[1], enemy[2])
 		spr(249 + enemy[8], enemy[1] - 9, enemy[2])
 		enemy[1] -= 0.1 * enemy[11]
@@ -644,7 +644,7 @@ function draw_enemys()
 		
 		-- this if is for the enemy_wobble
 		if enemy[16] >= 20 / enemy[11] then
-			if enemy[2] > 0 and enemy[2] < enemys_max_y + 1 and not enemy_colides_enemy(enemy[1], enemy[2], enemy[17]) then
+			if enemy[2] > 0 and enemy[2] < enemies_max_y + 1 and not enemy_colides_enemy(enemy[1], enemy[2], enemy[17]) then
 				enemy[2] += enemy[14]
 				if enemy[15] + enemy[13] <= enemy[2] or enemy[15] - enemy[13] >= enemy[2] then
 					enemy[14] = enemy[14] - enemy[14] * 2
@@ -664,7 +664,7 @@ function draw_enemys()
 		end
 
 		if enemy[1] <= -7 then
-			del(enemys, enemy)
+			del(enemies, enemy)
 		end
 	end
 end
@@ -998,11 +998,11 @@ function kill_drone()
 	drone_tier = 0
 end
 -->8
--- enemys
+-- enemies
 
-enemys_max_y = 0
-enemys = {}
-min_enemys_on_level = 0
+enemies_max_y = 0
+enemies = {}
+min_enemies_on_level = 0
 enemy_shots = {}
 enemy_shot_cooldown = 0
 
@@ -1011,12 +1011,12 @@ enemy_shot_cooldown = 0
 --							 Places behind anyways if not avoidable because of to many enemies.
 function add_enemy(lvl, try_avoid_placing_behind)
 	if show_battle_stats == true then
-		enemys_max_y = 96
+		enemies_max_y = 96
 	else
-		enemys_max_y = 119
+		enemies_max_y = 119
 	end
 
-	local y = flr(rnd(enemys_max_y))
+	local y = flr(rnd(enemies_max_y))
 	local x = 127
 	local htbx = get_enemy_htbx_skp_pxl_width(lvl)
 	local htbx_skp_pxl = htbx[1]
@@ -1033,7 +1033,7 @@ function add_enemy(lvl, try_avoid_placing_behind)
 		elseif try_avoid_placing_behind then
 			placement_tries += 1
 			y += 12
-			if y > enemys_max_y then
+			if y > enemies_max_y then
 				y = 3
 			end
 		else
@@ -1078,12 +1078,12 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- wobble counter
 	enemy[16] = 0
 	-- id
-	enemy[17] = #enemys+1
+	enemy[17] = #enemies+1
 	-- shot_pattern (array with vals between 1 and 60)
 	-- tells number of shots in one shot cycle, which lasts 60 frames and on which frame they are shot
 	enemy[18] = get_shot_pattern(lvl)
 	
-	add(enemys, enemy)
+	add(enemies, enemy)
 end
 
 function get_shot_pattern(lvl)
@@ -1105,11 +1105,11 @@ function get_shot_pattern(lvl)
 end
 
 function spawn_enemy_wave()
-	if min_enemys_on_level > 0 then
+	if min_enemies_on_level > 0 then
 		sfx(22)
 		-- have always at least 2 enemies with up to 4 more (random). 1 more enemy ever 5 levels
 		local enemy_number_this_wave = 2 + flr(rnd(4)) + flr(level * 0.2)
-		min_enemys_on_level -= enemy_number_this_wave
+		min_enemies_on_level -= enemy_number_this_wave
 
 		for i = 0, enemy_number_this_wave, 1 do
 			local enemy_level = max(1, flr(rnd(5)) + (level - 4))
@@ -1144,7 +1144,7 @@ function enemy_shoot()
 
 	--if enemy_shot_cooldown == 6 or enemy_shot_cooldown == 12 or enemy_shot_cooldown == 18 then
 	
-	for enemy in all(enemys) do
+	for enemy in all(enemies) do
 		if contains(enemy_shot_cooldown, enemy[18]) then
 			local shot_mask = get_shot_mask(enemy[9])
 	
@@ -1185,7 +1185,7 @@ end
 function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 	info("htbx")
 	for shot in all(shot_array) do
-		for enemy in all(enemys) do
+		for enemy in all(enemies) do
 			local hit_x
 			if enemy[7] > 0 then
 				hit_x = shot[1] + 5 >= enemy[1] and shot[1] <= enemy[1] + 7
@@ -1203,7 +1203,7 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 				if flr(enemy[7]) <= 0 then
 					create_explosion(enemy[1], enemy[2])
 					enemy_drop_item(enemy)
-					del(enemys, enemy)
+					del(enemies, enemy)
 				end
 
 				create_hitmarker(shot[1], shot[2], ship1_drone2)
@@ -1263,7 +1263,7 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 end
 
 function enemy_colides_enemy(posx, posy, id)
-	for enemy in all(enemys) do
+	for enemy in all(enemies) do
 		if id != enemy[17] then
 			hity = enemy[2] - 8 < posy and enemy[2] + 8 > posy
 			hitx = enemy[1] - 8 < posx and enemy[1] + 8 > posx
@@ -1592,7 +1592,7 @@ hitmarkers = {}
 pl_ship_shots = {}
 pl_ship_items_stored = {}
 drone_shots = {}
-enemys = {}
+enemies = {}
 enemy_shots = {}
 stars = {}
 pl_items_stored = {}

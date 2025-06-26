@@ -5,7 +5,7 @@ __lua__8
 function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 	info("htbx")
 	for shot in all(shot_array) do
-		for enemy in all(enemys) do
+		for enemy in all(enemies) do
 			local hit_x
 			if enemy[7] > 0 then
 				hit_x = shot[1] + 5 >= enemy[1] and shot[1] <= enemy[1] + 7
@@ -23,7 +23,7 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 				if flr(enemy[7]) <= 0 then
 					create_explosion(enemy[1], enemy[2])
 					enemy_drop_item(enemy)
-					del(enemys, enemy)
+					del(enemies, enemy)
 				end
 
 				create_hitmarker(shot[1], shot[2], ship1_drone2)
@@ -83,7 +83,7 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 end
 
 function enemy_colides_enemy(posx, posy, id)
-	for enemy in all(enemys) do
+	for enemy in all(enemies) do
 		if id != enemy[17] then
 			hity = enemy[2] - 8 < posy and enemy[2] + 8 > posy
 			hitx = enemy[1] - 8 < posx and enemy[1] + 8 > posx

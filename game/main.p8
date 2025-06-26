@@ -152,7 +152,7 @@ function _update()
 	elseif battle_mode then
 		if init_battle then
 			show_battle_stats = true
-			min_enemys_on_level = 10 + level
+			min_enemies_on_level = 10 + level
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -163,7 +163,7 @@ function _update()
 
 		-- spawn new enemy wave every 20 seconds if there are still enemies. else after 5
 		-- I think this can lead to crashes if to many enemies are created at once
-		if #enemys > 0 then
+		if #enemies > 0 then
 			interval = 23
 		else
 			interval -= 0.3
@@ -187,7 +187,7 @@ function _update()
 		speed_buff_timer()
 		shot_speed_buff_timer()
 
-		if not travel_after_battle_mode and min_enemys_on_level <= 0 and #enemys <= 0 then
+		if not travel_after_battle_mode and min_enemies_on_level <= 0 and #enemies <= 0 then
 			tme = time()
 			travel_after_battle_mode = true
 			current_planet = flr(rnd(6)) + 1
@@ -282,7 +282,7 @@ function _draw()
 		end
 
 		draw_floating_items()
-		draw_enemys()
+		draw_enemies()
 		draw_ship()
 		draw_drone()
 

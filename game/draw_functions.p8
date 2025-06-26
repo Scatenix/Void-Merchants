@@ -236,8 +236,8 @@ function draw_drone()
 	end
 end
 
-function draw_enemys()
-	for enemy in all(enemys) do
+function draw_enemies()
+	for enemy in all(enemies) do
 		spr(enemy[5], enemy[1], enemy[2])
 		spr(249 + enemy[8], enemy[1] - 9, enemy[2])
 		enemy[1] -= 0.1 * enemy[11]
@@ -248,7 +248,7 @@ function draw_enemys()
 		
 		-- this if is for the enemy_wobble
 		if enemy[16] >= 20 / enemy[11] then
-			if enemy[2] > 0 and enemy[2] < enemys_max_y + 1 and not enemy_colides_enemy(enemy[1], enemy[2], enemy[17]) then
+			if enemy[2] > 0 and enemy[2] < enemies_max_y + 1 and not enemy_colides_enemy(enemy[1], enemy[2], enemy[17]) then
 				enemy[2] += enemy[14]
 				if enemy[15] + enemy[13] <= enemy[2] or enemy[15] - enemy[13] >= enemy[2] then
 					enemy[14] = enemy[14] - enemy[14] * 2
@@ -268,7 +268,7 @@ function draw_enemys()
 		end
 
 		if enemy[1] <= -7 then
-			del(enemys, enemy)
+			del(enemies, enemy)
 		end
 	end
 end
