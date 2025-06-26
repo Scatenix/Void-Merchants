@@ -101,10 +101,12 @@ function _init()
 		-- add_floating_item(cobalt, 70, 70)
 		-- add_floating_item(cobalt, 70, 70)
 
-		drone_tier = 2
+		--add_floating_item(drone_inc, 70, 70)
+		
+		-- drone_tier = 1
 
 		set_pl_ship(1)
-		set_pl_drone(drone_tier)
+		-- set_pl_drone(drone_tier)
 		-- pl_ship_max_life = 9999
 		-- pl_ship_life = 9999
 		-- drone_life = 9999
@@ -126,7 +128,6 @@ function _update()
 		ship_burner_calculation()
 		calculate_floating_items_drift()
 		floating_items_colides_player()
-		ship_and_drone_shoot()
 
 		if jump_to_hyperspce then
 			jump_to_hyperspce_animation()
@@ -152,7 +153,7 @@ function _update()
 			pl_ship_x = 20
 			pl_ship_y = 96
 			
-			add_enemy(14)
+			add_enemy(flr(rnd(7)) + 14)
 			-- set x, y, life, shield, speed, wobble_state
 			enemies[1][1] = 100
 			enemies[1][2] = 96

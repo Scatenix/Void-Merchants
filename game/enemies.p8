@@ -174,9 +174,11 @@ function contains(val, arr)
   end
 
 function enemy_drop_item(enemy)
-	local droped_item = drop_item()
-	if droped_item > 0 then
-		add_floating_item(droped_item, enemy[1], enemy[2])
+	if not titlescreen_mode then
+		local droped_item = drop_item()
+		if droped_item > 0 then
+			add_floating_item(droped_item, enemy[1], enemy[2])
+		end
 	end
 end
 
