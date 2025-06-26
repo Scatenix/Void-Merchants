@@ -43,7 +43,41 @@ function trader_converstaion()
 		conv_text_1 = "hello my friend!"
 		conv_text_2 = "you are pretty capable"
 		conv_text_3 = "to make it this far."
-		conv_text_4 = "prepare for the final battle!"
+		conv_text_4 = "prepare for the final wave!"
+	end
+end
+
+function void_creature_converstaion()
+	if level <= 1 then
+		conv_text_1 = "..."
+		conv_text_2 = ""
+		conv_text_3 = ""
+		conv_text_4 = ""
+	elseif level < 5 then
+		conv_text_1 = "..."
+		conv_text_2 = "..."
+		conv_text_3 = ""
+		conv_text_4 = ""
+	elseif level < 10 then
+		conv_text_1 = "..."
+		conv_text_2 = "..."
+		conv_text_3 = "..."
+		conv_text_4 = ""
+	elseif level < 15 then
+		conv_text_1 = "..."
+		conv_text_2 = "..."
+		conv_text_3 = "..."
+		conv_text_4 = "..."
+	elseif level < 20 then
+		conv_text_1 = "..."
+		conv_text_2 = "..."
+		conv_text_3 = "..."
+		conv_text_4 = "!"
+	elseif level >= 20 then
+		conv_text_1 = "you have mastered my little"
+		conv_text_2 = "challenge. very well..."
+		conv_text_3 = "there is no more to uncover."
+		conv_text_4 = "i will send you back to menu."
 	end
 end
 

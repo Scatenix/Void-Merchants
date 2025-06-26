@@ -4,29 +4,12 @@ __lua__
 -- main
 -- shift + h = ♥
 
--- Game loop description (To Be):
--- 1st void guy talks to you
--- starting journey with lightspeed into first stage
--- after every stage: slowly fly towards random planet, trader appears
--- accel again from this planet with light speed
--- next wave slightly harder
--- repeat
--- every 10 waves, void guy appears and says something
--- final wave (21): hardest wave, void guy is final boss
--- to not overcomplicate the final fight:
---		void creature lurks in the background (draw huge face of him)
---		and occasionally moves back, outside the right screen edge and appears
---		as smaller (1:1 scale) and fights like a ship with maybe lvl 25 or something
---		If feeling fancy, occasionally spawn bombs that explode and deal damage to player if in range. (do this only if he is in the background)
---		Fight is essentially level 20, but with the boss. Game does not allow level being higher than 20
-
 -- Possible void creature dialog
 --	before lvl 1:
 --	after lvl 5: I see you are making progress. Very good!
 -- 	after lvl 10:
 -- 	after lvl 15:
---  after lvl 20, before final boss:
---			Finally you are strong enough for me to consume your strength
+--  after lvl 20: finished game, sending back to menu
 
 -- SFX
 -- 0 explosion
@@ -78,6 +61,9 @@ function _init()
 	set_pl_ship(1)
 	pl_ship_weapons = 1
 	set_pl_drone(0)
+
+	stars_hide = false
+	trading_phase = 0
 
 	-- for testing:
 	-- pause_on_text = true
@@ -1953,7 +1939,41 @@ function trader_converstaion()
 		conv_text_1 = "hello my friend!"
 		conv_text_2 = "you are pretty capable"
 		conv_text_3 = "to make it this far."
-		conv_text_4 = "prepare for the final battle!"
+		conv_text_4 = "prepare for the final wave!"
+	end
+end
+
+function void_creature_converstaion()
+	if level <= 1 then
+		conv_text_1 = "..."
+		conv_text_2 = ""
+		conv_text_3 = ""
+		conv_text_4 = ""
+	elseif level < 5 then
+		conv_text_1 = "..."
+		conv_text_2 = "..."
+		conv_text_3 = ""
+		conv_text_4 = ""
+	elseif level < 10 then
+		conv_text_1 = "..."
+		conv_text_2 = "..."
+		conv_text_3 = "..."
+		conv_text_4 = ""
+	elseif level < 15 then
+		conv_text_1 = "..."
+		conv_text_2 = "..."
+		conv_text_3 = "..."
+		conv_text_4 = "..."
+	elseif level < 20 then
+		conv_text_1 = "..."
+		conv_text_2 = "..."
+		conv_text_3 = "..."
+		conv_text_4 = "!"
+	elseif level >= 20 then
+		conv_text_1 = "you have mastered my little"
+		conv_text_2 = "challenge. very well..."
+		conv_text_3 = "there is no more to uncover."
+		conv_text_4 = "i will send you back to menu."
 	end
 end
 
@@ -1987,21 +2007,22 @@ function trading_script()
 		trading_phase = 0
 		trade_finished = false
 	elseif trading_phase == 4 and not pause_on_text then
-		-- send back to trading station
-		skip_void = true
-		stars_hide = false
-		trading_phase = 0
+		if level % 20 == 0 then
+			_init()
+		else
+			-- send back to trading station
+			skip_void = true
+			stars_hide = false
+			trading_phase = 0
+		end
 	elseif trading_phase == 3 and time() - tme >= 11.5  then -- 12 then
 		pause_on_text = true
 		stars_hide = true
 		trading_phase = 4
 	elseif trading_phase == 2 and time() - tme >= 10 then -- 10.5
+		void_creature_converstaion()
 		trading_phase = 3
 		conv_partner = 2
-		conv_text_1 = "missing text"
-		conv_text_2 = ""
-		cong_text_3 = ""
-		conv_text_4 = "I will send you back..."
 	elseif trading_phase == 1 and time() - tme >= 5 then -- 5
 		all_stars_speed_ctrl(1)
 		trading_phase = 2
@@ -2019,7 +2040,7 @@ function trading_script()
 			pl_ship_x = 64
 			pl_ship_y = 64
 			-- leaving to the void creature
-			if level % 5 == 0 and not skip_void then
+			if level % 20 == 0 and not skip_void then
 				tme = time()
 				talk_to_void_creature = true
 				black_hole_x = 200

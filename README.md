@@ -10,20 +10,18 @@ All the code, sprites, sounds, and music were entirely created by me but with so
 
 Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merchants/)
 
-Control with arrow keys to move, C to shoot, V to advance text in conversations.
+Control with arrow keys to move, C to shoot (Can be held down), V to advance text in conversations.
 
 # State of the Game
 
 The game is still in development.
 
-However, it is already in a playable state with something not too far from the intended final game loop.
+However, it is already in a playable state and the intended game loop is already completely implemented.
 
 Major parts that are missing:
-- The Trading mechanic (Items exist, the trader can speak to you, but buying upgrades and selling materials is not yet implemented)
-- A proper start sequence for the game
-- The Final Boss
 - Balancing is far from enjoyable at the moment (it gets very hard very quickly)
 - Explanations of the controls and abbreviations
+- Bug fixing
 
 # Tech Stack
 
@@ -53,7 +51,7 @@ Note: The default sound volume can be a bit loud. I recommend lowering your brow
 
 Controls:
 - ↑ ↓ ← → : Move your ship
-- C       : Shoot
+- C       : Shoot (Can be held down)
 - V       : Advance text / dialog
 
 Can also be played with a controller! Tested with an Xbox controller - others may work too.
@@ -79,13 +77,14 @@ Take the following steps for Windows:
 - All off-screen elements are mostly deleted or at least deactivated, to avoid heavy calculations or useless rendering.
     - Exception: Enemies that spawn behind other enemies will be fully calculated and rendered as an arrow at the right screen edge.
 
-Currently about 2000 of 8192 tokens are left for the game code.
+Currently only about 200 of 8192 tokens are left for the game code.
 
 # Known Bugs
 
+- Major: If picking up an extra drone, it will not be able to shoot
 - Major: Game balancing is very bad at the moment
     - For example, level 1 enemies deal 2 damage (should really be 1)
-    - Also, Drone should be nearer towards the player on the Y-axis
+- Minor: Drone does not properly follow the player ship when flying into the void
 - Minor: Sounds or music sometimes skips
     - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here
 - Minor: Sounds for buffs (faster shooting and flying) keeps playing if picked up right before starting to travel to the merchant  
@@ -102,10 +101,8 @@ Currently about 2000 of 8192 tokens are left for the game code.
 
 - Explain abbreviations like wps, sts, and so on
 - Explain controls (move, shoot, advance dialog)
-- Add a title screen!
 - Add the possibility to restart the game on the death screen
-- Show on which level the player is (yellow text in the top center at the start of each level for a few seconds?)
-- Make the moon on the start screen random (there are 5 or 6 other small planets/moons)
+- Create dialog for the void creature
 
 # License
 

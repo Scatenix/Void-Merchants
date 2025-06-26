@@ -2,29 +2,12 @@ __lua__1
 -- main
 -- shift + h = ♥
 
--- Game loop description (To Be):
--- 1st void guy talks to you
--- starting journey with lightspeed into first stage
--- after every stage: slowly fly towards random planet, trader appears
--- accel again from this planet with light speed
--- next wave slightly harder
--- repeat
--- every 10 waves, void guy appears and says something
--- final wave (21): hardest wave, void guy is final boss
--- to not overcomplicate the final fight:
---		void creature lurks in the background (draw huge face of him)
---		and occasionally moves back, outside the right screen edge and appears
---		as smaller (1:1 scale) and fights like a ship with maybe lvl 25 or something
---		If feeling fancy, occasionally spawn bombs that explode and deal damage to player if in range. (do this only if he is in the background)
---		Fight is essentially level 20, but with the boss. Game does not allow level being higher than 20
-
 -- Possible void creature dialog
 --	before lvl 1:
 --	after lvl 5: I see you are making progress. Very good!
 -- 	after lvl 10:
 -- 	after lvl 15:
---  after lvl 20, before final boss:
---			Finally you are strong enough for me to consume your strength
+--  after lvl 20: finished game, sending back to menu
 
 -- SFX
 -- 0 explosion
@@ -76,6 +59,9 @@ function _init()
 	set_pl_ship(1)
 	pl_ship_weapons = 1
 	set_pl_drone(0)
+
+	stars_hide = false
+	trading_phase = 0
 
 	-- for testing:
 	-- pause_on_text = true
