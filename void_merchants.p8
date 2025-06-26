@@ -1,7 +1,6 @@
 pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
-
 -- main
 -- shift + h = ♥
 
@@ -122,11 +121,7 @@ function _init()
 		-- pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
 end
 
-
-
 -------------------------------
-
-
 
 function _update()
 	

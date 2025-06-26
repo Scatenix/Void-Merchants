@@ -1,3 +1,14 @@
+# Void Merchants
+
+A little space-invaders inspired pico-8 game with ship upgrade possibilities and trading of items gathered through the fight.
+
+# State of the Game
+
+The game
+
+# Tech Stack
+
+
 Unfinished Readme.
 Just some quick notes for now.
 
@@ -10,12 +21,16 @@ In it's current state, the game consumes
     - Theoretically, 20 enemies at the same time are possible, but it's unlikely and I won't bother with it for now
 
 Currently known bugs:
+- Major: Game balancing is very bad at the moment
+    - For example, level 1 enemies deal 2 damage (should really be 1)
+    - Also, Drone should be nearer towards the player on the Y-axis
 - Minor: Sounds or music sometimes skips
     - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here.
-- Not a bug but important: Explain short names like wps, sts, and so on
-- Not a bug but important: Explain controls (move, shoot, advance dialog)
 - Minor: Player and Drone are not always completely in bounds (edges might be 2-3 pixel outside)
     - Might sometimes be caused by speed higher than 1, resulting in calculating to much in one direction
 - Minor: After the last enemy has been defeated, all shots still on the screen will not hit the player or drone
 - Minor: Slow Stars in the background remain for a long time after they were already accellerated
     - When adjusting star speed, existing stars need to become as fast as newly spawned stars
+- Minor: Down-scaled planets look terrible
+- Not a bug but important: Explain short names like wps, sts, and so on
+- Not a bug but important: Explain controls (move, shoot, advance dialog)
