@@ -41,30 +41,38 @@ function _init()
 
 	init_passing_stars()
 
-	current_planet = flr(rnd(6)) + 1
-	current_small_planet = flr(rnd(6)) + 1
-	init_battle = true
-
-	titlescreen_mode = true
+	titlescreen_mode = false
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = false
+	trading_mode = true
 	death_mode = false
 
+	init_battle = true
 	init_titlescreen = true
 
 	level = 1
 	pl_credits = 200
-
-	set_pl_ship(6)
+	set_pl_ship(1)
 	pl_ship_weapons = 1
-
 	drone_tier = 0
-	set_pl_drone(0)
+	set_pl_drone(drone_tier)
 
 	stars_hide = false
+
+	current_planet = flr(rnd(6)) + 1
+	current_small_planet = flr(rnd(6)) + 1
+
+	-- for game restart
+	enemies = {}
+	explosions = {}
+	hitmarkers = {}
+	pl_ship_shots = {}
+	pl_ship_items_stored = {}
+	drone_shots = {}
+	enemy_shots = {}
+	pl_items_stored = {}
 	trading_phase = 0
 
 	-- for testing:
@@ -96,8 +104,8 @@ function _init()
 	-- set_pl_ship(6)
 	
 	-- set_pl_drone(drone_tier)
-	-- drone_shields -= 2
-	-- pl_ship_shields -= 2
+	-- drone_shields -= 1
+	-- pl_ship_shields -= 1
 
 	-- store_item({0, 0, scrap[1]}, scrap[2])
 	-- store_item({0, 0, copper[1]}, copper[2])
@@ -172,6 +180,7 @@ function _update()
 		ship_and_drone_shoot()
 		friendly_shots_hit_enemy(pl_ship_shots, pl_ship_damage, 1)
 		ship_burner_calculation()
+		generate_void_noise(40, 50, 50, 40, 15)
 
 		-- Give the player some time before enemies spawn
 		if #enemies <= 0 then
@@ -234,7 +243,7 @@ function _update()
 			trading_mode = true
 		end
 		if conv_partner == 2 then
-			generate_void_noise()
+			generate_void_noise(0, 0, 128, 128, 50)
 		end
 		conv_partner = 1
 		trader_converstaion()
@@ -306,7 +315,11 @@ function _draw()
 ----------------
 
 	if death_mode then
-		print("you died :c\nwanna play again? :)\nrestart the game!", 30, 30, 10)
+		print("your ship was destroyed!", 15, 56, 8)
+		print("press 🅾️ to play again!", 16, 72, 7)
+		if btnp(4) then
+			_init()
+		end
 	elseif titlescreen_mode then
 		draw_passing_stars()
 		draw_titlescreen()
@@ -318,14 +331,33 @@ function _draw()
 		draw_enemy_shots()
 		draw_hitmarkers()
 		draw_explosions()
+		draw_void_noise()
 	elseif battle_mode then
 		if initial_draw == true then
 			initial_draw = false
 			show_level = true
 			show_level_frames_left = 100
+			if level == 1 then
+				show_level_frames_left = 250
+			end
 		end
 
 		draw_passing_stars()
+
+		if show_level then
+			print("level " ..level, 52, 20, 10)
+
+			-- tutorial on the first level
+			if level == 1 then
+				print("⬆️⬅️⬇️➡️ to move", 34, 28, 6)
+				print("hold ❎ to shoot", 34, 36, 6)
+				print("🅾️ to interact", 38, 44, 6)
+			end
+			show_level_frames_left -= 1
+		end
+		if show_level_frames_left <= 0 then
+			show_level = false
+		end
 
 		if show_battle_stats then
 			draw_battle_stats()
@@ -343,14 +375,6 @@ function _draw()
 		draw_hitmarkers()
 		draw_explosions()
 		draw_money_pickups()
-
-		if show_level then
-			print("level " ..level, 52, 20, 10)
-			show_level_frames_left -= 1
-		end
-		if show_level_frames_left <= 0 then
-			show_level = false
-		end
 	elseif converstaion_mode then
 		draw_passing_stars()
 		draw_textbox()
@@ -363,8 +387,6 @@ function _draw()
 		draw_friendly_shots(pl_ship_shots, 11)
 		draw_friendly_shots(drone_shots, 12)
 		draw_money_pickups()
-
-		draw_battle_stats()
 	elseif trading_mode then
 		draw_passing_stars()
 		if trading_phase == 0 then

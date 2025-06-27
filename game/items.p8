@@ -12,7 +12,7 @@ floating_items = {}
 speed_buff = {154, 0, "speed buff"}
 shot_speed_buff = {155, 0, "shot speed buff"}
 life_up = {156, 0, "life up"}
-shield_up = {157, 50, "shield up"} -- can only be bought
+shield_up = {157, 50, "shield up"}
 
 -- stat increases {sprite, price, name}
 attack_damage_inc = {170, 50, "damage upgrade"}
@@ -47,7 +47,7 @@ function interpret_item(item)
 	if item[3] == speed_buff[1] then
 		if pl_ship_speed_buff_time == 0 then
 			sfx(9)
-			pl_ship_speed *= 2
+			pl_ship_speed *= 1.5
 			pl_ship_speed_buff_time = time()
 			del(floating_items, item)
 		end
@@ -68,6 +68,10 @@ function interpret_item(item)
 		if pl_ship_shields < pl_ship_max_shield then
 			sfx(12)
 			pl_ship_shields += 1
+			del(floating_items, item)
+		elseif drone_shields < drone_max_shields then
+			sfx(12)
+			drone_shields += 1
 			del(floating_items, item)
 		end
 	elseif item[3] == attack_damage_inc[1] then
@@ -157,27 +161,29 @@ function drop_item()
 		return attack_damage_inc
 	elseif num >=935 then --2%
 		return void_fragment
-	elseif num >=910 then --2,5%
+	elseif num >=915 then --2%
+		return shield_up
+	elseif num >=890 then --2,5%
 		return platinum
-	elseif num >=880 then --3%
+	elseif num >=860 then --3%
 		return life_up
-	elseif num >=850 then --3%
+	elseif num >=830 then --3%
 		return cobalt
-	elseif num >=815 then --3,5%
+	elseif num >=795 then --3,5%
 		return parts_crate
-	elseif num >=775 then --4%
+	elseif num >=755 then --4%
 		return gold
-	elseif num >=725 then --5%
+	elseif num >=705 then --5%
 		return speed_buff
-	elseif num >=665 then --6%
+	elseif num >=645 then --6%
 		return copper
-	elseif num >=595 then --7%
+	elseif num >=575 then --7%
 		return shot_speed_buff
-	elseif num >=490 then --10,5%
+	elseif num >=470 then --10,5%
 		return scrap
-	elseif num >=390 then --10%
+	elseif num >=370 then --10%
 		return credit
-	else --39%
+	else --37%
 		return {-1, 0, "nothing"} -- no drop
 	end
 end

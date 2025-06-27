@@ -19,9 +19,9 @@ function draw_titlescreen()
 		print("prepare!", 48, 110, 10)	
 	else
 		if animation_counter > 10 then
-			print("press 🅾️ to play", 32, 110, 10)
+			print("press ❎ to play", 32, 110, 10)
 		else
-			print("press 🅾️ to play", 32, 111, 10)
+			print("press ❎ to play", 32, 111, 10)
 		end
 	end
 end

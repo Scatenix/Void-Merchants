@@ -43,30 +43,38 @@ function _init()
 
 	init_passing_stars()
 
-	current_planet = flr(rnd(6)) + 1
-	current_small_planet = flr(rnd(6)) + 1
-	init_battle = true
-
-	titlescreen_mode = true
+	titlescreen_mode = false
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = false
+	trading_mode = true
 	death_mode = false
 
+	init_battle = true
 	init_titlescreen = true
 
 	level = 1
 	pl_credits = 200
-
-	set_pl_ship(6)
+	set_pl_ship(1)
 	pl_ship_weapons = 1
-
 	drone_tier = 0
-	set_pl_drone(0)
+	set_pl_drone(drone_tier)
 
 	stars_hide = false
+
+	current_planet = flr(rnd(6)) + 1
+	current_small_planet = flr(rnd(6)) + 1
+
+	-- for game restart
+	enemies = {}
+	explosions = {}
+	hitmarkers = {}
+	pl_ship_shots = {}
+	pl_ship_items_stored = {}
+	drone_shots = {}
+	enemy_shots = {}
+	pl_items_stored = {}
 	trading_phase = 0
 
 	-- for testing:
@@ -98,8 +106,8 @@ function _init()
 	-- set_pl_ship(6)
 	
 	-- set_pl_drone(drone_tier)
-	-- drone_shields -= 2
-	-- pl_ship_shields -= 2
+	-- drone_shields -= 1
+	-- pl_ship_shields -= 1
 
 	-- store_item({0, 0, scrap[1]}, scrap[2])
 	-- store_item({0, 0, copper[1]}, copper[2])
@@ -174,6 +182,7 @@ function _update()
 		ship_and_drone_shoot()
 		friendly_shots_hit_enemy(pl_ship_shots, pl_ship_damage, 1)
 		ship_burner_calculation()
+		generate_void_noise(40, 50, 50, 40, 15)
 
 		-- Give the player some time before enemies spawn
 		if #enemies <= 0 then
@@ -236,7 +245,7 @@ function _update()
 			trading_mode = true
 		end
 		if conv_partner == 2 then
-			generate_void_noise()
+			generate_void_noise(0, 0, 128, 128, 50)
 		end
 		conv_partner = 1
 		trader_converstaion()
@@ -308,7 +317,11 @@ function _draw()
 ----------------
 
 	if death_mode then
-		print("you died :c\nwanna play again? :)\nrestart the game!", 30, 30, 10)
+		print("your ship was destroyed!", 15, 56, 8)
+		print("press 🅾️ to play again!", 16, 72, 7)
+		if btnp(4) then
+			_init()
+		end
 	elseif titlescreen_mode then
 		draw_passing_stars()
 		draw_titlescreen()
@@ -320,14 +333,33 @@ function _draw()
 		draw_enemy_shots()
 		draw_hitmarkers()
 		draw_explosions()
+		draw_void_noise()
 	elseif battle_mode then
 		if initial_draw == true then
 			initial_draw = false
 			show_level = true
 			show_level_frames_left = 100
+			if level == 1 then
+				show_level_frames_left = 250
+			end
 		end
 
 		draw_passing_stars()
+
+		if show_level then
+			print("level " ..level, 52, 20, 10)
+
+			-- tutorial on the first level
+			if level == 1 then
+				print("⬆️⬅️⬇️➡️ to move", 34, 28, 6)
+				print("hold ❎ to shoot", 34, 36, 6)
+				print("🅾️ to interact", 38, 44, 6)
+			end
+			show_level_frames_left -= 1
+		end
+		if show_level_frames_left <= 0 then
+			show_level = false
+		end
 
 		if show_battle_stats then
 			draw_battle_stats()
@@ -345,14 +377,6 @@ function _draw()
 		draw_hitmarkers()
 		draw_explosions()
 		draw_money_pickups()
-
-		if show_level then
-			print("level " ..level, 52, 20, 10)
-			show_level_frames_left -= 1
-		end
-		if show_level_frames_left <= 0 then
-			show_level = false
-		end
 	elseif converstaion_mode then
 		draw_passing_stars()
 		draw_textbox()
@@ -365,8 +389,6 @@ function _draw()
 		draw_friendly_shots(pl_ship_shots, 11)
 		draw_friendly_shots(drone_shots, 12)
 		draw_money_pickups()
-
-		draw_battle_stats()
 	elseif trading_mode then
 		draw_passing_stars()
 		if trading_phase == 0 then
@@ -611,21 +633,6 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	rectfill(20, 72, 23, 75, 0)
 end
 
-noise_dots = {}
--- Draws some randomly appearing particles with the same colors as the black hole
-function generate_void_noise()
-	local colors = {1, 2, 12, 13, 14}
-	if animation_counter == 1 then
-		noise_dots = {}
-		for i=1, 50 do
-			local x = flr(rnd(128))
-			local y = flr(rnd(128))
-			local color = colors[flr(rnd(5)) + 1]
-			add(noise_dots, {x, y, color})
-		end
-	end
-end
-
 function draw_void_noise()
 	for dot in all(noise_dots) do
 		rect(dot[1], dot[2], dot[1] + 1, dot[2] + 1 , dot[3])
@@ -648,22 +655,22 @@ function draw_battle_stats()
 		spr(138, 126, i)
 	end
 
-	print("hp:", 5, 110, 7)
-	print(get_ship_life_as_string(), 16, 110, 8)
+	print("hp:", 4, 110, 7)
+	print(get_ship_life_as_string(), 15, 110, 8)
 
-	print("sh:", 42, 110, 7)
-	print(get_ship_shields_as_string(), 53, 110, 12)
+	print("sh:", 41, 110, 7)
+	print(get_ship_shields_as_string(), 52, 110, 12)
 
-	print("dr:", 79, 110, 7)
-	print(get_drone_life_as_string(), 90, 110, 8)
+	print("dr:", 78, 110, 7)
+	print(get_drone_life_as_string(), 89, 110, 8)
 
 	local draw_drone_shield_offset_y
 	if drone_life < 4 then
-		draw_drone_shield_offset_y = 90 + drone_life * 8
+		draw_drone_shield_offset_y = 89 + drone_life * 8
 	elseif drone_life < 10 then
-		draw_drone_shield_offset_y = 98
+		draw_drone_shield_offset_y = 97
 	else
-		draw_drone_shield_offset_y = 102
+		draw_drone_shield_offset_y = 101
 	end
 
 	if drone_shields > 0 then
@@ -671,20 +678,24 @@ function draw_battle_stats()
 		print(drone_shields, draw_drone_shield_offset_y + 4, 110, 12)
 	end
 
-	print("stg:", 5, 119, 7)
-	print(get_free_storage(), 20, 119, 13)
+	print("stg:", 4, 119, 7)
+	print(get_free_storage(), 19, 119, 13)
 
-	print("dmg:", 29, 119, 7)
-	print(pl_ship_damage+drone_damage, 44, 119, 9)
+	print("dmg:", 28, 119, 7)
+	print(pl_ship_damage+drone_damage, 43, 119, 9)
 	
-	print("wps:", 53, 119, 7)
-	print(pl_ship_weapons+drone_weapons, 68, 119, 5)
+	print("wps:", 52, 119, 7)
+	print(pl_ship_weapons+drone_weapons, 67, 119, 5)
 	
-	print("sp:", 77, 119, 7)
-	print(pl_ship_speed, 88, 119, 11)
+	print("sp:", 76, 119, 7)
+	print(format_one_decimal(pl_ship_speed), 87, 119, 11)
 	
-	print("sts:", 101, 119, 7)
-	print(pl_ship_shot_speed, 116, 119, 14)
+	print("sts:", 100, 119, 7)
+	print(format_one_decimal(pl_ship_shot_speed), 115, 119, 14)
+end
+
+function format_one_decimal(n)
+    return tostr(flr(n * 10 + 0.5) / 10)
 end
 
 function draw_ship()
@@ -701,11 +712,11 @@ end
 
 function draw_friendly_shots(array, col)
 	for shot in all(array) do
-	line(shot[1], shot[2], shot[1]+1, shot[2], col)
-	shot[1] += 1 * pl_ship_shot_speed * 1.3
+		line(shot[1], shot[2], shot[1]+1, shot[2], col)
+		shot[1] += 1 * pl_ship_shot_speed * 1.3
 		if shot[1] > 150 then
-		del(pl_ship_shots, shot)
-		del(drone_shots, shot)
+			del(pl_ship_shots, shot)
+			del(drone_shots, shot)
 		end
 	end
 end
@@ -899,7 +910,7 @@ function ship_and_drone_shoot()
 		pl_ship_can_shoot = true
 	end
 
-	if btn(4) and pl_ship_can_shoot == true then
+	if btn(5) and pl_ship_can_shoot == true then
 		local shot_mask = get_shot_mask(pl_ship_weapons)
 		if play_sfx == true then
 			sfx(5)
@@ -1241,16 +1252,16 @@ function calc_enemy_life(lvl)
 end
 
 function get_enemy_htbx_skp_pxl_width(lvl)
-	if tier == 1 or 3 or 11 then
- 	return {0, 7}
- elseif tier == 2 or 8 or 9 or 10 or 12 or 14 or 20 then
- 	return {0, 8}
- elseif tier == 4 or 5 or 6 then
- 	return {2, 5}
- elseif tier == 7 or 13 or 15 or 16 or 17 or 19 then
- 	return {1, 7}
- elseif tier == 18 then
- 	return {1, 6}
+	if lvl == 1 or 3 or 11 then
+ 		return {0, 7}
+	elseif lvl == 2 or 8 or 9 or 10 or 12 or 14 or 20 then
+		return {0, 8}
+	elseif lvl == 4 or 5 or 6 then
+		return {2, 5}
+	elseif lvl == 7 or 13 or 15 or 16 or 17 or 19 then
+		return {1, 7}
+	elseif lvl == 18 then
+		return {1, 6}
 	end
 end
 
@@ -1428,7 +1439,7 @@ floating_items = {}
 speed_buff = {154, 0, "speed buff"}
 shot_speed_buff = {155, 0, "shot speed buff"}
 life_up = {156, 0, "life up"}
-shield_up = {157, 50, "shield up"} -- can only be bought
+shield_up = {157, 50, "shield up"}
 
 -- stat increases {sprite, price, name}
 attack_damage_inc = {170, 50, "damage upgrade"}
@@ -1463,7 +1474,7 @@ function interpret_item(item)
 	if item[3] == speed_buff[1] then
 		if pl_ship_speed_buff_time == 0 then
 			sfx(9)
-			pl_ship_speed *= 2
+			pl_ship_speed *= 1.5
 			pl_ship_speed_buff_time = time()
 			del(floating_items, item)
 		end
@@ -1484,6 +1495,10 @@ function interpret_item(item)
 		if pl_ship_shields < pl_ship_max_shield then
 			sfx(12)
 			pl_ship_shields += 1
+			del(floating_items, item)
+		elseif drone_shields < drone_max_shields then
+			sfx(12)
+			drone_shields += 1
 			del(floating_items, item)
 		end
 	elseif item[3] == attack_damage_inc[1] then
@@ -1573,27 +1588,29 @@ function drop_item()
 		return attack_damage_inc
 	elseif num >=935 then --2%
 		return void_fragment
-	elseif num >=910 then --2,5%
+	elseif num >=915 then --2%
+		return shield_up
+	elseif num >=890 then --2,5%
 		return platinum
-	elseif num >=880 then --3%
+	elseif num >=860 then --3%
 		return life_up
-	elseif num >=850 then --3%
+	elseif num >=830 then --3%
 		return cobalt
-	elseif num >=815 then --3,5%
+	elseif num >=795 then --3,5%
 		return parts_crate
-	elseif num >=775 then --4%
+	elseif num >=755 then --4%
 		return gold
-	elseif num >=725 then --5%
+	elseif num >=705 then --5%
 		return speed_buff
-	elseif num >=665 then --6%
+	elseif num >=645 then --6%
 		return copper
-	elseif num >=595 then --7%
+	elseif num >=575 then --7%
 		return shot_speed_buff
-	elseif num >=490 then --10,5%
+	elseif num >=470 then --10,5%
 		return scrap
-	elseif num >=390 then --10%
+	elseif num >=370 then --10%
 		return credit
-	else --39%
+	else --37%
 		return {-1, 0, "nothing"} -- no drop
 	end
 end
@@ -1727,39 +1744,56 @@ end
 -->8
 -- debug infos
 
-function debug_coords()
-	line(10,70,10,70,8)
-	print("point x:10 y:70", 10,60,8)
+-- commented code to not waste tokens
+
+-- function debug_coords()
+-- 	line(10,70,10,70,8)
+-- 	print("point x:10 y:70", 10,60,8)
 	
-	print("ship_x:" .. pl_ship_x, 10, 10, 7)
-	print("ship_y:" .. pl_ship_y, 10, 20, 7)
-	print("drone_x:" .. drone_x, 10, 30, 12)
-	print("drone_y:" .. drone_y, 10, 40, 12)
-end
+-- 	print("ship_x:" .. pl_ship_x, 10, 10, 7)
+-- 	print("ship_y:" .. pl_ship_y, 10, 20, 7)
+-- 	print("drone_x:" .. drone_x, 10, 30, 12)
+-- 	print("drone_y:" .. drone_y, 10, 40, 12)
+-- end
 
-function info(text, val, plus_y)
-		if plus_y == nil then
-			plus_y = 0
-		end
-		if val == nil then
-			val = ""
-		end
-	print(text .. ": " .. val, 5, 5+plus_y, 7)
-end
+-- function info(text, val, plus_y)
+-- 		if plus_y == nil then
+-- 			plus_y = 0
+-- 		end
+-- 		if val == nil then
+-- 			val = ""
+-- 		end
+-- 	print(text .. ": " .. val, 5, 5+plus_y, 7)
+-- end
 
-function show_stored_items()
-	y = 0
-	for i in all(pl_items_stored) do
-		info("i" .. y .. ": ", i[1], y)
-		spr(i[1], 50, y+4)
-		y+=7
-	end
-end
+-- function show_stored_items()
+-- 	y = 0
+-- 	for i in all(pl_items_stored) do
+-- 		info("i" .. y .. ": ", i[1], y)
+-- 		spr(i[1], 50, y+4)
+-- 		y+=7
+-- 	end
+-- end
 -->8
 -- characters
 char_player=56
 char_trader=64
 char_void=48
+
+noise_dots = {}
+-- Draws some randomly appearing particles with the same colors as the black hole
+function generate_void_noise(x1, y1, wx2, wy2, amount)
+	local colors = {1, 2, 12, 13, 14}
+	if animation_counter == 1 then
+		noise_dots = {}
+		for i=1, amount do
+			local x = flr(rnd(wx2)) + x1
+			local y = flr(rnd(wy2)) + y1
+			local color = colors[flr(rnd(5)) + 1]
+			add(noise_dots, {x, y, color})
+		end
+	end
+end
 -->8
 -- jump_animations
 trader_station_x = 0
@@ -1904,7 +1938,7 @@ conv_text_3=""
 conv_text_4=""
 
 function advance_textbox()
-	if pause_on_text and btn(5) then
+	if pause_on_text and btn(4) then
 		pause_on_text = false
 	end
 end
@@ -2143,19 +2177,24 @@ function draw_tradescreen()
 	end
 
 	if drone_tier < max_drones then
-		print("buy drone", 10, 84, 7)
-		print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 47, 84, 10)
+		if drone_type_attack then
+			print("buy attack drone", 10, 84, 7)
+			print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 75, 84, 10)
+		else
+			print("buy cargo drone", 10, 84, 7)
+			print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 71, 84, 10)
+		end
 	else
 		print("buy drone", 10, 84, 5)
 	end
 
 	if drone_type_attack then
-		print("convert drones to cargo", 10, 92, 7)
+		print("rebuild drones to cargo", 10, 92, 7)
 	else
-		print("convert drones to attack", 10, 92, 7)
+		print("rebuild drones to attack", 10, 92, 7)
 	end
 
-	print("❎", 2, 4 + 8*trade_cursor_pos, 13)
+	print("🅾️", 2, 4 + 8*trade_cursor_pos, 13)
 end
 
 function trade()
@@ -2173,7 +2212,7 @@ function trade()
 			trade_cursor_pos = 0
 		end
 	end
-	if btnp(5) then
+	if btnp(4) then
 		if trade_cursor_pos == 0 then -- leave
 			trade_finished = true
 			all_stars_speed_ctrl(0.2)
@@ -2377,9 +2416,9 @@ function draw_titlescreen()
 		print("prepare!", 48, 110, 10)	
 	else
 		if animation_counter > 10 then
-			print("press 🅾️ to play", 32, 110, 10)
+			print("press ❎ to play", 32, 110, 10)
 		else
-			print("press 🅾️ to play", 32, 111, 10)
+			print("press ❎ to play", 32, 111, 10)
 		end
 	end
 end

@@ -137,21 +137,6 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	rectfill(20, 72, 23, 75, 0)
 end
 
-noise_dots = {}
--- Draws some randomly appearing particles with the same colors as the black hole
-function generate_void_noise()
-	local colors = {1, 2, 12, 13, 14}
-	if animation_counter == 1 then
-		noise_dots = {}
-		for i=1, 50 do
-			local x = flr(rnd(128))
-			local y = flr(rnd(128))
-			local color = colors[flr(rnd(5)) + 1]
-			add(noise_dots, {x, y, color})
-		end
-	end
-end
-
 function draw_void_noise()
 	for dot in all(noise_dots) do
 		rect(dot[1], dot[2], dot[1] + 1, dot[2] + 1 , dot[3])
@@ -174,22 +159,22 @@ function draw_battle_stats()
 		spr(138, 126, i)
 	end
 
-	print("hp:", 5, 110, 7)
-	print(get_ship_life_as_string(), 16, 110, 8)
+	print("hp:", 4, 110, 7)
+	print(get_ship_life_as_string(), 15, 110, 8)
 
-	print("sh:", 42, 110, 7)
-	print(get_ship_shields_as_string(), 53, 110, 12)
+	print("sh:", 41, 110, 7)
+	print(get_ship_shields_as_string(), 52, 110, 12)
 
-	print("dr:", 79, 110, 7)
-	print(get_drone_life_as_string(), 90, 110, 8)
+	print("dr:", 78, 110, 7)
+	print(get_drone_life_as_string(), 89, 110, 8)
 
 	local draw_drone_shield_offset_y
 	if drone_life < 4 then
-		draw_drone_shield_offset_y = 90 + drone_life * 8
+		draw_drone_shield_offset_y = 89 + drone_life * 8
 	elseif drone_life < 10 then
-		draw_drone_shield_offset_y = 98
+		draw_drone_shield_offset_y = 97
 	else
-		draw_drone_shield_offset_y = 102
+		draw_drone_shield_offset_y = 101
 	end
 
 	if drone_shields > 0 then
@@ -197,20 +182,24 @@ function draw_battle_stats()
 		print(drone_shields, draw_drone_shield_offset_y + 4, 110, 12)
 	end
 
-	print("stg:", 5, 119, 7)
-	print(get_free_storage(), 20, 119, 13)
+	print("stg:", 4, 119, 7)
+	print(get_free_storage(), 19, 119, 13)
 
-	print("dmg:", 29, 119, 7)
-	print(pl_ship_damage+drone_damage, 44, 119, 9)
+	print("dmg:", 28, 119, 7)
+	print(pl_ship_damage+drone_damage, 43, 119, 9)
 	
-	print("wps:", 53, 119, 7)
-	print(pl_ship_weapons+drone_weapons, 68, 119, 5)
+	print("wps:", 52, 119, 7)
+	print(pl_ship_weapons+drone_weapons, 67, 119, 5)
 	
-	print("sp:", 77, 119, 7)
-	print(pl_ship_speed, 88, 119, 11)
+	print("sp:", 76, 119, 7)
+	print(format_one_decimal(pl_ship_speed), 87, 119, 11)
 	
-	print("sts:", 101, 119, 7)
-	print(pl_ship_shot_speed, 116, 119, 14)
+	print("sts:", 100, 119, 7)
+	print(format_one_decimal(pl_ship_shot_speed), 115, 119, 14)
+end
+
+function format_one_decimal(n)
+    return tostr(flr(n * 10 + 0.5) / 10)
 end
 
 function draw_ship()
@@ -227,11 +216,11 @@ end
 
 function draw_friendly_shots(array, col)
 	for shot in all(array) do
-	line(shot[1], shot[2], shot[1]+1, shot[2], col)
-	shot[1] += 1 * pl_ship_shot_speed * 1.3
+		line(shot[1], shot[2], shot[1]+1, shot[2], col)
+		shot[1] += 1 * pl_ship_shot_speed * 1.3
 		if shot[1] > 150 then
-		del(pl_ship_shots, shot)
-		del(drone_shots, shot)
+			del(pl_ship_shots, shot)
+			del(drone_shots, shot)
 		end
 	end
 end

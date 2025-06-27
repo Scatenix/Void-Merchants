@@ -8,7 +8,7 @@ conv_text_3=""
 conv_text_4=""
 
 function advance_textbox()
-	if pause_on_text and btn(5) then
+	if pause_on_text and btn(4) then
 		pause_on_text = false
 	end
 end

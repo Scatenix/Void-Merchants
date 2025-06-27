@@ -170,19 +170,24 @@ function draw_tradescreen()
 	end
 
 	if drone_tier < max_drones then
-		print("buy drone", 10, 84, 7)
-		print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 47, 84, 10)
+		if drone_type_attack then
+			print("buy attack drone", 10, 84, 7)
+			print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 75, 84, 10)
+		else
+			print("buy cargo drone", 10, 84, 7)
+			print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 71, 84, 10)
+		end
 	else
 		print("buy drone", 10, 84, 5)
 	end
 
 	if drone_type_attack then
-		print("convert drones to cargo", 10, 92, 7)
+		print("rebuild drones to cargo", 10, 92, 7)
 	else
-		print("convert drones to attack", 10, 92, 7)
+		print("rebuild drones to attack", 10, 92, 7)
 	end
 
-	print("❎", 2, 4 + 8*trade_cursor_pos, 13)
+	print("🅾️", 2, 4 + 8*trade_cursor_pos, 13)
 end
 
 function trade()
@@ -200,7 +205,7 @@ function trade()
 			trade_cursor_pos = 0
 		end
 	end
-	if btnp(5) then
+	if btnp(4) then
 		if trade_cursor_pos == 0 then -- leave
 			trade_finished = true
 			all_stars_speed_ctrl(0.2)

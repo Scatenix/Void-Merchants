@@ -125,16 +125,16 @@ function calc_enemy_life(lvl)
 end
 
 function get_enemy_htbx_skp_pxl_width(lvl)
-	if tier == 1 or 3 or 11 then
- 	return {0, 7}
- elseif tier == 2 or 8 or 9 or 10 or 12 or 14 or 20 then
- 	return {0, 8}
- elseif tier == 4 or 5 or 6 then
- 	return {2, 5}
- elseif tier == 7 or 13 or 15 or 16 or 17 or 19 then
- 	return {1, 7}
- elseif tier == 18 then
- 	return {1, 6}
+	if lvl == 1 or 3 or 11 then
+ 		return {0, 7}
+	elseif lvl == 2 or 8 or 9 or 10 or 12 or 14 or 20 then
+		return {0, 8}
+	elseif lvl == 4 or 5 or 6 then
+		return {2, 5}
+	elseif lvl == 7 or 13 or 15 or 16 or 17 or 19 then
+		return {1, 7}
+	elseif lvl == 18 then
+		return {1, 6}
 	end
 end
 

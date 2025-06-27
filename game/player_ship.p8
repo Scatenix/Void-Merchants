@@ -86,7 +86,7 @@ function ship_and_drone_shoot()
 		pl_ship_can_shoot = true
 	end
 
-	if btn(4) and pl_ship_can_shoot == true then
+	if btn(5) and pl_ship_can_shoot == true then
 		local shot_mask = get_shot_mask(pl_ship_weapons)
 		if play_sfx == true then
 			sfx(5)
