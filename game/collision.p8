@@ -3,7 +3,6 @@ __lua__8
 
 -- shots --> [1] = x; [2] = y
 function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
-	info("htbx")
 	for shot in all(shot_array) do
 		for enemy in all(enemies) do
 			local hit_x

@@ -41,15 +41,17 @@ function _init()
 	clear_screen()
 	music(0)
 
+	init_passing_stars()
+
 	current_planet = flr(rnd(6)) + 1
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
 	titlescreen_mode = false
-	battle_mode = true
+	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
-	converstaion_mode = false
+	converstaion_mode = true
 	trading_mode = false
 	death_mode = false
 
@@ -67,7 +69,7 @@ function _init()
 	trading_phase = 0
 
 	-- for testing:
-	-- pause_on_text = true
+	pause_on_text = true
 	-- tme = time() - 10
 	-- add_enemy(1)
 	-- add_enemy(3)
@@ -188,6 +190,7 @@ function _update()
 		end
 	elseif battle_mode then
 		if init_battle then
+			all_stars_speed_ctrl(1)
 			show_battle_stats = true
 			-- TODO: min_enemies_on_level = 10 + level
 			min_enemies_on_level = 1
@@ -295,7 +298,7 @@ function _draw()
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
 
 	-- debug_coords()
-	-- info(min_enemies_on_level)
+	-- info(#stars)
 	-- print("memory: "..stat(0).." bytes", 0, 0, 7)
 	-- info(pl_ship_speed)
 	-- if pause_on_text then
@@ -320,7 +323,6 @@ function _draw()
 		draw_explosions()
 	elseif battle_mode then
 		if initial_draw == true then
-			init_passing_stars()
 			initial_draw = false
 			show_level = true
 			show_level_frames_left = 100
@@ -353,6 +355,7 @@ function _draw()
 			show_level = false
 		end
 	elseif converstaion_mode then
+		draw_passing_stars()
 		draw_textbox()
 	elseif travel_after_battle_mode then
 		draw_passing_stars()
@@ -366,11 +369,11 @@ function _draw()
 
 		draw_battle_stats()
 	elseif trading_mode then
+		draw_passing_stars()
 		if trading_phase == 0 then
 			draw_tradescreen()
 			draw_battle_stats()
 		else
-			draw_passing_stars()
 			if trading_phase == 4 then
 				draw_textbox()
 			else
@@ -521,6 +524,12 @@ function draw_hitmarkers()
 end
 
 function draw_textbox(text1, text2, text3, text4, in_void)
+	-- fill background of textbox with a black rect
+	rectfill(0, 0, 128, 44, 0)
+
+	-- fill background underneath the trading station interior with a black rect
+	rectfill(0, 112, 128, 128, 0)
+
 	-- corners
 	spr(137, 0, -1, 1, 1, true)
 	spr(137, 0, 40, 1, 1, true, true)
@@ -606,7 +615,7 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	end
 
 	-- fix transparent main character mouth
-	rect(20, 74, 23, 75, 0)
+	rectfill(20, 72, 23, 75, 0)
 end
 
 -- Draws some randomly appearing particles with the same colors as the black hole
@@ -1302,7 +1311,6 @@ end
 
 -- shots --> [1] = x; [2] = y
 function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
-	info("htbx")
 	for shot in all(shot_array) do
 		for enemy in all(enemies) do
 			local hit_x
@@ -1648,11 +1656,12 @@ stars_max_y = 0
 stars = {} -- 1: x 2: y 3: speed
 stars_hyperspeed = false
 stars_hide = false
+star_base_speed = 1
 
 function init_passing_stars()
 	set_stars_max_y()
 	for i = 1, max_stars do
-		star = {flr(rnd(127)), flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier} 
+		star = {flr(rnd(127)), flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_base_speed} 
 		add(stars, star)
 	end
 end
@@ -1702,7 +1711,7 @@ end
 
 function all_stars_speed_ctrl(speed_multiplier)
 	for star in all(stars) do
-		star[3] = star[3] * speed_multiplier
+		star[3] = star_base_speed * speed_multiplier
 	end
 	star_speed_multiplier = speed_multiplier
 end
@@ -1810,6 +1819,7 @@ function travel_from_battle_animation_script()
 		-- land
 		travel_after_battle_phase = 11
 		stop_trader_station_near = true
+		all_stars_speed_ctrl(0)
 	elseif travel_after_battle_phase == 9 and time() - tme >= 23 then -- 23
 		-- approach landing from near
 		travel_after_battle_phase = 10
@@ -2018,14 +2028,11 @@ function trading_script()
 		trading_phase = 3
 		conv_partner = 2
 	elseif trading_phase == 1 and time() - tme >= 5 then -- 5
-		all_stars_speed_ctrl(1)
+		all_stars_speed_ctrl(0.2)
 		trading_phase = 2
 	elseif trading_phase == 0 then
-		all_stars_speed_ctrl(0.2)
 		if not trade_finished then
-		-- trade
-		-- ...
-		-- trade_finished = true
+			stars_hide = true
 			trade()
 			show_battle_stats = true
 		else
@@ -2183,6 +2190,8 @@ function trade()
 	if btnp(5) then
 		if trade_cursor_pos == 0 then -- leave
 			trade_finished = true
+			all_stars_speed_ctrl(0.2)
+			stars_hide = false
 		elseif trade_cursor_pos == 1 then -- sell all goods
 			local price = calc_player_goods_price(true)
 			if price == 0 then
@@ -2403,18 +2412,18 @@ a985ccd0085ddccd0a98dcc50985c600a985cccd0d566dcc000566c0000566c005d66d5000000000
 00000000005d000000050000005d00d0005ddd000966655d006ddd005055d60005555100000000000aaaaaaa9aaaaaaaaaa9aaaaaaaaaaa0bbbbbbbbbbbb3333
 00dd00000dddd00005d550009055500da5566660a88955dc06d111d055dddd6607777600000000000aaaaaaaaaaaaaaa9aa9aa9aaaaaaaa0bbbbbbbbbcb33333
 05556d009a5566d0a98d56500985c6009895c77d0d566dc7061818d00555dddd55555110000000000aaaaaaaaaaaaaaa9aaaaa999aaaaaa00bbbbbbcc1333330
-9895ccd0095ddccd0aa9dcc50895c600a985cccd0d566dcc06d111d004cc9cc00aaa990000000000aaaaaaaaaaa9999a9aaaaaaa9aaaaaaa0bbbbb1111333330
-05556d00a85566d0989d5650a055500da5566660998955dc06dd11dd844499900cdacd0000000000aaaaaaaaaaa9aaaa9aaaaaaaaaaaaaaa0033333333333300
-00dd00000dddd00005d55000005d00d0005ddd000a66655d066dddd1249055a09dd9dd4000000000aaaa9aaaaaaaaaaaaaaa99aaaaa99aaa0003333333333000
-00000000005d0000000500005500dd000055500005d55dd00066dd112299aaa00994440000000000aaaa9aa99aaaaaaaaaaa9aaaaaaa9aaa0000033333300000
-0000000000000000000000005500dd000055500005d55dd00606d111022288800077600000000000aaaaaaaa9aaaaaaaaaaa9aaaaaaa9aaa00000cccccc00000
-00000000005d000000050000005d00d0005ddd000966655d006dd111092888a0057c650000000000aaaaaaaa99aaaa9aaaaaaaaaaaaaaaaa000ccccc6cccc000
+9895ccd0095ddccd0aa9dcc50895c600a985cccd0d566dcc06d111d004cc9cc00bbb330000000000aaaaaaaaaaa9999a9aaaaaaa9aaaaaaa0bbbbb1111333330
+05556d00a85566d0989d5650a055500da5566660998955dc06dd11dd844499900cdb7a0000000000aaaaaaaaaaa9aaaa9aaaaaaaaaaaaaaa0033333333333300
+00dd00000dddd00005d55000005d00d0005ddd000a66655d066dddd1249055a09dd3aa4000000000aaaa9aaaaaaaaaaaaaaa99aaaaa99aaa0003333333333000
+00000000005d0000000500005500dd000055500005d55dd00066dd112299aaa00994449000000000aaaa9aa99aaaaaaaaaaa9aaaaaaa9aaa0000033333300000
+0000000000000000000000005500dd000055500005d55dd00606d111022288800077609000000000aaaaaaaa9aaaaaaaaaaa9aaaaaaa9aaa00000cccccc00000
+00000000005d000000050000005d00d0005ddd000966655d006dd111092888a0057c690000000000aaaaaaaa99aaaa9aaaaaaaaaaaaaaaaa000ccccc6cccc000
 00dd00000dddd00005d550009055500d95566660989955dc0060d11090188c0a755c556000000000aaaaaaaaa99aaa999aaaaaaaaaaaaaaa00ccccc6accccc00
 05556d00895566d0a89d56500995c600a895c77d0d566dc706000d1190111c09755c550600000000aaaa9aaaaa99aaaaaaaaaaaaaaaaaaaa0ccccc655acccc10
-aa85ccd0095ddccd09a9dcc50895c6009995cccd0d566dcc006010105511cc5507515506000000000aaa9aaaaaaaaaaaaaaa9aaaaaaaaaa00ccccccaaccccc10
-05556d00a85566d0a98d5650a055500da5566660a88955dc000001005049a405057a9506000000000aaa9aaaaaaaaaaaaa999aaa9aaaaaa0ccccccccccccc111
-00dd00000dddd00005d55000005d00d0005ddd000966655d000d000000dddd00005950a9000000000aaa99aaaaaaaaaaa99aaaa99aaaaaa0ccaacccaa66cc111
-00000000005d0000000500005500dd000055500005d55dd00600000000d00d00005550090000000000aaaaaaaaaaaaaaaaaaaa99aaaaaa00c655cca55a691111
+aa85ccd0095ddccd09a9dcc50895c6009995cccd0d566dcc006010105511cc5507515544000000000aaa9aaaaaaaaaaaaaaa9aaaaaaaaaa00ccccccaaccccc10
+05556d00a85566d0a98d5650a055500da5566660a88955dc000001005049a405057a4404000000000aaa9aaaaaaaaaaaaa999aaa9aaaaaa0ccccccccccccc111
+00dd00000dddd00005d55000005d00d0005ddd000966655d000d000000dddd00004950a9000000000aaa99aaaaaaaaaaa99aaaa99aaaaaa0ccaacccaa66cc111
+00000000005d0000000500005500dd000055500005d55dd00600000000d00d00445550090000000000aaaaaaaaaaaaaaaaaaaa99aaaaaa00c655cca55a691111
 0000000000000000000dd000000dd0000000000000d000000000000000000000000000000000000000aaaaaaa9aaaaaaaaaaaa9aaaaaaa00caacccca66555911
 000000000000000000950000009500000000000005dd000000000050000000000000000000000000000aaaaaaa9aaaaaaaaaaaaaaaaaa000cccccccccc951111
 0000000000000000000dd000000dd00000000d00a95000d000005d000000000000000000000000000000aaaaaaa99aaaaaaa9999aaaa0000cccccccccc111111

@@ -49,6 +49,7 @@ function travel_from_battle_animation_script()
 		-- land
 		travel_after_battle_phase = 11
 		stop_trader_station_near = true
+		all_stars_speed_ctrl(0)
 	elseif travel_after_battle_phase == 9 and time() - tme >= 23 then -- 23
 		-- approach landing from near
 		travel_after_battle_phase = 10

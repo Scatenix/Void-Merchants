@@ -11,11 +11,12 @@ stars_max_y = 0
 stars = {} -- 1: x 2: y 3: speed
 stars_hyperspeed = false
 stars_hide = false
+star_base_speed = 1
 
 function init_passing_stars()
 	set_stars_max_y()
 	for i = 1, max_stars do
-		star = {flr(rnd(127)), flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_speed_multiplier} 
+		star = {flr(rnd(127)), flr(rnd(stars_max_y)), flr(rnd(max_star_speed-min_star_speed) + min_star_speed) * star_base_speed} 
 		add(stars, star)
 	end
 end
@@ -65,7 +66,7 @@ end
 
 function all_stars_speed_ctrl(speed_multiplier)
 	for star in all(stars) do
-		star[3] = star[3] * speed_multiplier
+		star[3] = star_base_speed * speed_multiplier
 	end
 	star_speed_multiplier = speed_multiplier
 end

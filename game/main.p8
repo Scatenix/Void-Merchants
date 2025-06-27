@@ -39,15 +39,17 @@ function _init()
 	clear_screen()
 	music(0)
 
+	init_passing_stars()
+
 	current_planet = flr(rnd(6)) + 1
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
 	titlescreen_mode = false
-	battle_mode = true
+	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
-	converstaion_mode = false
+	converstaion_mode = true
 	trading_mode = false
 	death_mode = false
 
@@ -65,7 +67,7 @@ function _init()
 	trading_phase = 0
 
 	-- for testing:
-	-- pause_on_text = true
+	pause_on_text = true
 	-- tme = time() - 10
 	-- add_enemy(1)
 	-- add_enemy(3)
@@ -186,6 +188,7 @@ function _update()
 		end
 	elseif battle_mode then
 		if init_battle then
+			all_stars_speed_ctrl(1)
 			show_battle_stats = true
 			-- TODO: min_enemies_on_level = 10 + level
 			min_enemies_on_level = 1
@@ -293,7 +296,7 @@ function _draw()
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
 
 	-- debug_coords()
-	-- info(min_enemies_on_level)
+	-- info(#stars)
 	-- print("memory: "..stat(0).." bytes", 0, 0, 7)
 	-- info(pl_ship_speed)
 	-- if pause_on_text then
@@ -318,7 +321,6 @@ function _draw()
 		draw_explosions()
 	elseif battle_mode then
 		if initial_draw == true then
-			init_passing_stars()
 			initial_draw = false
 			show_level = true
 			show_level_frames_left = 100
@@ -351,6 +353,7 @@ function _draw()
 			show_level = false
 		end
 	elseif converstaion_mode then
+		draw_passing_stars()
 		draw_textbox()
 	elseif travel_after_battle_mode then
 		draw_passing_stars()
@@ -364,11 +367,11 @@ function _draw()
 
 		draw_battle_stats()
 	elseif trading_mode then
+		draw_passing_stars()
 		if trading_phase == 0 then
 			draw_tradescreen()
 			draw_battle_stats()
 		else
-			draw_passing_stars()
 			if trading_phase == 4 then
 				draw_textbox()
 			else

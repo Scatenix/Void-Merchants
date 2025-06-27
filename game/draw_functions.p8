@@ -49,6 +49,12 @@ function draw_hitmarkers()
 end
 
 function draw_textbox(text1, text2, text3, text4, in_void)
+	-- fill background of textbox with a black rect
+	rectfill(0, 0, 128, 44, 0)
+
+	-- fill background underneath the trading station interior with a black rect
+	rectfill(0, 112, 128, 128, 0)
+
 	-- corners
 	spr(137, 0, -1, 1, 1, true)
 	spr(137, 0, 40, 1, 1, true, true)
@@ -134,7 +140,7 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	end
 
 	-- fix transparent main character mouth
-	rect(20, 74, 23, 75, 0)
+	rectfill(20, 72, 23, 75, 0)
 end
 
 -- Draws some randomly appearing particles with the same colors as the black hole

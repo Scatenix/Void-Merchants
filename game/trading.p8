@@ -41,14 +41,11 @@ function trading_script()
 		trading_phase = 3
 		conv_partner = 2
 	elseif trading_phase == 1 and time() - tme >= 5 then -- 5
-		all_stars_speed_ctrl(1)
+		all_stars_speed_ctrl(0.2)
 		trading_phase = 2
 	elseif trading_phase == 0 then
-		all_stars_speed_ctrl(0.2)
 		if not trade_finished then
-		-- trade
-		-- ...
-		-- trade_finished = true
+			stars_hide = true
 			trade()
 			show_battle_stats = true
 		else
@@ -206,6 +203,8 @@ function trade()
 	if btnp(5) then
 		if trade_cursor_pos == 0 then -- leave
 			trade_finished = true
+			all_stars_speed_ctrl(0.2)
+			stars_hide = false
 		elseif trade_cursor_pos == 1 then -- sell all goods
 			local price = calc_player_goods_price(true)
 			if price == 0 then
