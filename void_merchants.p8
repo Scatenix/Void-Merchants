@@ -47,11 +47,11 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = false
+	titlescreen_mode = true
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
-	converstaion_mode = true
+	converstaion_mode = false
 	trading_mode = false
 	death_mode = false
 
@@ -59,7 +59,6 @@ function _init()
 
 	level = 1
 	pl_credits = 200
-	-- pl_credits = 9999
 
 	set_pl_ship(1)
 	pl_ship_weapons = 1
@@ -69,7 +68,7 @@ function _init()
 	trading_phase = 0
 
 	-- for testing:
-	pause_on_text = true
+	-- pause_on_text = true
 	-- tme = time() - 10
 	-- add_enemy(1)
 	-- add_enemy(3)
@@ -192,8 +191,8 @@ function _update()
 		if init_battle then
 			all_stars_speed_ctrl(1)
 			show_battle_stats = true
-			-- TODO: min_enemies_on_level = 10 + level
-			min_enemies_on_level = 1
+			min_enemies_on_level = 10 + level
+			-- TODO: remove line later: min_enemies_on_level = 1
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -239,11 +238,8 @@ function _update()
 		trader_converstaion()
 		advance_textbox()
 	elseif trading_mode then
-		-- if not trading_phase == 0 then
-		-- 	drone_ctrl()
-		-- 	ship_burner_calculation()
-		-- end
 		ship_burner_calculation()
+		drone_ctrl()
 
 		if trading_phase == 1 then
 			trader_station_x -= 0.5
@@ -254,7 +250,6 @@ function _update()
 			advance_textbox()
 		elseif trading_phase == 5 then
 			trader_station_x -= 0.5
-			drone_ctrl()
 			ship_ctrl()
 			ship_and_drone_shoot()
 		end
@@ -1602,14 +1597,14 @@ function drop_item()
 	elseif num >=390 then --10%
 		return credit
 	else --39%
-		-- TODO: return {-1, 0, "nothing"} -- no drop
-		return speed_buff
+		return {-1, 0, "nothing"} -- no drop
 	end
 end
 
+-- floating item speed is linked to the star_speed_multiplier!
 function calculate_floating_items_drift()
 	for item in all(floating_items) do
-		item[1] -= 0.25
+		item[1] -= 0.25 * star_speed_multiplier
 
 		if long_animation_counter == 50 then
 			item[2] = item[2] - 1
@@ -1839,6 +1834,9 @@ function travel_from_battle_animation_script()
 		sfx(18)
 	elseif travel_after_battle_phase == 7 and time() - tme >= 16.5 then -- 16.5
 		-- jump out of hyperspace
+		-- turning off buff sounds, sometimes they randomly re-appear
+		sfx(9, -2)
+		sfx(4, -2)
 		travel_after_battle_phase = 8
 		all_stars_speed_ctrl(5)
 	elseif travel_after_battle_phase == 6 and time() - tme >= 11.5 then -- 11.5
@@ -1867,19 +1865,20 @@ function travel_from_battle_animation_script()
 		pl_ship_speed_buff_time = 0
 		pl_ship_shot_speed = pl_ship_default_shot_speed
 		
-		all_stars_speed_ctrl(50)
+		all_stars_speed_ctrl(10)
+		floating_items = {}
 		sfx(15)
 	elseif travel_after_battle_phase == 4 and time() - tme >= 10 then -- 10
 		-- approaching hyperspace
 		travel_after_battle_phase = 5
 		stars_hyperspeed = true
-		all_stars_speed_ctrl(50)
+		all_stars_speed_ctrl(1)
 	elseif travel_after_battle_phase == 3 and time() - tme >= 6 then -- 6
 		-- engaging thrusters
 		travel_after_battle_phase = 4
 		jump_wobble = true
 		battle_mode = false
-		-- TODO: show_battle_stats = false
+		show_battle_stats = false
 		pl_ship_speed *= 0.2
 		all_stars_speed_ctrl(0.2)
 		sfx(14)
@@ -2036,12 +2035,12 @@ function trading_script()
 			trade()
 			show_battle_stats = true
 		else
-			-- TODO: show_battle_stats = false
+			show_battle_stats = false
 			show_trader_station_near = true
 			pl_ship_x = 64
 			pl_ship_y = 64
 			-- leaving to the void creature
-			if level % 20 == 0 and not skip_void then
+			if level % 5 == 0 and not skip_void then
 				tme = time()
 				talk_to_void_creature = true
 				black_hole_x = 200

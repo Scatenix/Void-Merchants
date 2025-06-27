@@ -49,12 +49,12 @@ function trading_script()
 			trade()
 			show_battle_stats = true
 		else
-			-- TODO: show_battle_stats = false
+			show_battle_stats = false
 			show_trader_station_near = true
 			pl_ship_x = 64
 			pl_ship_y = 64
 			-- leaving to the void creature
-			if level % 20 == 0 and not skip_void then
+			if level % 5 == 0 and not skip_void then
 				tme = time()
 				talk_to_void_creature = true
 				black_hole_x = 200

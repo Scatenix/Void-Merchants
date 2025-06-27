@@ -178,14 +178,14 @@ function drop_item()
 	elseif num >=390 then --10%
 		return credit
 	else --39%
-		-- TODO: return {-1, 0, "nothing"} -- no drop
-		return speed_buff
+		return {-1, 0, "nothing"} -- no drop
 	end
 end
 
+-- floating item speed is linked to the star_speed_multiplier!
 function calculate_floating_items_drift()
 	for item in all(floating_items) do
-		item[1] -= 0.25
+		item[1] -= 0.25 * star_speed_multiplier
 
 		if long_animation_counter == 50 then
 			item[2] = item[2] - 1

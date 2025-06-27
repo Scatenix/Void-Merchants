@@ -45,11 +45,11 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = false
+	titlescreen_mode = true
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
-	converstaion_mode = true
+	converstaion_mode = false
 	trading_mode = false
 	death_mode = false
 
@@ -57,7 +57,6 @@ function _init()
 
 	level = 1
 	pl_credits = 200
-	-- pl_credits = 9999
 
 	set_pl_ship(1)
 	pl_ship_weapons = 1
@@ -67,7 +66,7 @@ function _init()
 	trading_phase = 0
 
 	-- for testing:
-	pause_on_text = true
+	-- pause_on_text = true
 	-- tme = time() - 10
 	-- add_enemy(1)
 	-- add_enemy(3)
@@ -190,8 +189,8 @@ function _update()
 		if init_battle then
 			all_stars_speed_ctrl(1)
 			show_battle_stats = true
-			-- TODO: min_enemies_on_level = 10 + level
-			min_enemies_on_level = 1
+			min_enemies_on_level = 10 + level
+			-- TODO: remove line later: min_enemies_on_level = 1
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -237,11 +236,8 @@ function _update()
 		trader_converstaion()
 		advance_textbox()
 	elseif trading_mode then
-		-- if not trading_phase == 0 then
-		-- 	drone_ctrl()
-		-- 	ship_burner_calculation()
-		-- end
 		ship_burner_calculation()
+		drone_ctrl()
 
 		if trading_phase == 1 then
 			trader_station_x -= 0.5
@@ -252,7 +248,6 @@ function _update()
 			advance_textbox()
 		elseif trading_phase == 5 then
 			trader_station_x -= 0.5
-			drone_ctrl()
 			ship_ctrl()
 			ship_and_drone_shoot()
 		end

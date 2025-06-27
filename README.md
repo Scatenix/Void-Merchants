@@ -82,11 +82,6 @@ Currently only about 100 of 8192 tokens are left for the game code.
 # Known Bugs
 
 - Major: Game balancing could be better at the moment
-- Minor: Slow Stars in the background remain for a long time after they were already accelerated
-    - When adjusting star speed, existing stars need to become as fast as newly spawned stars
-- Minor: Drone does not properly follow the player ship when flying into the void
-- Minor: Stars at the beginning of the travel mode are not calculated correctly, but only after completing the first level
-- Minor: floating items are still there if jumping into hyperspace
 - Minor: Player and Drone are not always completely in bounds (edges might be 2-3 pixels outside the visible screen)
     - Probably caused by speed higher than 1, resulting in calculating too far in one direction
 - Minor: Down-scaled planets look terrible
