@@ -79,59 +79,7 @@ function _init()
 	enemy_shots = {}
 	pl_items_stored = {}
 	trading_phase = 0
-
-	-- for testing:
-	-- pause_on_text = true
-	-- tme = time() - 10
-	-- add_enemy(1)
-	-- add_enemy(3)
-	-- add_enemy(6)
-	-- add_enemy(9)
-	-- add_enemy(14)
-	-- add_enemy(18)
-	-- add_enemy(1)
-	-- add_enemy(1)
-	-- add_enemy(1)
-	-- add_enemy(1)
-
-	-- add_floating_item(drone_inc[1], 20, 60)
-	-- add_floating_item(weapons_inc[1], 70, 60)
-	-- add_floating_item(credit[1], 75, 75)
-	-- add_floating_item(credit[1], 76, 76)
-	-- add_floating_item(credit[1], 78, 78)
-	-- add_floating_item(cobalt, 70, 70)
-	-- add_floating_item(cobalt, 70, 70)
-
-	--add_floating_item(drone_inc, 70, 70)
-
-	-- set_pl_ship(6)
-	
-	-- set_pl_drone(4)
-	-- drone_shields -= 1
-	-- pl_ship_shields -= 1
-
-	-- store_item({0, 0, scrap[1]}, scrap[2])
-	-- store_item({0, 0, copper[1]}, copper[2])
-	-- store_item({0, 0, gold[1]}, gold[2])
-	-- store_item({0, 0, parts_crate[1]}, parts_crate[2])
-	-- store_item({0, 0, cobalt[1]}, cobalt[2])
-	-- store_item({0, 0, platinum[1]}, platinum[2])
-	-- store_item({0, 0, void_fragment[1]}, void_fragment[2])
-	-- store_item({0, 0, void_crystal[1]}, void_crystal[2])
-	-- store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
-	-- store_item({0, 0, drone_inc[1]}, drone_inc[2])
-	-- store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
-	-- pl_credits = 9000
-	-- pl_ship_max_life = 9999
-	-- pl_ship_life = 4
-	-- drone_life = 1
-	-- drone_life = 9999
-	-- pl_credits = 9999
-	-- pl_ship_storage = 8
-	-- drone_storage = 6
 end
-
--------------------------------
 
 function _update()
 	if travel_after_battle_mode then
@@ -290,8 +238,6 @@ function animation_counters()
 	long_animation_counter+=1
 end
 
--------------------------------
-
 function _draw()
 	clear_screen()
 	
@@ -300,17 +246,7 @@ function _draw()
 	-- print("memory: "..stat(0).." KiB", 0, 0, 7)
 	-- print("pico cpu: " ..stat(1), 0, 8, 7)
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
-
-	-- debug_coords()
 	-- info(test)
-	-- print("memory: "..stat(0).." bytes", 0, 0, 7)
-	-- info(pl_ship_speed)
-	-- if pause_on_text then
-	-- 	info("pause_on_text true", 10)
-	-- else 
-	-- 	info("pause_on_text false", 10)
-	-- end
-----------------
 
 	if death_mode then
 		print("your ship was destroyed!", 15, 56, 8)
@@ -1744,8 +1680,6 @@ function load_game()
 	titlescreen_mode = false
 	prevent_enemy_moving_on_x = false
 	trading_mode = true
-	current_planet = flr(rnd(6)) + 1
-	current_small_planet = flr(rnd(6)) + 1
 
 	level = dget(0)
 	pl_credits = dget(1)
@@ -1940,10 +1874,6 @@ end
 -- converstaion
 pause_on_text=false
 conv_partner=1 -- 1: trader, 2 void-creature
-conv_text_1="hello there!"
-conv_text_2=""
-conv_text_3=""
-conv_text_4=""
 
 function advance_textbox()
 	if pause_on_text and btn(4) then

@@ -47,8 +47,6 @@ function load_game()
 	titlescreen_mode = false
 	prevent_enemy_moving_on_x = false
 	trading_mode = true
-	current_planet = flr(rnd(6)) + 1
-	current_small_planet = flr(rnd(6)) + 1
 
 	level = dget(0)
 	pl_credits = dget(1)

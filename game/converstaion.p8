@@ -2,10 +2,6 @@ __lua__15
 -- converstaion
 pause_on_text=false
 conv_partner=1 -- 1: trader, 2 void-creature
-conv_text_1="hello there!"
-conv_text_2=""
-conv_text_3=""
-conv_text_4=""
 
 function advance_textbox()
 	if pause_on_text and btn(4) then
