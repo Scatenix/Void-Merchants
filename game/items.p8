@@ -82,17 +82,18 @@ function interpret_item(item)
 		if drone_tier < max_drones then
 			sfx(11)
 			drone_tier+=1
+			drone_available = true
 			set_pl_drone(drone_tier)
 			del(floating_items, item)
 		else
 			store_item(item, drone_inc[2])
 		end
 	elseif item[3] == weapons_inc[1] then
-		if pl_ship_weapons < max_pl_dr_weapons then
+		if pl_ship_weapons < max_pl_weapons then
 			sfx(11)
 			pl_ship_weapons+=1
 			del(floating_items, item)
-		elseif drone_weapons < max_pl_dr_weapons then
+		elseif drone_weapons < max_dr_weapons then
 			sfx(11)
 			drone_weapons+=1
 			del(floating_items, item)

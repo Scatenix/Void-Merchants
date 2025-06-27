@@ -43,18 +43,19 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = true
+	titlescreen_mode = false
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = false
+	trading_mode = true
 	death_mode = false
 
 	init_titlescreen = true
 
 	level = 1
-	pl_credits = 200
+	-- pl_credits = 200
+	pl_credits = 9999
 
 	set_pl_ship(1)
 	pl_ship_weapons = 1

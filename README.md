@@ -81,21 +81,21 @@ Currently only about 200 of 8192 tokens are left for the game code.
 
 # Known Bugs
 
-- Major: If picking up an extra drone, it will not be able to shoot
 - Major: Game balancing is very bad at the moment
     - For example, level 1 enemies deal 2 damage (should really be 1)
-- Minor: Drone does not properly follow the player ship when flying into the void
-- Minor: Sounds or music sometimes skips
-    - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here
-- Minor: Sounds for buffs (faster shooting and flying) keeps playing if picked up right before starting to travel to the merchant  
-- Minor: Player and Drone are not always completely in bounds (edges might be 2-3 pixels outside the visible screen)
-    - Probably caused by speed higher than 1, resulting in calculating too far in one direction
 - Minor: After the last enemy of the level has been defeated, all shots still on the screen will not hit the player or drone
+- Minor: buffs (faster shooting and flying) keep working for a long time if picked up right before starting to travel to the merchant  
 - Minor: Slow Stars in the background remain for a long time after they were already accelerated
     - When adjusting star speed, existing stars need to become as fast as newly spawned stars
-- Minor: Down-scaled planets look terrible
-- Minor: Travel mode can execute after dying
+- Minor: Drone does not properly follow the player ship when flying into the void
 - Minor: Stars at the beginning of the travel mode are not calculated correctly, but only after completing the first level
+- Minor: floating items are still there if jumping into hyperspace
+- Minor: Player and Drone are not always completely in bounds (edges might be 2-3 pixels outside the visible screen)
+    - Probably caused by speed higher than 1, resulting in calculating too far in one direction
+- Minor: Travel mode can execute after dying
+- Minor: Down-scaled planets look terrible
+- Minor: Sounds or music sometimes skips
+    - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here
 
 # Pending Improvements
 

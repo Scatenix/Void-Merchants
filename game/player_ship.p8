@@ -26,22 +26,23 @@ pl_ship_shot_speed_buff_time = 0
 pl_ship_damage_upgrades = 0
 
 function set_pl_ship(tier)
-	pl_ship_sprite=tier-1
+	pl_ship_sprite = tier - 1
 	htbx = get_ship_htbx_skp_pxl_width(tier)
 	pl_ship_hitbox_skip_pixel = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
-	pl_ship_damage=2*tier+pl_ship_damage_upgrades
-	pl_ship_base_damage=2*tier
-	pl_ship_life=5*tier
-	pl_ship_max_life=pl_ship_life
-	pl_ship_shields=flr(tier/2)
-	pl_ship_max_shield=pl_ship_shields
+	pl_ship_damage = 2 * tier + pl_ship_damage_upgrades
+	pl_ship_base_damage = 2 * tier
+	pl_ship_life = 5 * tier
+	pl_ship_max_life = pl_ship_life
+	pl_ship_shields = flr(tier/2)
+	pl_ship_max_shield = pl_ship_shields
 	-- pl_ship_weapons=flr(tier/4)+1
-	pl_ship_shot_speed=tier/3+1
-	pl_ship_speed=1+tier*0.2
-	pl_ship_default_shot_speed=tier/3+1
-	pl_ship_default_speed=1+tier*0.2
-	pl_ship_storage=7
+	pl_ship_shot_speed = tier / 3 + 1
+	pl_ship_speed = 1 + tier * 0.2
+	pl_ship_default_shot_speed = tier / 3 + 1
+	pl_ship_default_speed = 1 + tier * 0.2
+	pl_ship_storage = tier * 2 + 4
+	max_pl_weapons = min(tier, 5)
 end
 
 function get_ship_htbx_skp_pxl_width(tier)

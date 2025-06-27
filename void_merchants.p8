@@ -45,18 +45,19 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = true
+	titlescreen_mode = false
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = false
+	trading_mode = true
 	death_mode = false
 
 	init_titlescreen = true
 
 	level = 1
-	pl_credits = 200
+	-- pl_credits = 200
+	pl_credits = 9999
 
 	set_pl_ship(1)
 	pl_ship_weapons = 1
@@ -412,7 +413,8 @@ play_sfx = true
 speed_buff_time = 4.0
 shot_speed_buff_time = 4.0
 
-max_pl_dr_weapons = 5
+max_pl_weapons = 1
+max_dr_weapons = 0
 max_drones = 6
 max_pl_extra_damage = 6
 
@@ -824,22 +826,23 @@ pl_ship_shot_speed_buff_time = 0
 pl_ship_damage_upgrades = 0
 
 function set_pl_ship(tier)
-	pl_ship_sprite=tier-1
+	pl_ship_sprite = tier - 1
 	htbx = get_ship_htbx_skp_pxl_width(tier)
 	pl_ship_hitbox_skip_pixel = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
-	pl_ship_damage=2*tier+pl_ship_damage_upgrades
-	pl_ship_base_damage=2*tier
-	pl_ship_life=5*tier
-	pl_ship_max_life=pl_ship_life
-	pl_ship_shields=flr(tier/2)
-	pl_ship_max_shield=pl_ship_shields
+	pl_ship_damage = 2 * tier + pl_ship_damage_upgrades
+	pl_ship_base_damage = 2 * tier
+	pl_ship_life = 5 * tier
+	pl_ship_max_life = pl_ship_life
+	pl_ship_shields = flr(tier/2)
+	pl_ship_max_shield = pl_ship_shields
 	-- pl_ship_weapons=flr(tier/4)+1
-	pl_ship_shot_speed=tier/3+1
-	pl_ship_speed=1+tier*0.2
-	pl_ship_default_shot_speed=tier/3+1
-	pl_ship_default_speed=1+tier*0.2
-	pl_ship_storage=7
+	pl_ship_shot_speed = tier / 3 + 1
+	pl_ship_speed = 1 + tier * 0.2
+	pl_ship_default_shot_speed = tier / 3 + 1
+	pl_ship_default_speed = 1 + tier * 0.2
+	pl_ship_storage = tier * 2 + 4
+	max_pl_weapons = min(tier, 5)
 end
 
 function get_ship_htbx_skp_pxl_width(tier)
@@ -1011,14 +1014,14 @@ function set_pl_drone(tier)
 		htbx = get_drone_htbx_skp_pxl_width(tier)
 		drone_hitbox_skip_pixel = htbx[1]
 		drone_hitbox_width = htbx[2]
-		drone_damage = flr(10 * tier * 0.1) + 1
-		drone_life = flr(20 * tier * 0.1) + 1
-		drone_max_life = flr(20 * tier * 0.1) + 1
-		drone_shields = flr(10 * tier * 0.1 - 1) + 1
-		drone_max_shields = flr(10 * tier * 0.1 - 1) + 1
-		drone_storage = flr(10 * tier * 0.1) + 1
+		drone_damage = tier + 1
+		drone_life = 2 * tier + 1
+		drone_max_life = 2 * tier + 1
+		drone_shields = tier
+		drone_max_shields = tier
+		drone_storage = tier + 1
 		drone_available = true
-		-- drone_weapons = flr(1 * tier * 0.5) + 1
+		max_dr_weapons = min(tier, 5)
 
 	-- get storage drone
 	elseif tier >= 0 and tier <= 3 and not drone_type_attack then
@@ -1027,11 +1030,14 @@ function set_pl_drone(tier)
 		drone_hitbox_skip_pixel = htbx[1]
 		drone_hitbox_width = htbx[2]
 		drone_damage = 0
-		drone_life = flr(20 * (tier-3) * 0.1) + 1
-		drone_shields = flr(10 * (tier-6.5) * 0.2) + 1
-		drone_storage = flr(10 * tier * 0.1) + 1
+		drone_life = 3 * tier
+		drone_max_life = 3 * tier
+		drone_shields = tier * 2
+		drone_max_shields = tier * 2
+		drone_storage = tier * 3
 		drone_available = true
 		drone_weapons = 0
+		max_dr_weapons = 0
 	end
 end
 
@@ -1491,17 +1497,18 @@ function interpret_item(item)
 		if drone_tier < max_drones then
 			sfx(11)
 			drone_tier+=1
+			drone_available = true
 			set_pl_drone(drone_tier)
 			del(floating_items, item)
 		else
 			store_item(item, drone_inc[2])
 		end
 	elseif item[3] == weapons_inc[1] then
-		if pl_ship_weapons < max_pl_dr_weapons then
+		if pl_ship_weapons < max_pl_weapons then
 			sfx(11)
 			pl_ship_weapons+=1
 			del(floating_items, item)
-		elseif drone_weapons < max_pl_dr_weapons then
+		elseif drone_weapons < max_dr_weapons then
 			sfx(11)
 			drone_weapons+=1
 			del(floating_items, item)
@@ -2086,31 +2093,60 @@ function draw_tradescreen()
 	print(" " ..pl_credits, 104, 4, 10)
 	spr(parts_crate[1], 98, 10)
 	print(" " ..#pl_items_stored, 104, 12, 13)
-	print("sell your goods", 10, 12, 7)
-	print("(" ..calc_player_goods_price(false).. ")", 71, 12, 10)
+	
+	if calc_player_goods_price(false) > 0 then
+		print("sell your goods", 10, 12, 7)
+		print("(" ..calc_player_goods_price(false).. ")", 71, 12, 10)
+	else
+		print("sell your goods", 10, 12, 5)
+	end
 
-	print("sell your upgrades", 10, 20, 7)
-	print("(" ..calc_player_upgrades_price(false).. ")", 83, 20, 10)
+	if calc_player_upgrades_price(false) > 0 then
+		print("sell your upgrades", 10, 20, 7)
+		print("(" ..calc_player_upgrades_price(false).. ")", 83, 20, 10)
+	else
+		print("sell your upgrades", 10, 20, 5)
+	end
 
 	if pl_ship_life < pl_ship_max_life then
 		print("repair ship hull ", 10, 28, 7)
 		print("(" ..(pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point.. ")", 75, 28, 10)
 	else
-		print("upgrade ship ", 10, 28, 7)
-		print("(" ..pl_ship_tier*price_increase_per_ship_tier.. ")", 59, 28, 10)
+		if pl_ship_tier < 6 then
+			print("upgrade ship ", 10, 28, 7)
+			print("(" ..pl_ship_tier*price_increase_per_ship_tier.. ")", 59, 28, 10)
+		else
+			print("upgrade ship ", 10, 28, 5)
+		end
 	end
 
-	print("repair drones", 10, 36, 7)
-	print("(" ..(drone_max_life-drone_life)*price_per_drone_hull_point.. ")", 63, 36, 10)
+	if drone_life < drone_max_life then
+		print("repair drones", 10, 36, 7)
+		print("(" ..(drone_max_life-drone_life)*price_per_drone_hull_point.. ")", 63, 36, 10)
+	else
+		print("repair drones", 10, 36, 5)
+	end
 
-	print("restore ship shield", 10, 44, 7)
-	print("(" ..(pl_ship_max_shield-pl_ship_shields)*price_per_ship_shield.. ")", 87, 44, 10)
+	if pl_ship_shields < pl_ship_max_shield then
+		print("restore ship shield", 10, 44, 7)
+		print("(" ..(pl_ship_max_shield-pl_ship_shields)*price_per_ship_shield.. ")", 87, 44, 10)
+	else
+		print("restore ship shield", 10, 44, 5)
+	end
 
-	print("restore drone shield", 10, 52, 7)
-	print("(" ..(drone_max_shields-drone_shields)*price_per_drone_shield.. ")", 91, 52, 10)
+	if drone_shields < drone_max_shields then
+		print("restore drone shield", 10, 52, 7)
+		print("(" ..(drone_max_shields-drone_shields)*price_per_drone_shield.. ")", 91, 52, 10)
+	else
+		print("restore drone shield", 10, 52, 5)
+	end
 
-	print("install stored upgrades", 10, 60, 7)
-	print("(" ..get_number_of_stored_upgrades(false).. ")", 103, 60, 10)
+	if get_number_of_stored_upgrades(false) > 0 then
+		print("install stored upgrades", 10, 60, 7)
+		print("(" ..get_number_of_stored_upgrades(false).. ")", 103, 60, 10)
+	else
+		print("install stored upgrades", 10, 60, 5)
+	end
 
 	if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
 		print("install stronger weapons", 10, 68, 7)
@@ -2119,7 +2155,7 @@ function draw_tradescreen()
 		print("install stronger weapons", 10, 68, 5)
 	end
 
-	if pl_ship_weapons < max_pl_dr_weapons or drone_weapons < max_pl_dr_weapons then
+	if pl_ship_weapons < max_pl_weapons or drone_weapons < max_dr_weapons then
 		print("install new weapon", 10, 76, 7)
 		print("(" ..weapons_inc[2]+price_increase_per_weapon*(pl_ship_weapons+drone_weapons).. ")", 83, 76, 10)
 	else
@@ -2235,11 +2271,11 @@ function trade()
 			end
 		elseif trade_cursor_pos == 9 then -- install new weapon
 			local price = weapons_inc[2]+price_increase_per_weapon*(pl_ship_weapons+drone_weapons)
-			if pl_ship_weapons < max_pl_dr_weapons and pl_credits >= price then
+			if pl_ship_weapons < max_pl_weapons and pl_credits >= price then
 				sfx(11)
 				pl_ship_weapons += 1
 				pl_credits -= price
-			elseif drone_weapons < max_pl_dr_weapons and pl_credits >= price then
+			elseif drone_weapons < max_dr_weapons and pl_credits >= price then
 				sfx(11)
 				drone_weapons += 1
 				pl_credits -= price
@@ -2251,6 +2287,7 @@ function trade()
 			if drone_tier < max_drones and pl_credits >= price then
 				sfx(11)
 				drone_tier+=1
+				drone_available = true
 				set_pl_drone(drone_tier)
 				pl_credits -= price
 			else
@@ -2320,7 +2357,7 @@ function get_number_of_stored_upgrades(equip)
 			local skip = false
 			if item[1] == drone_inc[1] and drone_tier >= max_drones then
 				skip = true
-			elseif item[1] == weapons_inc[1] and pl_ship_weapons+drone_weapons >= max_pl_dr_weapons*2 then
+			elseif item[1] == weapons_inc[1] and pl_ship_weapons+drone_weapons >= (max_pl_weapons+max_dr_weapons)*2 then
 				skip = true
 			elseif item[1] == attack_damage_inc[1] and pl_ship_damage-pl_ship_base_damage >= max_pl_extra_damage then
 				skip = true

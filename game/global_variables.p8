@@ -22,7 +22,8 @@ play_sfx = true
 speed_buff_time = 4.0
 shot_speed_buff_time = 4.0
 
-max_pl_dr_weapons = 5
+max_pl_weapons = 1
+max_dr_weapons = 0
 max_drones = 6
 max_pl_extra_damage = 6
 

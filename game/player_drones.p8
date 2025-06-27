@@ -34,14 +34,14 @@ function set_pl_drone(tier)
 		htbx = get_drone_htbx_skp_pxl_width(tier)
 		drone_hitbox_skip_pixel = htbx[1]
 		drone_hitbox_width = htbx[2]
-		drone_damage = flr(10 * tier * 0.1) + 1
-		drone_life = flr(20 * tier * 0.1) + 1
-		drone_max_life = flr(20 * tier * 0.1) + 1
-		drone_shields = flr(10 * tier * 0.1 - 1) + 1
-		drone_max_shields = flr(10 * tier * 0.1 - 1) + 1
-		drone_storage = flr(10 * tier * 0.1) + 1
+		drone_damage = tier + 1
+		drone_life = 2 * tier + 1
+		drone_max_life = 2 * tier + 1
+		drone_shields = tier
+		drone_max_shields = tier
+		drone_storage = tier + 1
 		drone_available = true
-		-- drone_weapons = flr(1 * tier * 0.5) + 1
+		max_dr_weapons = min(tier, 5)
 
 	-- get storage drone
 	elseif tier >= 0 and tier <= 3 and not drone_type_attack then
@@ -50,11 +50,14 @@ function set_pl_drone(tier)
 		drone_hitbox_skip_pixel = htbx[1]
 		drone_hitbox_width = htbx[2]
 		drone_damage = 0
-		drone_life = flr(20 * (tier-3) * 0.1) + 1
-		drone_shields = flr(10 * (tier-6.5) * 0.2) + 1
-		drone_storage = flr(10 * tier * 0.1) + 1
+		drone_life = 3 * tier
+		drone_max_life = 3 * tier
+		drone_shields = tier * 2
+		drone_max_shields = tier * 2
+		drone_storage = tier * 3
 		drone_available = true
 		drone_weapons = 0
+		max_dr_weapons = 0
 	end
 end
 
