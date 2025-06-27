@@ -101,7 +101,7 @@ function interpret_item(item)
 			drone_weapons+=1
 			del(floating_items, item)
 		else
-			store_item(item, drone_inc[2])
+			store_item(item, weapons_inc[2])
 		end
 	elseif item[3] == credit[1] then
 		sfx(17)
@@ -115,7 +115,7 @@ function interpret_item(item)
 		add_money_pickup(super_credit[2])
 		del(floating_items, item)
 	else
-		store_item(item, super_credit[2])
+		store_item(item, item[4])
 	end
 end
 
@@ -183,8 +183,7 @@ function drop_item()
 	elseif num >=370 then --10%
 		return credit
 	else --37%
-		-- TODO: return {-1, 0, "nothing"} -- no drop
-		return weapons_inc
+		return {-1, 0, "nothing"} -- no drop
 	end
 end
 

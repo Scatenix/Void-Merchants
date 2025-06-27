@@ -183,7 +183,7 @@ function _update()
 		ship_burner_calculation()
 		generate_void_noise(40, 50, 50, 40, 15)
 
-		if btnp(4) then
+		if save_game_exists() and btnp(4) and #pl_ship_shots <= 0 and #enemies > 0 then
 			load_game()
 		end
 
@@ -407,8 +407,6 @@ function _draw()
 			end
 		end
 	end
-	-- TODO:
-	show_stored_items()
 end
 -->8
 -- global variables
@@ -1502,7 +1500,7 @@ function interpret_item(item)
 			drone_weapons+=1
 			del(floating_items, item)
 		else
-			store_item(item, drone_inc[2])
+			store_item(item, weapons_inc[2])
 		end
 	elseif item[3] == credit[1] then
 		sfx(17)
@@ -1516,7 +1514,7 @@ function interpret_item(item)
 		add_money_pickup(super_credit[2])
 		del(floating_items, item)
 	else
-		store_item(item, super_credit[2])
+		store_item(item, item[4])
 	end
 end
 
@@ -1584,8 +1582,7 @@ function drop_item()
 	elseif num >=370 then --10%
 		return credit
 	else --37%
-		-- TODO: return {-1, 0, "nothing"} -- no drop
-		return weapons_inc
+		return {-1, 0, "nothing"} -- no drop
 	end
 end
 
@@ -1710,7 +1707,14 @@ function save_game_exists()
 	return false
 end
 
+function reset_save_game()
+	for i=0, 64 do
+		dset(i, 0)
+	end
+end
+
 function save_game()
+	reset_save_game()
 	dset(0, level)
 	dset(1, pl_credits)
 	dset(2, pl_ship_weapons)
@@ -1781,24 +1785,24 @@ end
 -- 	print("drone_y:" .. drone_y, 10, 40, 12)
 -- end
 
-function info(text, val, plus_y)
-		if plus_y == nil then
-			plus_y = 0
-		end
-		if val == nil then
-			val = ""
-		end
-	print(text .. ": " .. val, 5, 5+plus_y, 7)
-end
+-- function info(text, val, plus_y)
+-- 		if plus_y == nil then
+-- 			plus_y = 0
+-- 		end
+-- 		if val == nil then
+-- 			val = ""
+-- 		end
+-- 	print(text .. ": " .. val, 5, 5+plus_y, 8)
+-- end
 
-function show_stored_items()
-	y = 0
-	for i in all(pl_items_stored) do
-		info("i" .. y .. ": ", i[1], y)
-		spr(i[1], 50, y+4)
-		y+=7
-	end
-end
+-- function show_stored_items()
+-- 	y = 0
+-- 	for i in all(pl_items_stored) do
+-- 		info(i[2].. " :", i[1], y)
+-- 		spr(i[1], 50, y+4)
+-- 		y+=7
+-- 	end
+-- end
 -->8
 -- jump_animations
 trader_station_x = 0
@@ -1981,30 +1985,29 @@ function trader_converstaion()
 	end
 end
 
--- TODO: reactivate
--- function void_creature_converstaion()
--- 	if level == 5 then
--- 		conv_text_1 = "i have been watching you."
--- 		conv_text_2 = "you are making progress."
--- 		conv_text_3 = "not many come this far."
--- 		conv_text_4 = "very well... continue..."
--- 	elseif level == 10 then
--- 		conv_text_1 = "you are changing destiny."
--- 		conv_text_2 = "i did not expect that."
--- 		conv_text_3 = "but i am... intrigued."
--- 		conv_text_4 = "let us see where this goes."
--- 	elseif level == 15 then
--- 		conv_text_1 = "you are quite strong..."
--- 		conv_text_2 = "curious..."
--- 		conv_text_3 = "rise and shine, little pilot."
--- 		conv_text_4 = "rise and shine..."
--- 	elseif level == 20 then
--- 		conv_text_1 = "you have mastered my little"
--- 		conv_text_2 = "game. very well..."
--- 		conv_text_3 = "i deem you... sufficient."
--- 		conv_text_4 = "let us return to the title..."
--- 	end
--- end
+function void_creature_converstaion()
+	if level == 5 then
+		conv_text_1 = "i have been watching you."
+		conv_text_2 = "you are making progress."
+		conv_text_3 = "not many come this far."
+		conv_text_4 = "very well... continue..."
+	elseif level == 10 then
+		conv_text_1 = "you are changing destiny."
+		conv_text_2 = "i did not expect that."
+		conv_text_3 = "but i am... intrigued."
+		conv_text_4 = "let us see where this goes."
+	elseif level == 15 then
+		conv_text_1 = "you are quite strong..."
+		conv_text_2 = "curious..."
+		conv_text_3 = "rise and shine, little pilot."
+		conv_text_4 = "rise and shine..."
+	elseif level == 20 then
+		conv_text_1 = "you have mastered my little"
+		conv_text_2 = "game. very well..."
+		conv_text_3 = "i deem you... sufficient."
+		conv_text_4 = "let us return to the title..."
+	end
+end
 
 function send_to_void_creature()
 
@@ -2420,15 +2423,19 @@ function draw_titlescreen()
 	sspr(small_planets[current_small_planet][1], small_planets[current_small_planet][2], 16, 16, 96, 22, 16, 16)
 
 	
-	if wait_after_titlescreen then
+	if wait_after_titlescreen or #pl_ship_shots > 0 then
 		print("prepare!", 48, 110, 10)	
 	else
 		if animation_counter > 10 then
 			print("press ❎ to play", 32, 110, 10)
-			print("press 🅾️ to load your last save", 2, 118, 12)
+			if save_game_exists() then
+				print("press 🅾️ to load your last save", 2, 118, 12)
+			end
 		else
 			print("press ❎ to play", 32, 111, 10)
-			print("press 🅾️ to load your last save", 2, 119, 12)
+			if save_game_exists() then
+				print("press 🅾️ to load your last save", 2, 119, 12)
+			end
 		end
 	end
 end

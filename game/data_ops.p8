@@ -10,7 +10,14 @@ function save_game_exists()
 	return false
 end
 
+function reset_save_game()
+	for i=0, 64 do
+		dset(i, 0)
+	end
+end
+
 function save_game()
+	reset_save_game()
 	dset(0, level)
 	dset(1, pl_credits)
 	dset(2, pl_ship_weapons)

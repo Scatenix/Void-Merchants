@@ -13,22 +13,22 @@ __lua__13
 -- 	print("drone_y:" .. drone_y, 10, 40, 12)
 -- end
 
-function info(text, val, plus_y)
-		if plus_y == nil then
-			plus_y = 0
-		end
-		if val == nil then
-			val = ""
-		end
-	print(text .. ": " .. val, 5, 5+plus_y, 7)
-end
+-- function info(text, val, plus_y)
+-- 		if plus_y == nil then
+-- 			plus_y = 0
+-- 		end
+-- 		if val == nil then
+-- 			val = ""
+-- 		end
+-- 	print(text .. ": " .. val, 5, 5+plus_y, 8)
+-- end
 
-function show_stored_items()
-	y = 0
-	for i in all(pl_items_stored) do
-		info("i" .. y .. ": ", i[1], y)
-		spr(i[1], 50, y+4)
-		y+=7
-	end
-end
+-- function show_stored_items()
+-- 	y = 0
+-- 	for i in all(pl_items_stored) do
+-- 		info(i[2].. " :", i[1], y)
+-- 		spr(i[1], 50, y+4)
+-- 		y+=7
+-- 	end
+-- end
 -->8

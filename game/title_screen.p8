@@ -15,15 +15,19 @@ function draw_titlescreen()
 	sspr(small_planets[current_small_planet][1], small_planets[current_small_planet][2], 16, 16, 96, 22, 16, 16)
 
 	
-	if wait_after_titlescreen then
+	if wait_after_titlescreen or #pl_ship_shots > 0 then
 		print("prepare!", 48, 110, 10)	
 	else
 		if animation_counter > 10 then
 			print("press ❎ to play", 32, 110, 10)
-			print("press 🅾️ to load your last save", 2, 118, 12)
+			if save_game_exists() then
+				print("press 🅾️ to load your last save", 2, 118, 12)
+			end
 		else
 			print("press ❎ to play", 32, 111, 10)
-			print("press 🅾️ to load your last save", 2, 119, 12)
+			if save_game_exists() then
+				print("press 🅾️ to load your last save", 2, 119, 12)
+			end
 		end
 	end
 end

@@ -181,7 +181,7 @@ function _update()
 		ship_burner_calculation()
 		generate_void_noise(40, 50, 50, 40, 15)
 
-		if btnp(4) then
+		if save_game_exists() and btnp(4) and #pl_ship_shots <= 0 and #enemies > 0 then
 			load_game()
 		end
 
@@ -405,7 +405,5 @@ function _draw()
 			end
 		end
 	end
-	-- TODO:
-	show_stored_items()
 end
 -->8
