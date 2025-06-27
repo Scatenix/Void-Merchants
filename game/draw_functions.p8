@@ -119,6 +119,9 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 		sspr(char_player, 8, 8, 8, 8, 48, 8*4, 8*4)
 		sspr(char_player, 16, 8, 8, 8, 80, 8*4, 8*4)
 	elseif conv_partner == 2 then
+		-- draw black hole ground
+		sspr(48, 112, 16, 16, 0, 96, 128, 32)
+
 		-- drawing main character
 		sspr(char_player, 8, 8, 8, 8, 48, 8*4, 8*4)
 		sspr(char_player, 16, 8, 8, 8, 80, 8*4, 8*4)
@@ -126,15 +129,6 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 		sspr(small_planets[7][1], small_planets[7][2], 16, 16, 59, 44, 32, 32)
 		sspr(char_void, 8, 8, 8, 88, 48, 8*4, 8*4)
 		sspr(char_void, 16, 8, 8, 88, 80, 8*4, 8*4)
-		
-		-- draw cloud
-		if medium_animation_counter <= 25 then
-			sspr(48, 112, 24, 8, -9, 102, 72, 24)
-			sspr(48, 112, 24, 8, 54, 102, 72, 24)
-		else
-			sspr(48, 120, 24, 8, -9, 102, 72, 24)
-			sspr(48, 120, 24, 8, 54, 102, 72, 24)
-		end
 
 		draw_void_noise()
 	end
@@ -143,16 +137,24 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	rectfill(20, 72, 23, 75, 0)
 end
 
+noise_dots = {}
 -- Draws some randomly appearing particles with the same colors as the black hole
-function draw_void_noise()
-	-- TODO: implement
-	-- min y = 44
-	for i=1, 50 do
-		local x = flr(rnd(128))       -- random x from 0 to 127
-		local y = flr(rnd(128))       -- random y from 0 to 127
-		local color = 8 + flr(rnd(5)) -- choose color from 8 to 12
+function generate_void_noise()
+	local colors = {1, 2, 12, 13, 14}
+	if animation_counter == 1 then
+		noise_dots = {}
+		for i=1, 50 do
+			local x = flr(rnd(128))
+			local y = flr(rnd(128))
+			local color = colors[flr(rnd(5)) + 1]
+			add(noise_dots, {x, y, color})
+		end
+	end
+end
 
-		pset(x, y, color)             -- draw the pixel
+function draw_void_noise()
+	for dot in all(noise_dots) do
+		rect(dot[1], dot[2], dot[1] + 1, dot[2] + 1 , dot[3])
 	end
 end
 

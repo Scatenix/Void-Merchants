@@ -45,8 +45,8 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = false
-	battle_mode = true
+	titlescreen_mode = true
+	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
@@ -233,6 +233,9 @@ function _update()
 			converstaion_mode = false
 			trading_mode = true
 		end
+		if conv_partner == 2 then
+			generate_void_noise()
+		end
 		conv_partner = 1
 		trader_converstaion()
 		advance_textbox()
@@ -323,8 +326,6 @@ function _draw()
 		end
 
 		draw_passing_stars()
-
-		-- TODO: debug: draw_void_noise()
 
 		if show_battle_stats then
 			draw_battle_stats()

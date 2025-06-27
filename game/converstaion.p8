@@ -48,36 +48,26 @@ function trader_converstaion()
 end
 
 function void_creature_converstaion()
-	if level <= 1 then
-		conv_text_1 = "..."
-		conv_text_2 = ""
-		conv_text_3 = ""
-		conv_text_4 = ""
-	elseif level < 5 then
-		conv_text_1 = "..."
-		conv_text_2 = "..."
-		conv_text_3 = ""
-		conv_text_4 = ""
-	elseif level < 10 then
-		conv_text_1 = "..."
-		conv_text_2 = "..."
-		conv_text_3 = "..."
-		conv_text_4 = ""
-	elseif level < 15 then
-		conv_text_1 = "..."
-		conv_text_2 = "..."
-		conv_text_3 = "..."
-		conv_text_4 = "..."
-	elseif level < 20 then
-		conv_text_1 = "..."
-		conv_text_2 = "..."
-		conv_text_3 = "..."
-		conv_text_4 = "!"
-	elseif level >= 20 then
+	if level == 5 then
+		conv_text_1 = "i have been watching you."
+		conv_text_2 = "you are making progress."
+		conv_text_3 = "not many come this far."
+		conv_text_4 = "very well... continue..."
+	elseif level == 10 then
+		conv_text_1 = "you are changing destiny."
+		conv_text_2 = "i did not expect that."
+		conv_text_3 = "but i am... intrigued."
+		conv_text_4 = "let us see where this goes."
+	elseif level == 15 then
+		conv_text_1 = "you are quite strong..."
+		conv_text_2 = "curious..."
+		conv_text_3 = "rise and shine, little pilot."
+		conv_text_4 = "rise and shine..."
+	elseif level == 20 then
 		conv_text_1 = "you have mastered my little"
-		conv_text_2 = "challenge. very well..."
-		conv_text_3 = "there is no more to uncover."
-		conv_text_4 = "i will send you back to menu."
+		conv_text_2 = "game. very well..."
+		conv_text_3 = "i deem you... sufficient."
+		conv_text_4 = "let us return to the menu..."
 	end
 end
 
