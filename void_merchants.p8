@@ -117,16 +117,16 @@ function _init()
 	-- store_item({0, 0, platinum[1]}, platinum[2])
 	-- store_item({0, 0, void_fragment[1]}, void_fragment[2])
 	-- store_item({0, 0, void_crystal[1]}, void_crystal[2])
-	store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
-	store_item({0, 0, drone_inc[1]}, drone_inc[2])
-	store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
+	-- store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
+	-- store_item({0, 0, drone_inc[1]}, drone_inc[2])
+	-- store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
 	-- pl_credits = 9000
 	-- pl_ship_max_life = 9999
 	-- pl_ship_life = 4
 	-- drone_life = 1
 	-- drone_life = 9999
 
-	pl_credits = 9999
+	-- pl_credits = 9999
 
 	-- pl_ship_storage = 8
 	-- drone_storage = 6
@@ -2335,7 +2335,7 @@ end
 function calc_player_goods_price(sell)
 	local price = 0
 	for item in all(pl_items_stored) do
-		if item[1] >= 173 then
+		if item[1] > 172 then
 			price += item[2]
 			if sell then
 				sfx(17)
@@ -2353,7 +2353,7 @@ end
 function calc_player_upgrades_price(sell)
 	local price = 0
 	for item in all(pl_items_stored) do
-		if item[1] >= 158 and item[1] <= 170 then 
+		if item[1] < 171 then
 			price += ceil(item[2] * selling_upgrades_multiplier)
 			if sell then
 				sfx(17)
@@ -2373,11 +2373,10 @@ function get_number_of_stored_upgrades(equip)
 	for item in all(pl_items_stored) do
 		if item[1] >= 158 and item[1] <= 170 then 
 			local skip = false
-			if item[1] == drone_inc[1] and drone_tier >= max_drones then
-				skip = true
-			elseif item[1] == weapons_inc[1] and pl_ship_weapons+drone_weapons >= (max_pl_weapons+max_dr_weapons)*2 then
-				skip = true
-			elseif item[1] == attack_damage_inc[1] and pl_ship_damage-pl_ship_base_damage >= max_pl_extra_damage then
+			if (item[1] == drone_inc[1] and drone_tier >= max_drones)
+				or (item[1] == weapons_inc[1] and pl_ship_weapons >= max_pl_weapons and drone_weapons >= max_dr_weapons)
+				or (item[1] == attack_damage_inc[1] and pl_ship_damage-pl_ship_base_damage >= max_pl_extra_damage)
+				then
 				skip = true
 			end
 			if not skip then

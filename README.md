@@ -90,10 +90,10 @@ Currently only about 100 of 8192 tokens are left for the game code.
 
 # Pending Improvements
 
+- Save mechanism (if there are still tokens left). Save in the trade menu
+    - Because of space constraint, maybe just place a "hit x to save" next to the leave button
 - Explain abbreviations like wps, sts, and so on
-- Save mechanism (if there are still tokens left)
-- Change dialogue advance symbol to the o-button symbol
-- Change order of trading to have "leave" at the bottom
+    - Will probably not happen. I don't know where to put it. Players should just figure it out by themselves
 
 # License
 
