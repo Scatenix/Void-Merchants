@@ -55,18 +55,18 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- sprite
 	enemy[5] = 199 + lvl
 	-- damage
-	enemy[6] = lvl + 1
+	enemy[6] = lvl
 	-- life
 	enemy[7] = calc_enemy_life(lvl)
 	-- shields
-	enemy[8] = flr(5.1 * lvl * 0.1 - 1) + 1
+	enemy[8] = flr(lvl/3)
 	if enemy[8] > 5 then
 		enemy[8] = 5
 	end
 	-- weapons
-	enemy[9] = flr(lvl / 5) + 1
+	enemy[9] = ceil(lvl / 4)
 	-- shot_speed
-	enemy[10] = 1 + 0.1 * lvl--flr(lvl / 5) * 0.7 + 1
+	enemy[10] = 1 + 0.1 * lvl
 	-- speed
 	enemy[11] = flr(lvl / 5) * 0.7 + 1
 	-- value

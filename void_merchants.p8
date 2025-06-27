@@ -1170,18 +1170,18 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- sprite
 	enemy[5] = 199 + lvl
 	-- damage
-	enemy[6] = lvl + 1
+	enemy[6] = lvl
 	-- life
 	enemy[7] = calc_enemy_life(lvl)
 	-- shields
-	enemy[8] = flr(5.1 * lvl * 0.1 - 1) + 1
+	enemy[8] = flr(lvl/3)
 	if enemy[8] > 5 then
 		enemy[8] = 5
 	end
 	-- weapons
-	enemy[9] = flr(lvl / 5) + 1
+	enemy[9] = ceil(lvl / 4)
 	-- shot_speed
-	enemy[10] = 1 + 0.1 * lvl--flr(lvl / 5) * 0.7 + 1
+	enemy[10] = 1 + 0.1 * lvl
 	-- speed
 	enemy[11] = flr(lvl / 5) * 0.7 + 1
 	-- value
@@ -1436,14 +1436,14 @@ drone_inc = {159, 100, "drone upgrade"}
 weapons_inc = {158, 50, "weapon upgrade"}
 
 -- trading items {sprite, price, name}
-credit = {171, 1, "credit"}
-scrap = {173, 10, "scrap"}
-copper = {174, 20, "copper"}
-gold = {184, 40, "gold"}
-parts_crate = {185, 50, "parts crate"}
-cobalt = {186, 65, "cobalt"}
-platinum = {187, 80, "platinum"}
-void_fragment = {188, 100, "void fragment"}
+credit = {171, 5, "credit"}
+scrap = {173, 5, "scrap"}
+copper = {174, 10, "copper"}
+gold = {184, 20, "gold"}
+parts_crate = {185, 25, "parts crate"}
+cobalt = {186, 35, "cobalt"}
+platinum = {187, 40, "platinum"}
+void_fragment = {188, 50, "void fragment"}
 super_credit = {172, 100, "super credit"}
 void_crystal = {189, 200, "void crystal"}
 

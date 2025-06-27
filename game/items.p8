@@ -20,14 +20,14 @@ drone_inc = {159, 100, "drone upgrade"}
 weapons_inc = {158, 50, "weapon upgrade"}
 
 -- trading items {sprite, price, name}
-credit = {171, 1, "credit"}
-scrap = {173, 10, "scrap"}
-copper = {174, 20, "copper"}
-gold = {184, 40, "gold"}
-parts_crate = {185, 50, "parts crate"}
-cobalt = {186, 65, "cobalt"}
-platinum = {187, 80, "platinum"}
-void_fragment = {188, 100, "void fragment"}
+credit = {171, 5, "credit"}
+scrap = {173, 5, "scrap"}
+copper = {174, 10, "copper"}
+gold = {184, 20, "gold"}
+parts_crate = {185, 25, "parts crate"}
+cobalt = {186, 35, "cobalt"}
+platinum = {187, 40, "platinum"}
+void_fragment = {188, 50, "void fragment"}
 super_credit = {172, 100, "super credit"}
 void_crystal = {189, 200, "void crystal"}
 
