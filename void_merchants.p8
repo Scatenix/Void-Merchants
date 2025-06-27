@@ -43,12 +43,12 @@ function _init()
 
 	init_passing_stars()
 
-	titlescreen_mode = false
+	titlescreen_mode = true
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = true
+	trading_mode = false
 	death_mode = false
 
 	init_battle = true
@@ -582,13 +582,11 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 	print(conv_text_4, 5, 33, 7)
 
 	-- drawing "waiting for input" indicator
-	local waiting_indicator_woble = 0
 	if animation_counter > 10 then
-		waiting_indicator_woble = 1
+		print("🅾️", 118, 33, 13)
+	else
+		print("🅾️", 118, 34, 13)
 	end
-	line(120, 35+waiting_indicator_woble, 123, 35+waiting_indicator_woble, 9)
-	line(120, 36+waiting_indicator_woble, 123, 36+waiting_indicator_woble, 9)
-	line(121, 37+waiting_indicator_woble, 122, 37+waiting_indicator_woble, 9)
 
 	if conv_partner == 1 then
 		-- drawing planet

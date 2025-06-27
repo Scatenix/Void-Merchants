@@ -41,12 +41,12 @@ function _init()
 
 	init_passing_stars()
 
-	titlescreen_mode = false
+	titlescreen_mode = true
 	battle_mode = false
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = true
+	trading_mode = false
 	death_mode = false
 
 	init_battle = true
