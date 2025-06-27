@@ -239,13 +239,6 @@ end
 function _draw()
 	clear_screen()
 	
------ debug section
-	-- show_stored_items()
-	-- print("memory: "..stat(0).." KiB", 0, 0, 7)
-	-- print("pico cpu: " ..stat(1), 0, 8, 7)
-	-- print("sys cpu: " ..stat(2), 0, 16, 7)
-	-- info(test)
-
 	if death_mode then
 		print("your ship was destroyed!", 15, 56, 8)
 		print("press 🅾️ to play again!", 16, 72, 7)
@@ -341,5 +334,12 @@ function _draw()
 			end
 		end
 	end
+
+	----- debug section
+	-- show_stored_items()
+	-- print("memory: "..stat(0).." KiB", 0, 0, 7)
+	-- print("pico cpu: " ..stat(1), 0, 8, 7)
+	-- print("sys cpu: " ..stat(2), 0, 16, 7)
+	-- info(test)
 end
 -->8

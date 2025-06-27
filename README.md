@@ -4,13 +4,15 @@ Void Merchants is a Space Invaders-inspired action game built in PICO-8. Blast e
 
 This is my first game in such an advanced state.
 
-All the code, sprites, sounds, and music were entirely created by me but with some outside inspiration of course ;)
-
 ![VoidMerchantsPreview](https://github.com/user-attachments/assets/8e84f286-647b-49c6-badc-f8cfba2bcc5f)
 
 Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merchants/)
 
-Control with arrow keys to move, C to shoot (Can be held down), V to advance text in conversations.
+Control with arrow keys to move, X/V to shoot (Can be held down), Y/C to interact with NPCs or trading.
+
+Create save-games at each visit to the trader by hitting X/V.
+
+Load them at the title screen by hitting Y/C.
 
 # State of the Game
 
@@ -77,12 +79,11 @@ Take the following steps for Windows:
 - All off-screen elements are mostly deleted or at least deactivated, to avoid heavy calculations or useless rendering.
     - Exception: Enemies that spawn behind other enemies will be fully calculated and rendered as an arrow at the right screen edge.
 
-Currently only about 100 of 8192 tokens are left for the game code.
+Currently only about 70 of 8192 tokens are left for the game code. There shouldn't really be any unused code, since I had to make sure there is nothing unnecessary to stay in this limit.
 
 # Known Bugs
 
 - Major: Game balancing needs to be tested!
-- Major: test loading a game-save that does not exist
 - Minor: Down-scaled planets look terrible
     - I don't think this is possible in a non-overly complex way
 - Minor: Sounds or music sometimes skips
@@ -90,7 +91,6 @@ Currently only about 100 of 8192 tokens are left for the game code.
 
 # Pending Improvements
 
-- Implement save-game not existing handling on title-screen
 - Explain abbreviations like wps, sts, and so on
     - Will probably not happen. I don't know where to put it. Players should just figure it out by themselves
 
