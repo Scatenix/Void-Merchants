@@ -147,12 +147,13 @@ end
 function draw_void_noise()
 	-- TODO: implement
 	-- min y = 44
+	for i=1, 50 do
+		local x = flr(rnd(128))       -- random x from 0 to 127
+		local y = flr(rnd(128))       -- random y from 0 to 127
+		local color = 8 + flr(rnd(5)) -- choose color from 8 to 12
 
-	--rect(50,50,51,51,1)
-	--rect(53,53,54,54,2)
-	--rect(57,57,58,58,12)
-	--rect(60,60,61,61,13)
-	--rect(64,64,65,65,14)
+		pset(x, y, color)             -- draw the pixel
+	end
 end
 
 function draw_battle_stats()

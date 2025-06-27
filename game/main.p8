@@ -45,8 +45,8 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = true
-	battle_mode = false
+	titlescreen_mode = false
+	battle_mode = true
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
@@ -58,8 +58,10 @@ function _init()
 	level = 1
 	pl_credits = 200
 
-	set_pl_ship(1)
+	set_pl_ship(6)
 	pl_ship_weapons = 1
+
+	drone_tier = 0
 	set_pl_drone(0)
 
 	stars_hide = false
@@ -190,7 +192,6 @@ function _update()
 			all_stars_speed_ctrl(1)
 			show_battle_stats = true
 			min_enemies_on_level = 10 + level
-			-- TODO: remove line later: min_enemies_on_level = 1
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -322,6 +323,8 @@ function _draw()
 		end
 
 		draw_passing_stars()
+
+		-- TODO: debug: draw_void_noise()
 
 		if show_battle_stats then
 			draw_battle_stats()

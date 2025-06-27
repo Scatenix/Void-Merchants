@@ -91,8 +91,9 @@ function drone_ctrl()
 		drone_offset_x = 0
 	end
 	
-	if pl_ship_x <= x_left_boundry + 3 then
-		drone_offset_x = x_left_boundry + 3 - pl_ship_x
+	-- 11 is the distance to the last possible pixel of all drones to the ship back
+	if pl_ship_x <= x_left_boundry + 11 then
+		drone_offset_x = x_left_boundry + 11 - pl_ship_x
 	end
 
 	drone_x = pl_ship_x-11+drone_offset_x

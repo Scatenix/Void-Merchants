@@ -47,8 +47,8 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 	init_battle = true
 
-	titlescreen_mode = true
-	battle_mode = false
+	titlescreen_mode = false
+	battle_mode = true
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
@@ -60,8 +60,10 @@ function _init()
 	level = 1
 	pl_credits = 200
 
-	set_pl_ship(1)
+	set_pl_ship(6)
 	pl_ship_weapons = 1
+
+	drone_tier = 0
 	set_pl_drone(0)
 
 	stars_hide = false
@@ -192,7 +194,6 @@ function _update()
 			all_stars_speed_ctrl(1)
 			show_battle_stats = true
 			min_enemies_on_level = 10 + level
-			-- TODO: remove line later: min_enemies_on_level = 1
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -325,6 +326,8 @@ function _draw()
 
 		draw_passing_stars()
 
+		-- TODO: debug: draw_void_noise()
+
 		if show_battle_stats then
 			draw_battle_stats()
 		end
@@ -402,7 +405,7 @@ show_battle_stats = false
 animation_counter = 0
 medium_animation_counter = 0
 long_animation_counter = 0
-x_left_boundry = 2
+x_left_boundry = 0
 x_right_boundry = 120
 y_up_boundry = 0
 y_down_boundry = 97
@@ -617,12 +620,13 @@ end
 function draw_void_noise()
 	-- TODO: implement
 	-- min y = 44
+	for i=1, 50 do
+		local x = flr(rnd(128))       -- random x from 0 to 127
+		local y = flr(rnd(128))       -- random y from 0 to 127
+		local color = 8 + flr(rnd(5)) -- choose color from 8 to 12
 
-	--rect(50,50,51,51,1)
-	--rect(53,53,54,54,2)
-	--rect(57,57,58,58,12)
-	--rect(60,60,61,61,13)
-	--rect(64,64,65,65,14)
+		pset(x, y, color)             -- draw the pixel
+	end
 end
 
 function draw_battle_stats()
@@ -925,29 +929,18 @@ function ship_and_drone_shoot()
 end
 
 function ship_ctrl()
-	if btn(0) then
-		if pl_ship_x > x_left_boundry then
-			pl_ship_x -= pl_ship_speed
-		end
+	if btn(0) then -- left
+		pl_ship_x = max(pl_ship_x - pl_ship_speed, x_left_boundry)
 	end
-	if btn(1) then
-		if pl_ship_x < x_right_boundry then
-			pl_ship_x += pl_ship_speed
-		end
+	if btn(1) then -- right
+		-- - 5 because of the shield that a player can have
+		pl_ship_x = min(pl_ship_x + pl_ship_speed, x_right_boundry - 5)
 	end
-	if btn(2) then
-		if pl_ship_y > y_up_boundry then
-			pl_ship_y -= pl_ship_speed
-		elseif pl_ship_y < y_up_boundry then
-			pl_ship_y = y_up_boundry
-		end
+	if btn(2) then -- up
+		pl_ship_y = max(pl_ship_y - pl_ship_speed, y_up_boundry)
 	end
-	if btn(3) then
-		if pl_ship_y < y_down_boundry then
-			pl_ship_y += pl_ship_speed
-		elseif pl_ship_y > y_down_boundry then
-			pl_ship_y = y_down_boundry
-		end
+	if btn(3) then -- down
+		pl_ship_y = min(pl_ship_y + pl_ship_speed, y_down_boundry)
 	end
 end
 
@@ -1077,8 +1070,9 @@ function drone_ctrl()
 		drone_offset_x = 0
 	end
 	
-	if pl_ship_x <= x_left_boundry + 3 then
-		drone_offset_x = x_left_boundry + 3 - pl_ship_x
+	-- 11 is the distance to the last possible pixel of all drones to the ship back
+	if pl_ship_x <= x_left_boundry + 11 then
+		drone_offset_x = x_left_boundry + 11 - pl_ship_x
 	end
 
 	drone_x = pl_ship_x-11+drone_offset_x

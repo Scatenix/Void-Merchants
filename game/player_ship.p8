@@ -119,29 +119,18 @@ function ship_and_drone_shoot()
 end
 
 function ship_ctrl()
-	if btn(0) then
-		if pl_ship_x > x_left_boundry then
-			pl_ship_x -= pl_ship_speed
-		end
+	if btn(0) then -- left
+		pl_ship_x = max(pl_ship_x - pl_ship_speed, x_left_boundry)
 	end
-	if btn(1) then
-		if pl_ship_x < x_right_boundry then
-			pl_ship_x += pl_ship_speed
-		end
+	if btn(1) then -- right
+		-- - 5 because of the shield that a player can have
+		pl_ship_x = min(pl_ship_x + pl_ship_speed, x_right_boundry - 5)
 	end
-	if btn(2) then
-		if pl_ship_y > y_up_boundry then
-			pl_ship_y -= pl_ship_speed
-		elseif pl_ship_y < y_up_boundry then
-			pl_ship_y = y_up_boundry
-		end
+	if btn(2) then -- up
+		pl_ship_y = max(pl_ship_y - pl_ship_speed, y_up_boundry)
 	end
-	if btn(3) then
-		if pl_ship_y < y_down_boundry then
-			pl_ship_y += pl_ship_speed
-		elseif pl_ship_y > y_down_boundry then
-			pl_ship_y = y_down_boundry
-		end
+	if btn(3) then -- down
+		pl_ship_y = min(pl_ship_y + pl_ship_speed, y_down_boundry)
 	end
 end
 

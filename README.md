@@ -82,9 +82,8 @@ Currently only about 100 of 8192 tokens are left for the game code.
 # Known Bugs
 
 - Major: Game balancing could be better at the moment
-- Minor: Player and Drone are not always completely in bounds (edges might be 2-3 pixels outside the visible screen)
-    - Probably caused by speed higher than 1, resulting in calculating too far in one direction
 - Minor: Down-scaled planets look terrible
+    - I don't think this is possible in a non-overly complex way
 - Minor: Sounds or music sometimes skips
     - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here
 
