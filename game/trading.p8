@@ -1,4 +1,4 @@
-__lua__17
+__lua__16
 -- trading
 black_hole_x = 0
 trade_finished = false
@@ -47,9 +47,7 @@ function trading_script()
 		if not trade_finished then
 			stars_hide = true
 			trade()
-			show_battle_stats = true
 		else
-			show_battle_stats = false
 			show_trader_station_near = true
 			pl_ship_x = 64
 			pl_ship_y = 64
@@ -183,6 +181,11 @@ function draw_tradescreen()
 	end
 
 	print("leave", 10, 92, 9)
+	if saved then
+		print ("saved game!", 81, 92, 11)
+	else
+		print ("❎ to save", 84, 92, 12)
+	end
 
 	print("🅾️", 2, 4 + 8*trade_cursor_pos, 13)
 end
@@ -202,7 +205,13 @@ function trade()
 			trade_cursor_pos = 0
 		end
 	end
+	if btnp(5) and not saved then -- save game
+		save_game()
+	end
 	if btnp(4) then
+		if saved then
+			saved = false
+		end
 		if trade_cursor_pos == 0 then -- sell all goods
 			local price = calc_player_goods_price(true)
 			if price == 0 then
@@ -293,9 +302,8 @@ function trade()
 			price = drone_inc[2]+price_increase_per_drone*drone_tier
 			if drone_tier < max_drones and pl_credits >= price then
 				sfx(11)
-				drone_tier+=1
 				drone_available = true
-				set_pl_drone(drone_tier)
+				set_pl_drone(drone_tier + 1)
 				pl_credits -= price
 			else
 				sfx(23)
@@ -305,9 +313,8 @@ function trade()
 			ds = drone_shields
 			if drone_type_attack then
 				max_drones = 3
-				drone_tier = min(3, drone_tier)
 				drone_type_attack = not drone_type_attack
-				set_pl_drone(drone_tier)
+				set_pl_drone(min(3, drone_tier))
 			else
 				max_drones = 6
 				drone_type_attack = not drone_type_attack

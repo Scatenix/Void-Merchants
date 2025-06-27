@@ -38,11 +38,15 @@ __lua__
 -- 23 cannot perform action (used at trading)
 
 function _init()
-	clear_screen()
+	-- needed to save and load the game (saving at trader, loading at titlescreen)
+	-- this is a hash of this cartridge at some point. should be pretty unique
+	cartdata("void_merchants_4e40baa22f0e407277e79304514550b9e952ccef")
+	
 	music(0)
 
 	init_passing_stars()
 
+	-- by default, only the titlescreen_mode should be true
 	titlescreen_mode = true
 	battle_mode = false
 	travel_to_battle_mode = false
@@ -58,8 +62,7 @@ function _init()
 	pl_credits = 200
 	set_pl_ship(1)
 	pl_ship_weapons = 1
-	drone_tier = 0
-	set_pl_drone(drone_tier)
+	set_pl_drone(0)
 
 	stars_hide = false
 
@@ -91,8 +94,8 @@ function _init()
 	-- add_enemy(1)
 	-- add_enemy(1)
 
-	-- add_floating_item(credit[1], 70, 70)
-	-- add_floating_item(credit[1], 73, 73)
+	-- add_floating_item(drone_inc[1], 20, 60)
+	-- add_floating_item(weapons_inc[1], 70, 60)
 	-- add_floating_item(credit[1], 75, 75)
 	-- add_floating_item(credit[1], 76, 76)
 	-- add_floating_item(credit[1], 78, 78)
@@ -100,12 +103,10 @@ function _init()
 	-- add_floating_item(cobalt, 70, 70)
 
 	--add_floating_item(drone_inc, 70, 70)
-	
-	-- drone_tier = 4
 
 	-- set_pl_ship(6)
 	
-	-- set_pl_drone(drone_tier)
+	-- set_pl_drone(4)
 	-- drone_shields -= 1
 	-- pl_ship_shields -= 1
 
@@ -125,13 +126,9 @@ function _init()
 	-- pl_ship_life = 4
 	-- drone_life = 1
 	-- drone_life = 9999
-
 	-- pl_credits = 9999
-
 	-- pl_ship_storage = 8
 	-- drone_storage = 6
-
-	-- pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
 end
 
 -------------------------------
@@ -186,6 +183,10 @@ function _update()
 		ship_burner_calculation()
 		generate_void_noise(40, 50, 50, 40, 15)
 
+		if btnp(4) then
+			load_game()
+		end
+
 		-- Give the player some time before enemies spawn
 		if #enemies <= 0 then
 			ship_ctrl()
@@ -203,7 +204,6 @@ function _update()
 	elseif battle_mode then
 		if init_battle then
 			all_stars_speed_ctrl(1)
-			show_battle_stats = true
 			min_enemies_on_level = 10 + level
 			init_battle = false
 			tme = time()
@@ -283,12 +283,6 @@ function animation_counters()
 	end
 	animation_counter+=1
 
-	-- medium_animation_counter -> used for animations with medium runtime
-	if medium_animation_counter == 51 then
-		medium_animation_counter = 0
-	end
-	medium_animation_counter+=1
-
 	-- long_animation_counter -> used for animations with longer runtime
 	if long_animation_counter == 101 then
 		long_animation_counter = 0
@@ -308,7 +302,7 @@ function _draw()
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
 
 	-- debug_coords()
-	-- info(#stars)
+	-- info(test)
 	-- print("memory: "..stat(0).." bytes", 0, 0, 7)
 	-- info(pl_ship_speed)
 	-- if pause_on_text then
@@ -349,13 +343,13 @@ function _draw()
 		draw_passing_stars()
 
 		if show_level then
-			print("level " ..level, 52, 20, 10)
+			print("level " ..level, 52, 12, 10)
 
 			-- tutorial on the first level
 			if level == 1 then
-				print("⬆️⬅️⬇️➡️ to move", 34, 28, 6)
-				print("hold ❎ to shoot", 34, 36, 6)
-				print("🅾️ to interact", 38, 44, 6)
+				print("⬆️⬅️⬇️➡️ to move", 34, 20, 6)
+				print("hold ❎ to shoot", 34, 28, 6)
+				print("🅾️ to interact", 38, 36, 6)
 			end
 			show_level_frames_left -= 1
 		end
@@ -363,10 +357,7 @@ function _draw()
 			show_level = false
 		end
 
-		if show_battle_stats then
-			draw_battle_stats()
-		end
-
+		draw_battle_stats()
 		draw_floating_items()
 		draw_enemies()
 		draw_ship()
@@ -416,6 +407,8 @@ function _draw()
 			end
 		end
 	end
+	-- TODO:
+	show_stored_items()
 end
 -->8
 -- global variables
@@ -426,9 +419,7 @@ show_level = false
 show_level_frames_left = 0
 
 init_battle = false
-show_battle_stats = false
 animation_counter = 0
-medium_animation_counter = 0
 long_animation_counter = 0
 x_left_boundry = 0
 x_right_boundry = 120
@@ -436,7 +427,6 @@ y_up_boundry = 0
 y_down_boundry = 97
 
 initial_draw = true
-play_sfx = true
 
 speed_buff_time = 4.0
 shot_speed_buff_time = 4.0
@@ -470,6 +460,9 @@ skip_void = false
 money_pickups = {} -- amount, x, y, animation_frames_remainung
 money_pickup_animation_frames = 50
 
+explosions = {}
+hitmarkers = {}
+
 current_planet = 1
 planets = {
 	{80, 0},
@@ -492,12 +485,9 @@ small_planets = {
 	{64, 72},
 }
 
--- arrays
-
-explosions = {}
-hitmarkers = {}
 -->8
 -- draw functions
+noise_dots = {}
 
 function draw_money_pickups()
 	for mp in all(money_pickups) do
@@ -593,38 +583,30 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 		sspr(planets[current_planet][1], planets[current_planet][2], 32, 32, 42, 44, 64, 64)
 		
 		-- drawing space-ship windows
-		sspr(16, 112, 16, 16, 0, 44, 32, 32)
-		sspr(16, 112, 16, 16, 0, 74, 32, 32)
-		sspr(16, 112, 16, 16, 32, 44, 32, 32)
-		sspr(16, 112, 16, 16, 32, 74, 32, 32)
-		sspr(16, 112, 16, 16, 64, 44, 32, 32)
-		sspr(16, 112, 16, 16, 64, 74, 32, 32)
-		sspr(16, 112, 16, 16, 96, 44, 32, 32)
-		sspr(16, 112, 16, 16, 96, 74, 32, 32)
+		sspr(0, 112, 32, 16, 0, 44, 64, 32)
+		sspr(0, 112, 32, 16, 0, 74, 64, 32)
+		sspr(0, 112, 32, 16, 64, 44, 64, 32)
+		sspr(0, 112, 32, 16, 64, 74, 64, 32)
 
-		sspr(0, 112, 16, 8, 0, 106, 32, 16)
-		sspr(0, 112, 16, 8, 32, 106, 32, 16)
-		sspr(0, 112, 16, 8, 64, 106, 32, 16)
-		sspr(0, 112, 16, 8, 96, 106, 32, 16)
+		sspr(0, 96, 32, 8, 0, 106, 64, 16)
+		sspr(0, 96, 32, 8, 64, 106, 64, 16)
 		
 		-- drawing trader
-		sspr(char_trader, 8, 8, 8, 88, 48, 8*4, 8*4)
-		sspr(char_trader, 16, 8, 8, 88, 80, 8*4, 8*4)
+		sspr(64, 8, 8, 16, 88, 48, 8*4, 16*4)
 
 		-- drawing main character
-		sspr(char_player, 8, 8, 8, 8, 48, 8*4, 8*4)
-		sspr(char_player, 16, 8, 8, 8, 80, 8*4, 8*4)
+		sspr(56, 8, 8, 16, 8, 48, 8*4, 16*4)
 	elseif conv_partner == 2 then
 		-- draw black hole ground
 		sspr(48, 112, 16, 16, 0, 96, 128, 32)
 
 		-- drawing main character
-		sspr(char_player, 8, 8, 8, 8, 48, 8*4, 8*4)
-		sspr(char_player, 16, 8, 8, 8, 80, 8*4, 8*4)
+		sspr(56, 8, 8, 16, 8, 48, 8*4, 16*4)
 
 		sspr(small_planets[7][1], small_planets[7][2], 16, 16, 59, 44, 32, 32)
-		sspr(char_void, 8, 8, 8, 88, 48, 8*4, 8*4)
-		sspr(char_void, 16, 8, 8, 88, 80, 8*4, 8*4)
+
+		-- drawing void creature
+		sspr(48, 8, 8, 16, 88, 48, 8*4, 16*4)
 
 		draw_void_noise()
 	end
@@ -636,6 +618,20 @@ end
 function draw_void_noise()
 	for dot in all(noise_dots) do
 		rect(dot[1], dot[2], dot[1] + 1, dot[2] + 1 , dot[3])
+	end
+end
+
+-- Draws some randomly appearing particles with the same colors as the black hole
+function generate_void_noise(x1, y1, wx2, wy2, amount)
+	local colors = {1, 2, 12, 13, 14}
+	if animation_counter == 1 then
+		noise_dots = {}
+		for i=1, amount do
+			local x = flr(rnd(wx2)) + x1
+			local y = flr(rnd(wy2)) + y1
+			local color = colors[flr(rnd(5)) + 1]
+			add(noise_dots, {x, y, color})
+		end
 	end
 end
 
@@ -832,7 +828,7 @@ pl_ship_hitbox_width = 0 -- from mid
 pl_ship_sprite=0
 pl_ship_damage=0
 pl_ship_base_damage=0
-pl_ship_life=0
+pl_ship_life=5
 pl_ship_max_life=0
 pl_ship_shields=0
 pl_ship_weapons=0
@@ -860,7 +856,6 @@ function set_pl_ship(tier)
 	pl_ship_max_life = pl_ship_life
 	pl_ship_shields = flr(tier/2)
 	pl_ship_max_shield = pl_ship_shields
-	-- pl_ship_weapons=flr(tier/4)+1
 	pl_ship_shot_speed = tier / 3 + 1
 	pl_ship_speed = 1 + tier * 0.2
 	pl_ship_default_shot_speed = tier / 3 + 1
@@ -912,9 +907,7 @@ function ship_and_drone_shoot()
 
 	if btn(5) and pl_ship_can_shoot == true then
 		local shot_mask = get_shot_mask(pl_ship_weapons)
-		if play_sfx == true then
-			sfx(5)
-		end
+		sfx(5)
 
 		for shm in all(shot_mask) do
 			if shm != -1 then
@@ -1019,6 +1012,7 @@ function set_pl_drone(tier)
 		drone_weapons = 1
 	end
 
+	drone_tier = tier
 	if tier == 0 then
 		drone_available = false
 	-- get attack drone
@@ -1035,7 +1029,6 @@ function set_pl_drone(tier)
 		drone_storage = tier + 1
 		drone_available = true
 		max_dr_weapons = min(tier, 5)
-
 	-- get storage drone
 	elseif tier >= 0 and tier <= 3 and not drone_type_attack then
 		drone_sprite = 5 + tier
@@ -1113,22 +1106,12 @@ end
 function kill_drone()
 	drop_items_when_drone_dies()
 	
-	drone_hitbox_skip_pixel = 8
-	drone_hitbox_width = 0
-	drone_sprite = 48
-	drone_damage = 00
-	drone_weapons = 0
-	drone_life = 0
-	drone_shields = 0
-	drone_storage = 0
-	drone_shots = {}
-	drone_available = false
-	drone_tier = 0
+	set_pl_drone(0)
 end
 -->8
 -- enemies
 
-enemies_max_y = 0
+enemies_max_y = 96
 enemies = {}
 min_enemies_on_level = 0
 enemy_shots = {}
@@ -1139,12 +1122,6 @@ prevent_enemy_moving_on_x = false
 -- try_avoid_placing_behind: Try to not place an enemy behind another enemy.
 --							 Places behind anyways if not avoidable because of to many enemies.
 function add_enemy(lvl, try_avoid_placing_behind)
-	if show_battle_stats == true then
-		enemies_max_y = 96
-	else
-		enemies_max_y = 119
-	end
-
 	local y = flr(rnd(enemies_max_y))
 	local x = 127
 	local htbx = get_enemy_htbx_skp_pxl_width(lvl)
@@ -1276,10 +1253,7 @@ function enemy_shoot()
 	for enemy in all(enemies) do
 		if contains(enemy_shot_cooldown, enemy[18]) then
 			local shot_mask = get_shot_mask(enemy[9])
-	
-			if play_sfx == true then
-				sfx(5)
-			end
+			sfx(5)
 	
 			for shm in all(shot_mask) do
 				if shm != -1 then
@@ -1512,9 +1486,8 @@ function interpret_item(item)
 	elseif item[3] == drone_inc[1] then
 		if drone_tier < max_drones then
 			sfx(11)
-			drone_tier+=1
 			drone_available = true
-			set_pl_drone(drone_tier)
+			set_pl_drone(drone_tier + 1)
 			del(floating_items, item)
 		else
 			store_item(item, drone_inc[2])
@@ -1611,7 +1584,8 @@ function drop_item()
 	elseif num >=370 then --10%
 		return credit
 	else --37%
-		return {-1, 0, "nothing"} -- no drop
+		-- TODO: return {-1, 0, "nothing"} -- no drop
+		return weapons_inc
 	end
 end
 
@@ -1676,7 +1650,7 @@ function init_passing_stars()
 end
 
 function set_stars_max_y()
-	if show_battle_stats == true then
+	if battle_mode then
 		stars_max_y = 105
 	else
 		stars_max_y = 127
@@ -1727,19 +1701,70 @@ end
 -->8
 -- data_ops
 
--- started implementing saving of current game state
+saved = false
 
--- call once at _init
-function init_data_ops()
-	cartdata("void_merchants_4e40baa22f0e407277e79304514550b9e952ccef")
+function save_game_exists()
+	if dget(0) > 0 then
+		return true
+	end
+	return false
 end
 
 function save_game()
-	dset(index, variable_value)
+	dset(0, level)
+	dset(1, pl_credits)
+	dset(2, pl_ship_weapons)
+	dset(3, pl_ship_tier)
+	dset(4, pl_ship_damage_upgrades)
+	dset(5, pl_ship_life)
+	dset(6, pl_ship_shields)
+	dset(7, drone_tier)
+	dset(8, drone_life)
+	dset(9, drone_shields)
+	dset(10, drone_weapons)
+
+	-- store to game slot 11 to max 61 (50 slots)
+	-- (because player can have max 25 items and we need 2 slots per item)
+	j = 11
+	for item in all(pl_items_stored) do
+		dset(j, item[1])
+		dset(j+1, item[2])
+		j += 2
+	end
+	saved = true
+	sfx(11)
 end
 
 function load_game()
-	variable = dget(index)
+	enemies = {}
+	titlescreen_mode = false
+	prevent_enemy_moving_on_x = false
+	trading_mode = true
+	current_planet = flr(rnd(6)) + 1
+	current_small_planet = flr(rnd(6)) + 1
+
+	level = dget(0)
+	pl_credits = dget(1)
+	pl_ship_weapons = dget(2)
+	pl_ship_tier = dget(3)
+	pl_ship_damage_upgrades = dget(4)
+	set_pl_ship(pl_ship_tier)
+	pl_ship_life = dget(5)
+	pl_ship_shields = dget(6)
+
+	drone_tier = dget(7)
+	set_pl_drone(drone_tier)
+	drone_life = dget(8)
+	drone_shields = dget(9)
+	drone_weapons = dget(10)
+
+	-- for loop for stored items, saved to slot 11-61, max storage = 25 * 2 because we need the sprite and the price
+	for i = 11, 61, 2 do
+		if dget(i) ~= 0 then
+			add(pl_items_stored, {dget(i), dget(i+1)})
+		end
+	end
+	sfx(11)
 end
 -->8
 -- debug infos
@@ -1756,42 +1781,22 @@ end
 -- 	print("drone_y:" .. drone_y, 10, 40, 12)
 -- end
 
--- function info(text, val, plus_y)
--- 		if plus_y == nil then
--- 			plus_y = 0
--- 		end
--- 		if val == nil then
--- 			val = ""
--- 		end
--- 	print(text .. ": " .. val, 5, 5+plus_y, 7)
--- end
-
--- function show_stored_items()
--- 	y = 0
--- 	for i in all(pl_items_stored) do
--- 		info("i" .. y .. ": ", i[1], y)
--- 		spr(i[1], 50, y+4)
--- 		y+=7
--- 	end
--- end
--->8
--- characters
-char_player=56
-char_trader=64
-char_void=48
-
-noise_dots = {}
--- Draws some randomly appearing particles with the same colors as the black hole
-function generate_void_noise(x1, y1, wx2, wy2, amount)
-	local colors = {1, 2, 12, 13, 14}
-	if animation_counter == 1 then
-		noise_dots = {}
-		for i=1, amount do
-			local x = flr(rnd(wx2)) + x1
-			local y = flr(rnd(wy2)) + y1
-			local color = colors[flr(rnd(5)) + 1]
-			add(noise_dots, {x, y, color})
+function info(text, val, plus_y)
+		if plus_y == nil then
+			plus_y = 0
 		end
+		if val == nil then
+			val = ""
+		end
+	print(text .. ": " .. val, 5, 5+plus_y, 7)
+end
+
+function show_stored_items()
+	y = 0
+	for i in all(pl_items_stored) do
+		info("i" .. y .. ": ", i[1], y)
+		spr(i[1], 50, y+4)
+		y+=7
 	end
 end
 -->8
@@ -1909,7 +1914,6 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 4
 		jump_wobble = true
 		battle_mode = false
-		show_battle_stats = false
 		pl_ship_speed *= 0.2
 		all_stars_speed_ctrl(0.2)
 		sfx(14)
@@ -1977,29 +1981,30 @@ function trader_converstaion()
 	end
 end
 
-function void_creature_converstaion()
-	if level == 5 then
-		conv_text_1 = "i have been watching you."
-		conv_text_2 = "you are making progress."
-		conv_text_3 = "not many come this far."
-		conv_text_4 = "very well... continue..."
-	elseif level == 10 then
-		conv_text_1 = "you are changing destiny."
-		conv_text_2 = "i did not expect that."
-		conv_text_3 = "but i am... intrigued."
-		conv_text_4 = "let us see where this goes."
-	elseif level == 15 then
-		conv_text_1 = "you are quite strong..."
-		conv_text_2 = "curious..."
-		conv_text_3 = "rise and shine, little pilot."
-		conv_text_4 = "rise and shine..."
-	elseif level == 20 then
-		conv_text_1 = "you have mastered my little"
-		conv_text_2 = "game. very well..."
-		conv_text_3 = "i deem you... sufficient."
-		conv_text_4 = "let us return to the title..."
-	end
-end
+-- TODO: reactivate
+-- function void_creature_converstaion()
+-- 	if level == 5 then
+-- 		conv_text_1 = "i have been watching you."
+-- 		conv_text_2 = "you are making progress."
+-- 		conv_text_3 = "not many come this far."
+-- 		conv_text_4 = "very well... continue..."
+-- 	elseif level == 10 then
+-- 		conv_text_1 = "you are changing destiny."
+-- 		conv_text_2 = "i did not expect that."
+-- 		conv_text_3 = "but i am... intrigued."
+-- 		conv_text_4 = "let us see where this goes."
+-- 	elseif level == 15 then
+-- 		conv_text_1 = "you are quite strong..."
+-- 		conv_text_2 = "curious..."
+-- 		conv_text_3 = "rise and shine, little pilot."
+-- 		conv_text_4 = "rise and shine..."
+-- 	elseif level == 20 then
+-- 		conv_text_1 = "you have mastered my little"
+-- 		conv_text_2 = "game. very well..."
+-- 		conv_text_3 = "i deem you... sufficient."
+-- 		conv_text_4 = "let us return to the title..."
+-- 	end
+-- end
 
 function send_to_void_creature()
 
@@ -2054,9 +2059,7 @@ function trading_script()
 		if not trade_finished then
 			stars_hide = true
 			trade()
-			show_battle_stats = true
 		else
-			show_battle_stats = false
 			show_trader_station_near = true
 			pl_ship_x = 64
 			pl_ship_y = 64
@@ -2190,6 +2193,11 @@ function draw_tradescreen()
 	end
 
 	print("leave", 10, 92, 9)
+	if saved then
+		print ("saved game!", 81, 92, 11)
+	else
+		print ("❎ to save", 84, 92, 12)
+	end
 
 	print("🅾️", 2, 4 + 8*trade_cursor_pos, 13)
 end
@@ -2209,7 +2217,13 @@ function trade()
 			trade_cursor_pos = 0
 		end
 	end
+	if btnp(5) and not saved then -- save game
+		save_game()
+	end
 	if btnp(4) then
+		if saved then
+			saved = false
+		end
 		if trade_cursor_pos == 0 then -- sell all goods
 			local price = calc_player_goods_price(true)
 			if price == 0 then
@@ -2300,9 +2314,8 @@ function trade()
 			price = drone_inc[2]+price_increase_per_drone*drone_tier
 			if drone_tier < max_drones and pl_credits >= price then
 				sfx(11)
-				drone_tier+=1
 				drone_available = true
-				set_pl_drone(drone_tier)
+				set_pl_drone(drone_tier + 1)
 				pl_credits -= price
 			else
 				sfx(23)
@@ -2312,9 +2325,8 @@ function trade()
 			ds = drone_shields
 			if drone_type_attack then
 				max_drones = 3
-				drone_tier = min(3, drone_tier)
 				drone_type_attack = not drone_type_attack
-				set_pl_drone(drone_tier)
+				set_pl_drone(min(3, drone_tier))
 			else
 				max_drones = 6
 				drone_type_attack = not drone_type_attack
@@ -2413,8 +2425,10 @@ function draw_titlescreen()
 	else
 		if animation_counter > 10 then
 			print("press ❎ to play", 32, 110, 10)
+			print("press 🅾️ to load your last save", 2, 118, 12)
 		else
 			print("press ❎ to play", 32, 111, 10)
+			print("press 🅾️ to load your last save", 2, 119, 12)
 		end
 	end
 end
@@ -2517,9 +2531,9 @@ bbbbbbbbbbbbbbbbbbbb33bb33333333ccccbbbbbcccbbbbbbbccccb111111119999999999999999
 000000011111111111111ee11000000000555585555555000022888222222200000aa000056666500001100000077000012e0e00010200100000000000000000
 000000000111111111eeee800000000000055585555550000002222222222000000000000d5555d00000000000000000000010c0000c00000000000000000000
 0000000000001111188800000000000000000555555000000000022222200000000000000000000000000000000000000c000000000001000000000000000000
-0000000000000000000000000000000000000000000000000000000000000000006000000006000000dd0000000000000000000000000000000000000000d000
-00000000000000000000000000000000000000000000000000000000000000000859a00000859a000859a000000000000000000000000000000050000005d000
-0000000000000000000000000000000000000000000000000000000000008800006000000006000000dd00000005500000055000000d00000005550000ddd500
+1111111111111111111111111111111100000000000000000000000000000000006000000006000000dd0000000000000000000000000000000000000000d000
+16166166616616611616616661661661000000000000000000000000000000000859a00000859a000859a000000000000000000000000000000050000005d000
+1661661666166161166166166616616100000000000000000000000000008800006000000006000000dd00000005500000055000000d00000005550000ddd500
 0000000000000000000000000000000000000000000000000000000000008980000000000000060000000000005500000055550055dd9a000055dd9a085d559a
 0000000000000000000000000000000000000000000000000000000000008998000060000000859a0000dd0008dd59a00880d9a00885d000088d0000085d559a
 0000000000000000000000000000000000000000000000000000000000008980000859a006000600000859a0005500000055550055dd9a000055dd9a00ddd500
@@ -2533,22 +2547,22 @@ d00dd00000ddddd00859a00000859a000829a0000002d0000000500025500000022500000000d222
 00000d00055d5500000859a002000200000829a0002d550002255500025520000002250000222200825d29a00225d200009a909a909900009000990000000000
 d00dd00000ddddd000002000859a0000000022000002d0000002205002520000002250000000d2220225500000dd22200009a9a909aa9009a909aa9000000000
 0dd00000000dd00000000000020000000000000000002000000050002550000002250000000000000055dd00000002200009a9a99a00a909a909a0a900000000
-11111111111111115566666666666655000000000000000000000002200000000000000000000000000000000000000000009a909a00a909a909a0a900000000
-16166166616616615660000000000665000006000000600000000222222000000000000000000000000000000000000000009a9009aa9009a909aa9000000000
-166166166616616167000c00000000760006060000006000000222eeee2220000000000000000000000000000000000000000900009900009000990000000000
-00000000000000007700700000000077000dddd0006060000022eeecceee22000000000000000000000000000d000d0ddd0dd00ddd0d0d0ddd0d00d0ddd00dd0
-000000000000000070070000000000070555555500606000002eeccccccee2000000000000000000000000000dd0dd0d000d0d0d000d0d0d0d0dd0d00d00d000
-000000000000000070c0000000000007566667775ddddd00022ecc1111cce2200000000000000000000000000d0d0d0ddd0dd00d000ddd0ddd0d0dd00d000d00
-00000000000000007000000000000007566666675555555002eec110011cee200000000000000000000000000d000d0d000d0d0d000d0d0d0d0d00d00d0000d0
-00000000000000007000000000000007511111115666777522ecc100001cce220000000000000000000000000d000d0ddd0d0d0ddd0d0d0d0d0d00d00d00dd00
-00000000000000007000000000000007055555556666667522ecc100001cce220000000000000000000000000000000000000000000000000000000c0000007c
-000000000000000070000000000000070056d5444444444502eec110011cee20000000000000000000000000000000000000000c0000000c0000007c000007cc
-0000000000000000700000000000000700566d5555555550022ecc1111cce2200000000000000000000000c0000000c0000000c0000000c0000000c0000007c0
-00000000000000007000000000000c070056666666dd5000002eeccccccee20000000000000000000000000000000000000000c000000cc0000007c000007cc0
-0000000000000000700000000000700700055555555500000022eeecceee22000000000000000000000000000000000000000000000000c000000cc000007cc0
-000000000000000060000000000c0006000000ddddd00000000222eeee2220000000000000000000000000c0000000c0000000c0000000c0000000c0000007c0
-00000000000000006600000000000066000000060600000000000222222000000000000000000000000000000000000c0000000c000000cc000000cc000007cc
-000000000000000066666666666666660000000006000000000000022000000000000000000000000000000000000000000000000000000c0000000c0000007c
+55666666666666555566666666666655000000000000000000000002200000000000000000000000000000000000000000009a909a00a909a909a0a900000000
+56600000000006655660000000000665000006000000600000000222222000000000000000000000000000000000000000009a9009aa9009a909aa9000000000
+67000c000000007667000c00000000760006060000006000000222eeee2220000000000000000000000000000000000000000900009900009000990000000000
+77007000000000777700700000000077000dddd0006060000022eeecceee22000000000000000000000000000d000d0ddd0dd00ddd0d0d0ddd0d00d0ddd00dd0
+700700000000000770070000000000070555555500606000002eeccccccee2000000000000000000000000000dd0dd0d000d0d0d000d0d0d0d0dd0d00d00d000
+70c000000000000770c0000000000007566667775ddddd00022ecc1111cce2200000000000000000000000000d0d0d0ddd0dd00d000ddd0ddd0d0dd00d000d00
+70000000000000077000000000000007566666675555555002eec110011cee200000000000000000000000000d000d0d000d0d0d000d0d0d0d0d00d00d0000d0
+70000000000000077000000000000007511111115666777522ecc100001cce220000000000000000000000000d000d0ddd0d0d0ddd0d0d0d0d0d00d00d00dd00
+70000000000000077000000000000007055555556666667522ecc100001cce220000000000000000000000000000000000000000000000000000000c0000007c
+700000000000000770000000000000070056d5444444444502eec110011cee20000000000000000000000000000000000000000c0000000c0000007c000007cc
+7000000000000007700000000000000700566d5555555550022ecc1111cce2200000000000000000000000c0000000c0000000c0000000c0000000c0000007c0
+7000000000000c077000000000000c070056666666dd5000002eeccccccee20000000000000000000000000000000000000000c000000cc0000007c000007cc0
+7000000000007007700000000000700700055555555500000022eeecceee22000000000000000000000000000000000000000000000000c000000cc000007cc0
+60000000000c000660000000000c0006000000ddddd00000000222eeee2220000000000000000000000000c0000000c0000000c0000000c0000000c0000007c0
+66000000000000666600000000000066000000060600000000000222222000000000000000000000000000000000000c0000000c000000cc000000cc000007cc
+666666666666666666666666666666660000000006000000000000022000000000000000000000000000000000000000000000000000000c0000000c0000007c
 __label__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000700000000000000000000000000000000000000
 70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

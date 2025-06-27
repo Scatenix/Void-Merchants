@@ -22,7 +22,7 @@ function init_passing_stars()
 end
 
 function set_stars_max_y()
-	if show_battle_stats == true then
+	if battle_mode then
 		stars_max_y = 105
 	else
 		stars_max_y = 127

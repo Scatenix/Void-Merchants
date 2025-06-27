@@ -7,9 +7,7 @@ show_level = false
 show_level_frames_left = 0
 
 init_battle = false
-show_battle_stats = false
 animation_counter = 0
-medium_animation_counter = 0
 long_animation_counter = 0
 x_left_boundry = 0
 x_right_boundry = 120
@@ -17,7 +15,6 @@ y_up_boundry = 0
 y_down_boundry = 97
 
 initial_draw = true
-play_sfx = true
 
 speed_buff_time = 4.0
 shot_speed_buff_time = 4.0
@@ -51,6 +48,9 @@ skip_void = false
 money_pickups = {} -- amount, x, y, animation_frames_remainung
 money_pickup_animation_frames = 50
 
+explosions = {}
+hitmarkers = {}
+
 current_planet = 1
 planets = {
 	{80, 0},
@@ -73,8 +73,4 @@ small_planets = {
 	{64, 72},
 }
 
--- arrays
-
-explosions = {}
-hitmarkers = {}
 -->8

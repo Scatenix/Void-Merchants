@@ -1,4 +1,4 @@
-__lua__18
+__lua__17
 -- title screen
 
 function draw_titlescreen()
@@ -20,8 +20,10 @@ function draw_titlescreen()
 	else
 		if animation_counter > 10 then
 			print("press ❎ to play", 32, 110, 10)
+			print("press 🅾️ to load your last save", 2, 118, 12)
 		else
 			print("press ❎ to play", 32, 111, 10)
+			print("press 🅾️ to load your last save", 2, 119, 12)
 		end
 	end
 end

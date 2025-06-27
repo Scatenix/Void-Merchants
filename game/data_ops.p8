@@ -1,18 +1,69 @@
 __lua__12
 -- data_ops
 
--- started implementing saving of current game state
+saved = false
 
--- call once at _init
-function init_data_ops()
-	cartdata("void_merchants_4e40baa22f0e407277e79304514550b9e952ccef")
+function save_game_exists()
+	if dget(0) > 0 then
+		return true
+	end
+	return false
 end
 
 function save_game()
-	dset(index, variable_value)
+	dset(0, level)
+	dset(1, pl_credits)
+	dset(2, pl_ship_weapons)
+	dset(3, pl_ship_tier)
+	dset(4, pl_ship_damage_upgrades)
+	dset(5, pl_ship_life)
+	dset(6, pl_ship_shields)
+	dset(7, drone_tier)
+	dset(8, drone_life)
+	dset(9, drone_shields)
+	dset(10, drone_weapons)
+
+	-- store to game slot 11 to max 61 (50 slots)
+	-- (because player can have max 25 items and we need 2 slots per item)
+	j = 11
+	for item in all(pl_items_stored) do
+		dset(j, item[1])
+		dset(j+1, item[2])
+		j += 2
+	end
+	saved = true
+	sfx(11)
 end
 
 function load_game()
-	variable = dget(index)
+	enemies = {}
+	titlescreen_mode = false
+	prevent_enemy_moving_on_x = false
+	trading_mode = true
+	current_planet = flr(rnd(6)) + 1
+	current_small_planet = flr(rnd(6)) + 1
+
+	level = dget(0)
+	pl_credits = dget(1)
+	pl_ship_weapons = dget(2)
+	pl_ship_tier = dget(3)
+	pl_ship_damage_upgrades = dget(4)
+	set_pl_ship(pl_ship_tier)
+	pl_ship_life = dget(5)
+	pl_ship_shields = dget(6)
+
+	drone_tier = dget(7)
+	set_pl_drone(drone_tier)
+	drone_life = dget(8)
+	drone_shields = dget(9)
+	drone_weapons = dget(10)
+
+	-- for loop for stored items, saved to slot 11-61, max storage = 25 * 2 because we need the sprite and the price
+	for i = 11, 61, 2 do
+		if dget(i) ~= 0 then
+			add(pl_items_stored, {dget(i), dget(i+1)})
+		end
+	end
+	sfx(11)
 end
 -->8

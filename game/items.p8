@@ -85,9 +85,8 @@ function interpret_item(item)
 	elseif item[3] == drone_inc[1] then
 		if drone_tier < max_drones then
 			sfx(11)
-			drone_tier+=1
 			drone_available = true
-			set_pl_drone(drone_tier)
+			set_pl_drone(drone_tier + 1)
 			del(floating_items, item)
 		else
 			store_item(item, drone_inc[2])
@@ -184,7 +183,8 @@ function drop_item()
 	elseif num >=370 then --10%
 		return credit
 	else --37%
-		return {-1, 0, "nothing"} -- no drop
+		-- TODO: return {-1, 0, "nothing"} -- no drop
+		return weapons_inc
 	end
 end
 

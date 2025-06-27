@@ -8,7 +8,7 @@ pl_ship_hitbox_width = 0 -- from mid
 pl_ship_sprite=0
 pl_ship_damage=0
 pl_ship_base_damage=0
-pl_ship_life=0
+pl_ship_life=5
 pl_ship_max_life=0
 pl_ship_shields=0
 pl_ship_weapons=0
@@ -36,7 +36,6 @@ function set_pl_ship(tier)
 	pl_ship_max_life = pl_ship_life
 	pl_ship_shields = flr(tier/2)
 	pl_ship_max_shield = pl_ship_shields
-	-- pl_ship_weapons=flr(tier/4)+1
 	pl_ship_shot_speed = tier / 3 + 1
 	pl_ship_speed = 1 + tier * 0.2
 	pl_ship_default_shot_speed = tier / 3 + 1
@@ -88,9 +87,7 @@ function ship_and_drone_shoot()
 
 	if btn(5) and pl_ship_can_shoot == true then
 		local shot_mask = get_shot_mask(pl_ship_weapons)
-		if play_sfx == true then
-			sfx(5)
-		end
+		sfx(5)
 
 		for shm in all(shot_mask) do
 			if shm != -1 then

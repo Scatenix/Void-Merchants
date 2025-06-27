@@ -81,8 +81,9 @@ Currently only about 100 of 8192 tokens are left for the game code.
 
 # Known Bugs
 
-- Major: Game balancing could be better at the moment
-- Major: Installing stored upgrades from the inventory can cause an infinte loop
+- Major: Game balancing needs to be tested!
+- Major: test loading a game-save that does not exist
+- Major: calculating item prices to sell does not work properly
 - Minor: Down-scaled planets look terrible
     - I don't think this is possible in a non-overly complex way
 - Minor: Sounds or music sometimes skips
@@ -90,8 +91,6 @@ Currently only about 100 of 8192 tokens are left for the game code.
 
 # Pending Improvements
 
-- Save mechanism (if there are still tokens left). Save in the trade menu
-    - Because of space constraint, maybe just place a "hit x to save" next to the leave button
 - Explain abbreviations like wps, sts, and so on
     - Will probably not happen. I don't know where to put it. Players should just figure it out by themselves
 

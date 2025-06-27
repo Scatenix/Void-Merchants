@@ -1,4 +1,4 @@
-__lua__15
+__lua__14
 -- jump_animations
 trader_station_x = 0
 trader_station_x = 0
@@ -113,7 +113,6 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 4
 		jump_wobble = true
 		battle_mode = false
-		show_battle_stats = false
 		pl_ship_speed *= 0.2
 		all_stars_speed_ctrl(0.2)
 		sfx(14)

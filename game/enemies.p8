@@ -1,7 +1,7 @@
 __lua__7
 -- enemies
 
-enemies_max_y = 0
+enemies_max_y = 96
 enemies = {}
 min_enemies_on_level = 0
 enemy_shots = {}
@@ -12,12 +12,6 @@ prevent_enemy_moving_on_x = false
 -- try_avoid_placing_behind: Try to not place an enemy behind another enemy.
 --							 Places behind anyways if not avoidable because of to many enemies.
 function add_enemy(lvl, try_avoid_placing_behind)
-	if show_battle_stats == true then
-		enemies_max_y = 96
-	else
-		enemies_max_y = 119
-	end
-
 	local y = flr(rnd(enemies_max_y))
 	local x = 127
 	local htbx = get_enemy_htbx_skp_pxl_width(lvl)
@@ -149,10 +143,7 @@ function enemy_shoot()
 	for enemy in all(enemies) do
 		if contains(enemy_shot_cooldown, enemy[18]) then
 			local shot_mask = get_shot_mask(enemy[9])
-	
-			if play_sfx == true then
-				sfx(5)
-			end
+			sfx(5)
 	
 			for shm in all(shot_mask) do
 				if shm != -1 then

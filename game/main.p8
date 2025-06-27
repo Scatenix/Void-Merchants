@@ -36,11 +36,15 @@ __lua__1
 -- 23 cannot perform action (used at trading)
 
 function _init()
-	clear_screen()
+	-- needed to save and load the game (saving at trader, loading at titlescreen)
+	-- this is a hash of this cartridge at some point. should be pretty unique
+	cartdata("void_merchants_4e40baa22f0e407277e79304514550b9e952ccef")
+	
 	music(0)
 
 	init_passing_stars()
 
+	-- by default, only the titlescreen_mode should be true
 	titlescreen_mode = true
 	battle_mode = false
 	travel_to_battle_mode = false
@@ -56,8 +60,7 @@ function _init()
 	pl_credits = 200
 	set_pl_ship(1)
 	pl_ship_weapons = 1
-	drone_tier = 0
-	set_pl_drone(drone_tier)
+	set_pl_drone(0)
 
 	stars_hide = false
 
@@ -89,8 +92,8 @@ function _init()
 	-- add_enemy(1)
 	-- add_enemy(1)
 
-	-- add_floating_item(credit[1], 70, 70)
-	-- add_floating_item(credit[1], 73, 73)
+	-- add_floating_item(drone_inc[1], 20, 60)
+	-- add_floating_item(weapons_inc[1], 70, 60)
 	-- add_floating_item(credit[1], 75, 75)
 	-- add_floating_item(credit[1], 76, 76)
 	-- add_floating_item(credit[1], 78, 78)
@@ -98,12 +101,10 @@ function _init()
 	-- add_floating_item(cobalt, 70, 70)
 
 	--add_floating_item(drone_inc, 70, 70)
-	
-	-- drone_tier = 4
 
 	-- set_pl_ship(6)
 	
-	-- set_pl_drone(drone_tier)
+	-- set_pl_drone(4)
 	-- drone_shields -= 1
 	-- pl_ship_shields -= 1
 
@@ -123,13 +124,9 @@ function _init()
 	-- pl_ship_life = 4
 	-- drone_life = 1
 	-- drone_life = 9999
-
 	-- pl_credits = 9999
-
 	-- pl_ship_storage = 8
 	-- drone_storage = 6
-
-	-- pl_items_stored = {155, 154, 187, 174, 155, 155, 154, 187, 174, 155, 155, 154, 187, 174}
 end
 
 -------------------------------
@@ -184,6 +181,10 @@ function _update()
 		ship_burner_calculation()
 		generate_void_noise(40, 50, 50, 40, 15)
 
+		if btnp(4) then
+			load_game()
+		end
+
 		-- Give the player some time before enemies spawn
 		if #enemies <= 0 then
 			ship_ctrl()
@@ -201,7 +202,6 @@ function _update()
 	elseif battle_mode then
 		if init_battle then
 			all_stars_speed_ctrl(1)
-			show_battle_stats = true
 			min_enemies_on_level = 10 + level
 			init_battle = false
 			tme = time()
@@ -281,12 +281,6 @@ function animation_counters()
 	end
 	animation_counter+=1
 
-	-- medium_animation_counter -> used for animations with medium runtime
-	if medium_animation_counter == 51 then
-		medium_animation_counter = 0
-	end
-	medium_animation_counter+=1
-
 	-- long_animation_counter -> used for animations with longer runtime
 	if long_animation_counter == 101 then
 		long_animation_counter = 0
@@ -306,7 +300,7 @@ function _draw()
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
 
 	-- debug_coords()
-	-- info(#stars)
+	-- info(test)
 	-- print("memory: "..stat(0).." bytes", 0, 0, 7)
 	-- info(pl_ship_speed)
 	-- if pause_on_text then
@@ -347,13 +341,13 @@ function _draw()
 		draw_passing_stars()
 
 		if show_level then
-			print("level " ..level, 52, 20, 10)
+			print("level " ..level, 52, 12, 10)
 
 			-- tutorial on the first level
 			if level == 1 then
-				print("⬆️⬅️⬇️➡️ to move", 34, 28, 6)
-				print("hold ❎ to shoot", 34, 36, 6)
-				print("🅾️ to interact", 38, 44, 6)
+				print("⬆️⬅️⬇️➡️ to move", 34, 20, 6)
+				print("hold ❎ to shoot", 34, 28, 6)
+				print("🅾️ to interact", 38, 36, 6)
 			end
 			show_level_frames_left -= 1
 		end
@@ -361,10 +355,7 @@ function _draw()
 			show_level = false
 		end
 
-		if show_battle_stats then
-			draw_battle_stats()
-		end
-
+		draw_battle_stats()
 		draw_floating_items()
 		draw_enemies()
 		draw_ship()
@@ -414,5 +405,7 @@ function _draw()
 			end
 		end
 	end
+	-- TODO:
+	show_stored_items()
 end
 -->8

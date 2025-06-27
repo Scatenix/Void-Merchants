@@ -1,5 +1,6 @@
 __lua__3
 -- draw functions
+noise_dots = {}
 
 function draw_money_pickups()
 	for mp in all(money_pickups) do
@@ -95,38 +96,30 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 		sspr(planets[current_planet][1], planets[current_planet][2], 32, 32, 42, 44, 64, 64)
 		
 		-- drawing space-ship windows
-		sspr(16, 112, 16, 16, 0, 44, 32, 32)
-		sspr(16, 112, 16, 16, 0, 74, 32, 32)
-		sspr(16, 112, 16, 16, 32, 44, 32, 32)
-		sspr(16, 112, 16, 16, 32, 74, 32, 32)
-		sspr(16, 112, 16, 16, 64, 44, 32, 32)
-		sspr(16, 112, 16, 16, 64, 74, 32, 32)
-		sspr(16, 112, 16, 16, 96, 44, 32, 32)
-		sspr(16, 112, 16, 16, 96, 74, 32, 32)
+		sspr(0, 112, 32, 16, 0, 44, 64, 32)
+		sspr(0, 112, 32, 16, 0, 74, 64, 32)
+		sspr(0, 112, 32, 16, 64, 44, 64, 32)
+		sspr(0, 112, 32, 16, 64, 74, 64, 32)
 
-		sspr(0, 112, 16, 8, 0, 106, 32, 16)
-		sspr(0, 112, 16, 8, 32, 106, 32, 16)
-		sspr(0, 112, 16, 8, 64, 106, 32, 16)
-		sspr(0, 112, 16, 8, 96, 106, 32, 16)
+		sspr(0, 96, 32, 8, 0, 106, 64, 16)
+		sspr(0, 96, 32, 8, 64, 106, 64, 16)
 		
 		-- drawing trader
-		sspr(char_trader, 8, 8, 8, 88, 48, 8*4, 8*4)
-		sspr(char_trader, 16, 8, 8, 88, 80, 8*4, 8*4)
+		sspr(64, 8, 8, 16, 88, 48, 8*4, 16*4)
 
 		-- drawing main character
-		sspr(char_player, 8, 8, 8, 8, 48, 8*4, 8*4)
-		sspr(char_player, 16, 8, 8, 8, 80, 8*4, 8*4)
+		sspr(56, 8, 8, 16, 8, 48, 8*4, 16*4)
 	elseif conv_partner == 2 then
 		-- draw black hole ground
 		sspr(48, 112, 16, 16, 0, 96, 128, 32)
 
 		-- drawing main character
-		sspr(char_player, 8, 8, 8, 8, 48, 8*4, 8*4)
-		sspr(char_player, 16, 8, 8, 8, 80, 8*4, 8*4)
+		sspr(56, 8, 8, 16, 8, 48, 8*4, 16*4)
 
 		sspr(small_planets[7][1], small_planets[7][2], 16, 16, 59, 44, 32, 32)
-		sspr(char_void, 8, 8, 8, 88, 48, 8*4, 8*4)
-		sspr(char_void, 16, 8, 8, 88, 80, 8*4, 8*4)
+
+		-- drawing void creature
+		sspr(48, 8, 8, 16, 88, 48, 8*4, 16*4)
 
 		draw_void_noise()
 	end
@@ -138,6 +131,20 @@ end
 function draw_void_noise()
 	for dot in all(noise_dots) do
 		rect(dot[1], dot[2], dot[1] + 1, dot[2] + 1 , dot[3])
+	end
+end
+
+-- Draws some randomly appearing particles with the same colors as the black hole
+function generate_void_noise(x1, y1, wx2, wy2, amount)
+	local colors = {1, 2, 12, 13, 14}
+	if animation_counter == 1 then
+		noise_dots = {}
+		for i=1, amount do
+			local x = flr(rnd(wx2)) + x1
+			local y = flr(rnd(wy2)) + y1
+			local color = colors[flr(rnd(5)) + 1]
+			add(noise_dots, {x, y, color})
+		end
 	end
 end
 
