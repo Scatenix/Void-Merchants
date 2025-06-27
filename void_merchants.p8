@@ -117,14 +117,16 @@ function _init()
 	-- store_item({0, 0, platinum[1]}, platinum[2])
 	-- store_item({0, 0, void_fragment[1]}, void_fragment[2])
 	-- store_item({0, 0, void_crystal[1]}, void_crystal[2])
-	-- store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
-	-- store_item({0, 0, drone_inc[1]}, drone_inc[2])
-	-- store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
+	store_item({0, 0, attack_damage_inc[1]}, attack_damage_inc[2])
+	store_item({0, 0, drone_inc[1]}, drone_inc[2])
+	store_item({0, 0, weapons_inc[1]}, weapons_inc[2])
 	-- pl_credits = 9000
 	-- pl_ship_max_life = 9999
 	-- pl_ship_life = 4
 	-- drone_life = 1
 	-- drone_life = 9999
+
+	pl_credits = 9999
 
 	-- pl_ship_storage = 8
 	-- drone_storage = 6
@@ -1997,7 +1999,7 @@ function void_creature_converstaion()
 		conv_text_1 = "you have mastered my little"
 		conv_text_2 = "game. very well..."
 		conv_text_3 = "i deem you... sufficient."
-		conv_text_4 = "let us return to the menu..."
+		conv_text_4 = "let us return to the title..."
 	end
 end
 
@@ -2098,101 +2100,98 @@ function draw_tradescreen()
 		spr(138, 126, i)
 	end
 
-	-- extra dots for vertical bars
-	-- line(0, 7, 0, 7, 6)
-	-- line(127, 7, 127, 7, 6)
-	
-	print("leave", 10, 4, 9)
 	spr(credit[1], 98, 2)
 	print(" " ..pl_credits, 104, 4, 10)
 	spr(parts_crate[1], 98, 10)
 	print(" " ..#pl_items_stored, 104, 12, 13)
-	
+
 	if calc_player_goods_price(false) > 0 then
-		print("sell your goods", 10, 12, 7)
-		print("(" ..calc_player_goods_price(false).. ")", 71, 12, 10)
+		print("sell goods", 10, 4, 7)
+		print("(" ..calc_player_goods_price(false).. ")", 51, 4, 10)
 	else
-		print("sell your goods", 10, 12, 5)
+		print("sell goods", 10, 4, 5)
 	end
 
 	if calc_player_upgrades_price(false) > 0 then
-		print("sell your upgrades", 10, 20, 7)
-		print("(" ..calc_player_upgrades_price(false).. ")", 83, 20, 10)
+		print("sell upgrades", 10, 12, 7)
+		print("(" ..calc_player_upgrades_price(false).. ")", 63, 12, 10)
 	else
-		print("sell your upgrades", 10, 20, 5)
+		print("sell upgrades", 10, 12, 5)
 	end
 
 	if pl_ship_life < pl_ship_max_life then
-		print("repair ship hull ", 10, 28, 7)
-		print("(" ..(pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point.. ")", 75, 28, 10)
+		print("repair ship hull ", 10, 20, 7)
+		print("(" ..(pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point.. ")", 75, 20, 10)
 	else
 		if pl_ship_tier < 6 then
-			print("upgrade ship ", 10, 28, 7)
-			print("(" ..pl_ship_tier*price_increase_per_ship_tier.. ")", 59, 28, 10)
+			print("upgrade ship ", 10, 20, 7)
+			print("(" ..pl_ship_tier*price_increase_per_ship_tier.. ")", 59, 20, 10)
 		else
-			print("upgrade ship ", 10, 28, 5)
+			print("upgrade ship ", 10, 20, 5)
 		end
 	end
 
 	if drone_life < drone_max_life then
-		print("repair drones", 10, 36, 7)
-		print("(" ..(drone_max_life-drone_life)*price_per_drone_hull_point.. ")", 63, 36, 10)
+		print("repair drones", 10, 28, 7)
+		print("(" ..(drone_max_life-drone_life)*price_per_drone_hull_point.. ")", 63, 28, 10)
 	else
-		print("repair drones", 10, 36, 5)
+		print("repair drones", 10, 28, 5)
 	end
 
 	if pl_ship_shields < pl_ship_max_shield then
-		print("restore ship shield", 10, 44, 7)
-		print("(" ..(pl_ship_max_shield-pl_ship_shields)*price_per_ship_shield.. ")", 87, 44, 10)
+		print("restore ship shield", 10, 36, 7)
+		print("(" ..(pl_ship_max_shield-pl_ship_shields)*price_per_ship_shield.. ")", 87, 36, 10)
 	else
-		print("restore ship shield", 10, 44, 5)
+		print("restore ship shield", 10, 36, 5)
 	end
 
 	if drone_shields < drone_max_shields then
-		print("restore drone shield", 10, 52, 7)
-		print("(" ..(drone_max_shields-drone_shields)*price_per_drone_shield.. ")", 91, 52, 10)
+		print("restore drone shield", 10, 44, 7)
+		print("(" ..(drone_max_shields-drone_shields)*price_per_drone_shield.. ")", 91, 44, 10)
 	else
-		print("restore drone shield", 10, 52, 5)
+		print("restore drone shield", 10, 44, 5)
 	end
 
 	if get_number_of_stored_upgrades(false) > 0 then
-		print("install stored upgrades", 10, 60, 7)
-		print("(" ..get_number_of_stored_upgrades(false).. ")", 103, 60, 10)
+		print("install stored upgrades", 10, 52, 7)
+		print("(" ..get_number_of_stored_upgrades(false).. ")", 103, 52, 10)
 	else
-		print("install stored upgrades", 10, 60, 5)
+		print("install stored upgrades", 10, 52, 5)
 	end
 
 	if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
-		print("install stronger weapons", 10, 68, 7)
-		print("(" ..attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage.. ")", 107, 68, 10)
+		print("install stronger weapons", 10, 60, 7)
+		print("(" ..attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage.. ")", 107, 60, 10)
 	else
-		print("install stronger weapons", 10, 68, 5)
+		print("install stronger weapons", 10, 60, 5)
 	end
 
 	if pl_ship_weapons < max_pl_weapons or drone_weapons < max_dr_weapons then
-		print("install new weapon", 10, 76, 7)
-		print("(" ..weapons_inc[2]+price_increase_per_weapon*(pl_ship_weapons+drone_weapons).. ")", 83, 76, 10)
+		print("install new weapon", 10, 68, 7)
+		print("(" ..weapons_inc[2]+price_increase_per_weapon*(pl_ship_weapons+drone_weapons).. ")", 83, 68, 10)
 	else
-		print("install new weapon", 10, 76, 5)
+		print("install new weapon", 10, 68, 5)
 	end
 
 	if drone_tier < max_drones then
 		if drone_type_attack then
-			print("buy attack drone", 10, 84, 7)
-			print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 75, 84, 10)
+			print("buy attack drone", 10, 76, 7)
+			print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 75, 76, 10)
 		else
-			print("buy cargo drone", 10, 84, 7)
-			print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 71, 84, 10)
+			print("buy cargo drone", 10, 76, 7)
+			print("(" ..drone_inc[2]+price_increase_per_drone*drone_tier.. ")", 71, 76, 10)
 		end
 	else
-		print("buy drone", 10, 84, 5)
+		print("buy drone", 10, 76, 5)
 	end
 
 	if drone_type_attack then
-		print("rebuild drones to cargo", 10, 92, 7)
+		print("rebuild drones to cargo", 10, 84, 7)
 	else
-		print("rebuild drones to attack", 10, 92, 7)
+		print("rebuild drones to attack", 10, 84, 7)
 	end
+
+	print("leave", 10, 92, 9)
 
 	print("🅾️", 2, 4 + 8*trade_cursor_pos, 13)
 end
@@ -2213,21 +2212,17 @@ function trade()
 		end
 	end
 	if btnp(4) then
-		if trade_cursor_pos == 0 then -- leave
-			trade_finished = true
-			all_stars_speed_ctrl(0.2)
-			stars_hide = false
-		elseif trade_cursor_pos == 1 then -- sell all goods
+		if trade_cursor_pos == 0 then -- sell all goods
 			local price = calc_player_goods_price(true)
 			if price == 0 then
 				sfx(23)
 			end
-		elseif trade_cursor_pos == 2 then -- sell all upgrades
+		elseif trade_cursor_pos == 1 then -- sell all upgrades
 			price = calc_player_upgrades_price(true)
 			if price == 0 then
 				sfx(23)
 			end
-		elseif trade_cursor_pos == 3 then -- repair ship hull or upgrade ship
+		elseif trade_cursor_pos == 2 then -- repair ship hull or upgrade ship
 			if pl_ship_life < pl_ship_max_life then
 				local price = (pl_ship_max_life-pl_ship_life)*price_per_ship_hull_point
 				if pl_ship_max_life-pl_ship_life > 0 and pl_credits >= price then
@@ -2248,7 +2243,7 @@ function trade()
 					sfx(23)
 				end
 			end
-		elseif trade_cursor_pos == 4 then -- repair drones
+		elseif trade_cursor_pos == 3 then -- repair drones
 			local price = (drone_max_life-drone_life)*price_per_drone_hull_point
 			if drone_max_life-drone_life > 0 and pl_credits >= price then
 				drone_life = drone_max_life
@@ -2257,7 +2252,7 @@ function trade()
 			else
 				sfx(23)
 			end
-		elseif trade_cursor_pos == 5 then -- restore ship shield point
+		elseif trade_cursor_pos == 4 then -- restore ship shield point
 			price = (pl_ship_max_shield-pl_ship_shields)*price_per_ship_shield
 			if pl_ship_shields < pl_ship_max_shield and pl_credits >= price then
 				pl_ship_shields += 1
@@ -2265,7 +2260,7 @@ function trade()
 			else
 				sfx(23)
 			end
-		elseif trade_cursor_pos == 6 then -- restore drone shield point
+		elseif trade_cursor_pos == 5 then -- restore drone shield point
 			price = (drone_max_shields-drone_shields)*price_per_drone_shield
 			if drone_shields < drone_max_shields and pl_credits >= price then
 				drone_shields += 1
@@ -2273,14 +2268,14 @@ function trade()
 			else
 				sfx(23)
 			end
-		elseif trade_cursor_pos == 7 then -- install stored upgrades
+		elseif trade_cursor_pos == 6 then -- install stored upgrades
 			local upgrades = get_number_of_stored_upgrades(true)
 			if upgrades == 0 then
 				sfx(23)
 			else
 				sfx(11)
 			end
-		elseif trade_cursor_pos == 8 then -- install stronger weapons
+		elseif trade_cursor_pos == 7 then -- install stronger weapons
 			local price = attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage
 			if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage and pl_credits >= price then
 				sfx(11)
@@ -2290,7 +2285,7 @@ function trade()
 			else
 				sfx(23)
 			end
-		elseif trade_cursor_pos == 9 then -- install new weapon
+		elseif trade_cursor_pos == 8 then -- install new weapon
 			local price = weapons_inc[2]+price_increase_per_weapon*(pl_ship_weapons+drone_weapons)
 			if pl_ship_weapons < max_pl_weapons and pl_credits >= price then
 				sfx(11)
@@ -2303,7 +2298,7 @@ function trade()
 			else
 				sfx(23)
 			end
-		elseif trade_cursor_pos == 10 then -- buy drone
+		elseif trade_cursor_pos == 9 then -- buy drone
 			price = drone_inc[2]+price_increase_per_drone*drone_tier
 			if drone_tier < max_drones and pl_credits >= price then
 				sfx(11)
@@ -2314,7 +2309,7 @@ function trade()
 			else
 				sfx(23)
 			end
-		elseif trade_cursor_pos == 11 then -- convert drones
+		elseif trade_cursor_pos == 10 then -- convert drones
 			dl = drone_life
 			ds = drone_shields
 			if drone_type_attack then
@@ -2330,6 +2325,10 @@ function trade()
 			sfx(12)
 			drone_life = dl
 			drone_shields = ds
+		elseif trade_cursor_pos == 11 then -- leave
+			trade_finished = true
+			all_stars_speed_ctrl(0.2)
+			stars_hide = false
 		end
 	end
 end

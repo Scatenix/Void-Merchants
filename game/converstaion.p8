@@ -67,7 +67,7 @@ function void_creature_converstaion()
 		conv_text_1 = "you have mastered my little"
 		conv_text_2 = "game. very well..."
 		conv_text_3 = "i deem you... sufficient."
-		conv_text_4 = "let us return to the menu..."
+		conv_text_4 = "let us return to the title..."
 	end
 end
 
