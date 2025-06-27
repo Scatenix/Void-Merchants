@@ -81,9 +81,7 @@ Currently only about 100 of 8192 tokens are left for the game code.
 
 # Known Bugs
 
-- Major: Game balancing is very bad at the moment
-    - For example, level 1 enemies deal 2 damage (should really be 1)
-- Minor: buffs (faster shooting and flying) keep working for a long time if picked up right before starting to travel to the merchant  
+- Major: Game balancing could be better at the moment
 - Minor: Slow Stars in the background remain for a long time after they were already accelerated
     - When adjusting star speed, existing stars need to become as fast as newly spawned stars
 - Minor: Drone does not properly follow the player ship when flying into the void

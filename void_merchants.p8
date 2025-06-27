@@ -133,8 +133,6 @@ function _update()
 		enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixel, drone_hitbox_width, 2)
 		calculate_floating_items_drift()
 		floating_items_colides_player()
-		speed_buff_timer()
-		shot_speed_buff_timer()
 
 		if jump_to_hyperspce then
 			jump_to_hyperspce_animation()
@@ -191,7 +189,8 @@ function _update()
 	elseif battle_mode then
 		if init_battle then
 			show_battle_stats = true
-			min_enemies_on_level = 10 + level
+			-- TODO: min_enemies_on_level = 10 + level
+			min_enemies_on_level = 1
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -227,7 +226,6 @@ function _update()
 			tme = time()
 			travel_after_battle_mode = true
 			current_planet = flr(rnd(6)) + 1
-			reset_buffs()
 		end
 	elseif converstaion_mode then
 		if not pause_on_text then
@@ -365,6 +363,8 @@ function _draw()
 		draw_friendly_shots(pl_ship_shots, 11)
 		draw_friendly_shots(drone_shots, 12)
 		draw_money_pickups()
+
+		draw_battle_stats()
 	elseif trading_mode then
 		if trading_phase == 0 then
 			draw_tradescreen()
@@ -1537,7 +1537,7 @@ function add_money_pickup(money)
 end
 
 function speed_buff_timer()
-	if pl_ship_speed_buff_time > 0 then
+	if pl_ship_speed_buff_time >= 0 then
 		local delta = time() - pl_ship_speed_buff_time
 		if delta >= speed_buff_time then
 			sfx(9, -2)
@@ -1556,15 +1556,6 @@ function shot_speed_buff_timer()
 			pl_ship_shot_speed_buff_time = 0
 		end
 	end
-end
-
-function reset_buffs()
-	sfx(9, -2)
-	sfx(4, -2)
-	pl_ship_speed = pl_ship_default_speed
-	pl_ship_speed_buff_time = 0
-	pl_ship_shot_speed = pl_ship_default_shot_speed
-	pl_ship_shot_speed_buff_time = 0
 end
 
 -- calculate drop (random chance)
@@ -1603,7 +1594,8 @@ function drop_item()
 	elseif num >=390 then --10%
 		return credit
 	else --39%
-		return {-1, 0, "nothing"} -- no drop
+		-- TODO: return {-1, 0, "nothing"} -- no drop
+		return speed_buff
 	end
 end
 
@@ -1831,7 +1823,7 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 9
 		trader_station_x = 130
 		show_trader_station_far = true
-		pl_ship_speed /= 0.2
+		pl_ship_speed = pl_ship_default_speed
 		all_stars_speed_ctrl(1)
 		sfx(20)
 		sfx(18)
@@ -1857,6 +1849,14 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 6
 		jump_wobble = false
 		jump_to_hyperspce = true
+		
+		-- turning off buffs
+		sfx(9, -2)
+		sfx(4, -2)
+		pl_ship_shot_speed_buff_time = 0
+		pl_ship_speed_buff_time = 0
+		pl_ship_shot_speed = pl_ship_default_shot_speed
+		
 		all_stars_speed_ctrl(50)
 		sfx(15)
 	elseif travel_after_battle_phase == 4 and time() - tme >= 10 then -- 10
@@ -1869,7 +1869,7 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 4
 		jump_wobble = true
 		battle_mode = false
-		show_battle_stats = false
+		-- TODO: show_battle_stats = false
 		pl_ship_speed *= 0.2
 		all_stars_speed_ctrl(0.2)
 		sfx(14)
@@ -2029,7 +2029,7 @@ function trading_script()
 			trade()
 			show_battle_stats = true
 		else
-			show_battle_stats = false
+			-- TODO: show_battle_stats = false
 			show_trader_station_near = true
 			pl_ship_x = 64
 			pl_ship_y = 64

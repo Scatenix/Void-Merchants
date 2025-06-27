@@ -121,7 +121,7 @@ function add_money_pickup(money)
 end
 
 function speed_buff_timer()
-	if pl_ship_speed_buff_time > 0 then
+	if pl_ship_speed_buff_time >= 0 then
 		local delta = time() - pl_ship_speed_buff_time
 		if delta >= speed_buff_time then
 			sfx(9, -2)
@@ -140,15 +140,6 @@ function shot_speed_buff_timer()
 			pl_ship_shot_speed_buff_time = 0
 		end
 	end
-end
-
-function reset_buffs()
-	sfx(9, -2)
-	sfx(4, -2)
-	pl_ship_speed = pl_ship_default_speed
-	pl_ship_speed_buff_time = 0
-	pl_ship_shot_speed = pl_ship_default_shot_speed
-	pl_ship_shot_speed_buff_time = 0
 end
 
 -- calculate drop (random chance)
@@ -187,7 +178,8 @@ function drop_item()
 	elseif num >=390 then --10%
 		return credit
 	else --39%
-		return {-1, 0, "nothing"} -- no drop
+		-- TODO: return {-1, 0, "nothing"} -- no drop
+		return speed_buff
 	end
 end
 

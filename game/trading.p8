@@ -52,7 +52,7 @@ function trading_script()
 			trade()
 			show_battle_stats = true
 		else
-			show_battle_stats = false
+			-- TODO: show_battle_stats = false
 			show_trader_station_near = true
 			pl_ship_x = 64
 			pl_ship_y = 64

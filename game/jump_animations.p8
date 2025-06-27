@@ -62,7 +62,7 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 9
 		trader_station_x = 130
 		show_trader_station_far = true
-		pl_ship_speed /= 0.2
+		pl_ship_speed = pl_ship_default_speed
 		all_stars_speed_ctrl(1)
 		sfx(20)
 		sfx(18)
@@ -88,6 +88,14 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 6
 		jump_wobble = false
 		jump_to_hyperspce = true
+		
+		-- turning off buffs
+		sfx(9, -2)
+		sfx(4, -2)
+		pl_ship_shot_speed_buff_time = 0
+		pl_ship_speed_buff_time = 0
+		pl_ship_shot_speed = pl_ship_default_shot_speed
+		
 		all_stars_speed_ctrl(50)
 		sfx(15)
 	elseif travel_after_battle_phase == 4 and time() - tme >= 10 then -- 10
@@ -100,7 +108,7 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 4
 		jump_wobble = true
 		battle_mode = false
-		show_battle_stats = false
+		-- TODO: show_battle_stats = false
 		pl_ship_speed *= 0.2
 		all_stars_speed_ctrl(0.2)
 		sfx(14)

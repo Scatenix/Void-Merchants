@@ -131,8 +131,6 @@ function _update()
 		enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixel, drone_hitbox_width, 2)
 		calculate_floating_items_drift()
 		floating_items_colides_player()
-		speed_buff_timer()
-		shot_speed_buff_timer()
 
 		if jump_to_hyperspce then
 			jump_to_hyperspce_animation()
@@ -189,7 +187,8 @@ function _update()
 	elseif battle_mode then
 		if init_battle then
 			show_battle_stats = true
-			min_enemies_on_level = 10 + level
+			-- TODO: min_enemies_on_level = 10 + level
+			min_enemies_on_level = 1
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -225,7 +224,6 @@ function _update()
 			tme = time()
 			travel_after_battle_mode = true
 			current_planet = flr(rnd(6)) + 1
-			reset_buffs()
 		end
 	elseif converstaion_mode then
 		if not pause_on_text then
@@ -363,6 +361,8 @@ function _draw()
 		draw_friendly_shots(pl_ship_shots, 11)
 		draw_friendly_shots(drone_shots, 12)
 		draw_money_pickups()
+
+		draw_battle_stats()
 	elseif trading_mode then
 		if trading_phase == 0 then
 			draw_tradescreen()
