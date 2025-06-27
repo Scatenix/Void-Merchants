@@ -46,18 +46,18 @@ function _init()
 	init_battle = true
 
 	titlescreen_mode = false
-	battle_mode = false
+	battle_mode = true
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = true
+	trading_mode = false
 	death_mode = false
 
 	init_titlescreen = true
 
 	level = 1
-	-- pl_credits = 200
-	pl_credits = 9999
+	pl_credits = 200
+	-- pl_credits = 9999
 
 	set_pl_ship(1)
 	pl_ship_weapons = 1
@@ -129,6 +129,8 @@ function _update()
 		drone_ctrl()
 		ship_and_drone_shoot()
 		ship_burner_calculation()
+		enemy_shots_hit_friendly(pl_ship_x, pl_ship_y, pl_ship_hitbox_skip_pixel, pl_ship_hitbox_width, 1)
+		enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixel, drone_hitbox_width, 2)
 		calculate_floating_items_drift()
 		floating_items_colides_player()
 		speed_buff_timer()
@@ -295,7 +297,7 @@ function _draw()
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
 
 	-- debug_coords()
-	-- info(time())
+	-- info(min_enemies_on_level)
 	-- print("memory: "..stat(0).." bytes", 0, 0, 7)
 	-- info(pl_ship_speed)
 	-- if pause_on_text then
@@ -1365,8 +1367,7 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 					if player1_drone2 == 1 then
 							death_mode = true
 							battle_mode = false
-							clear_screen()
-							gc_all()
+							travel_after_battle_mode = false
 					elseif player1_drone2 == 2 then
 						kill_drone()
 					end
@@ -1430,9 +1431,9 @@ life_up = {156, 0, "life up"}
 shield_up = {157, 50, "shield up"} -- can only be bought
 
 -- stat increases {sprite, price, name}
-attack_damage_inc = {158, 50, "damage upgrade"}
+attack_damage_inc = {170, 50, "damage upgrade"}
 drone_inc = {159, 100, "drone upgrade"}
-weapons_inc = {170, 50, "weapon upgrade"}
+weapons_inc = {158, 50, "weapon upgrade"}
 
 -- trading items {sprite, price, name}
 credit = {171, 1, "credit"}
@@ -1532,7 +1533,7 @@ function interpret_item(item)
 end
 
 function add_money_pickup(money)
-	add(money_pickups, {credit[2], pl_ship_x, pl_ship_y, money_pickup_animation_frames})
+	add(money_pickups, {money, pl_ship_x, pl_ship_y, money_pickup_animation_frames})
 end
 
 function speed_buff_timer()
@@ -1712,20 +1713,6 @@ function all_stars_speed_ctrl(speed_multiplier)
 		star[3] = star[3] * speed_multiplier
 	end
 	star_speed_multiplier = speed_multiplier
-end
--->8
--- garbage collection
-
-function gc_all()
-explosions = {}
-hitmarkers = {}
-pl_ship_shots = {}
-pl_ship_items_stored = {}
-drone_shots = {}
-enemies = {}
-enemy_shots = {}
-stars = {}
-pl_items_stored = {}
 end
 -->8
 -- data_ops

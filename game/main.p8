@@ -44,18 +44,18 @@ function _init()
 	init_battle = true
 
 	titlescreen_mode = false
-	battle_mode = false
+	battle_mode = true
 	travel_to_battle_mode = false
 	travel_after_battle_mode = false
 	converstaion_mode = false
-	trading_mode = true
+	trading_mode = false
 	death_mode = false
 
 	init_titlescreen = true
 
 	level = 1
-	-- pl_credits = 200
-	pl_credits = 9999
+	pl_credits = 200
+	-- pl_credits = 9999
 
 	set_pl_ship(1)
 	pl_ship_weapons = 1
@@ -127,6 +127,8 @@ function _update()
 		drone_ctrl()
 		ship_and_drone_shoot()
 		ship_burner_calculation()
+		enemy_shots_hit_friendly(pl_ship_x, pl_ship_y, pl_ship_hitbox_skip_pixel, pl_ship_hitbox_width, 1)
+		enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixel, drone_hitbox_width, 2)
 		calculate_floating_items_drift()
 		floating_items_colides_player()
 		speed_buff_timer()
@@ -293,7 +295,7 @@ function _draw()
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
 
 	-- debug_coords()
-	-- info(time())
+	-- info(min_enemies_on_level)
 	-- print("memory: "..stat(0).." bytes", 0, 0, 7)
 	-- info(pl_ship_speed)
 	-- if pause_on_text then

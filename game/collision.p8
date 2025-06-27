@@ -68,8 +68,7 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 					if player1_drone2 == 1 then
 							death_mode = true
 							battle_mode = false
-							clear_screen()
-							gc_all()
+							travel_after_battle_mode = false
 					elseif player1_drone2 == 2 then
 						kill_drone()
 					end

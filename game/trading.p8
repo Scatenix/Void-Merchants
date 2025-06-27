@@ -1,4 +1,4 @@
-__lua__18
+__lua__17
 -- trading
 black_hole_x = 0
 trade_finished = false

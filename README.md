@@ -77,13 +77,12 @@ Take the following steps for Windows:
 - All off-screen elements are mostly deleted or at least deactivated, to avoid heavy calculations or useless rendering.
     - Exception: Enemies that spawn behind other enemies will be fully calculated and rendered as an arrow at the right screen edge.
 
-Currently only about 200 of 8192 tokens are left for the game code.
+Currently only about 100 of 8192 tokens are left for the game code.
 
 # Known Bugs
 
 - Major: Game balancing is very bad at the moment
     - For example, level 1 enemies deal 2 damage (should really be 1)
-- Minor: After the last enemy of the level has been defeated, all shots still on the screen will not hit the player or drone
 - Minor: buffs (faster shooting and flying) keep working for a long time if picked up right before starting to travel to the merchant  
 - Minor: Slow Stars in the background remain for a long time after they were already accelerated
     - When adjusting star speed, existing stars need to become as fast as newly spawned stars
@@ -92,7 +91,6 @@ Currently only about 200 of 8192 tokens are left for the game code.
 - Minor: floating items are still there if jumping into hyperspace
 - Minor: Player and Drone are not always completely in bounds (edges might be 2-3 pixels outside the visible screen)
     - Probably caused by speed higher than 1, resulting in calculating too far in one direction
-- Minor: Travel mode can execute after dying
 - Minor: Down-scaled planets look terrible
 - Minor: Sounds or music sometimes skips
     - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here
@@ -103,6 +101,7 @@ Currently only about 200 of 8192 tokens are left for the game code.
 - Explain controls (move, shoot, advance dialog)
 - Add the possibility to restart the game on the death screen
 - Create dialog for the void creature
+- Save mechanism (if there are still tokens left)
 
 # License
 

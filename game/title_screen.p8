@@ -1,4 +1,4 @@
-__lua__19
+__lua__18
 -- title screen
 
 function draw_titlescreen()

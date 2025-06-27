@@ -15,9 +15,9 @@ life_up = {156, 0, "life up"}
 shield_up = {157, 50, "shield up"} -- can only be bought
 
 -- stat increases {sprite, price, name}
-attack_damage_inc = {158, 50, "damage upgrade"}
+attack_damage_inc = {170, 50, "damage upgrade"}
 drone_inc = {159, 100, "drone upgrade"}
-weapons_inc = {170, 50, "weapon upgrade"}
+weapons_inc = {158, 50, "weapon upgrade"}
 
 -- trading items {sprite, price, name}
 credit = {171, 1, "credit"}
@@ -117,7 +117,7 @@ function interpret_item(item)
 end
 
 function add_money_pickup(money)
-	add(money_pickups, {credit[2], pl_ship_x, pl_ship_y, money_pickup_animation_frames})
+	add(money_pickups, {money, pl_ship_x, pl_ship_y, money_pickup_animation_frames})
 end
 
 function speed_buff_timer()
