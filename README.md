@@ -76,12 +76,14 @@ Or play it directly on the PICO-8 fantasy console by downloading this png and lo
 
 <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants.p8.png" alt="Void Merchants Game Cartridge" />
 
-The game is not yet on the official `splore` game explorer.
+How to do this:
+- Either open PICO-8 and drag and drop `void_merchants.p8.png` into the window (Alt+Enter to toggle fullscreen)
+    - (Windows only) Or drag and drop `void_merchants.p8.png` onto the PICO-8.exe
+- To save it permanently into your carts, type `save void_merchants`
+    - to play the game later again, type `load void_merchants`
+- To start the game, type `run` or hit ctrl+r
 
-Take the following steps for Windows:
-- Copy the `void_merchants.p8.png` file to `%AppData%\pico-8\carts\`
-- Open PICO-8 and type `load void_merchants.p8.png`
-- Type `run` or hit ctrl+r
+The game is not yet on the official `splore` game explorer.
 
 # About the Performance
 
