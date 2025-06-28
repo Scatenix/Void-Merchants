@@ -85,12 +85,14 @@ How to do this:
 - Either open PICO-8 and drag and drop `void_merchants.p8.png` into the window (Alt+Enter to toggle fullscreen)
     - (Windows only) Or drag and drop `void_merchants.p8.png` onto the PICO-8.exe
 - To save it permanently into your carts, type `save void_merchants`
-    - to play the game later again, type `load void_merchants`
+    - To play the game later again, type `load void_merchants`
 - To start the game, type `run` or hit ctrl+r
 
 The game is not yet on the official splore game explorer.
 
 ## About the Performance
+
+Because PICO-8 is using a virtualized CPU that is running at about 8 MHz, the game should run on pretty much every system.
 
 - No more than 300 KiB RAM is being used in all scenarios I have tested
 - For 20 enemies at level 20 (highest level) on one screen: rarely more than 0.3 CPUs of the virtualized PICO-8 Processor (a score of > 1.0 = game slowdown)
