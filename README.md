@@ -107,13 +107,8 @@ Currently only less than 100 of 8192 tokens are left for the game code. There sh
 ## Known Bugs
 
 - Major: Game balancing needs to be tested!
-    - Perhaps make the number of enemies per level higher for more drops. It's hard to get enough money for upgrades.
-    - I think enemy damage and number per wave is good. The player just can't keep up with upgrading because of to little money
     - Perhaps increase storage on the early levels, or get more money for drones to increase storage
-- Minor: Text for collecting credits can be out of bounds above the playing field
-- Minor: When traveling from battle, floating items should fade out of the screen one phase earlier (stars building up)
-- Minor: Add sound effect when leaving the trader
-- Minor: Had one instance of my drone dying but the drone_shield was still greater than 0. This should not happen
+- Minor: Had an instance of my drone dying but the drone_shield was still greater than 0. This should not happen
 - Minor: Down-scaled planets look terrible
     - I don't think this is possible without overly complex solutions
 - Minor: Sounds or music sometimes skips
