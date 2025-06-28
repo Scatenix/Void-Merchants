@@ -31,7 +31,7 @@ jobs:
             ./resources/cart/void-merchants.bin/void-merchants_osx.zip
             ./void-merchants.p8
             ./resources/cart/manual.txt
-            ./LICENSE.TXT
+            ./LICENSE.txt
           body: |
             ## Release ${{ env.TAG_NAME }}
 
@@ -43,4 +43,4 @@ jobs:
             - `manual.txt` — Manual for this release
             - `LICENSE.txt` — Licensing information
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
