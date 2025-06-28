@@ -8,15 +8,21 @@ Void Merchants is a Space Invaders-inspired action game built in PICO-8. Blast e
 
 # Fight
 
-![void_merchants_fight](https://github.com/user-attachments/assets/aecfdb81-4f61-4cb8-81a9-6cb9e2fde013)
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/aecfdb81-4f61-4cb8-81a9-6cb9e2fde013" alt="Void Merchants Fight" width="50%" />
+</p>
 
 # Travel
 
-![void_merchants_travel](https://github.com/user-attachments/assets/68499621-b96f-4241-a3f4-b97ee512295b)
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/68499621-b96f-4241-a3f4-b97ee512295b" alt="Void Merchants Travel" width="50%" />
+</p>
 
 # Trade
 
-![void_merchants_0](https://github.com/user-attachments/assets/c0fdd560-cbb2-4cfb-bc84-0ac62686ae1f)
+<p align="center">
+    <img src="https://github.com/user-attachments/assets/c0fdd560-cbb2-4cfb-bc84-0ac62686ae1f" alt="Void Merchants Trade" width="50%" />
+</p>
 
 Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merchants/)
 
