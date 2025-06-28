@@ -63,7 +63,7 @@ for file in ./resources/cart/void-merchants.bin/void-merchants_*.zip; do
 done
 
 git add --all
-git commit -m "$VERSION: prepare release"
+git commit -m "Release $VERSION"
 git tag "$VERSION"
 git push && git push origin "$VERSION"
 

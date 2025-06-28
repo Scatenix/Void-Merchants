@@ -33,16 +33,7 @@ jobs:
             ./resources/cart/void-merchants.bin/void-merchants_windows.zip
             ./resources/cart/void-merchants.bin/void-merchants_linux.zip
             ./resources/cart/void-merchants.p8.png
-          body: |
-            ## Release ${{ env.TAG_NAME }}
-
-            - `void-merchants.p8` — PICO-8 standard cart in clear text format
-            - `void-merchants.p8.png` — PICO-8 cart image
-            - `void-merchants_linux.zip` — Linux binaries
-            - `void-merchants_windows.zip` — Windows binaries
-            - `void-merchants_raspi.zip` — Raspberry Pi binaries
-            - `void-merchants_osx.zip` — macOS binaries
-            - `manual.txt` — Manual for this release
-            - `LICENSE.txt` — Licensing information
+          body_path: 
+            ./Release-Text
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

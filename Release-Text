@@ -1,0 +1,17 @@
+## Release ${{ env.TAG_NAME }}
+
+All features are now implemented.
+Release pipeline was set up.
+
+Next steps until the 1.0 release is game testing and fixing last remaining bugs.
+
+## Files included
+
+- `void-merchants.p8` — PICO-8 standard cart in clear text format
+- `void-merchants.p8.png` — PICO-8 cart image
+- `void-merchants_linux.zip` — Linux binaries
+- `void-merchants_windows.zip` — Windows binaries
+- `void-merchants_raspi.zip` — Raspberry Pi binaries
+- `void-merchants_osx.zip` — macOS binaries
+- `manual.txt` — Manual for this release
+- `LICENSE.txt` — Licensing information
