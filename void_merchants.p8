@@ -419,8 +419,10 @@ noise_dots = {}
 
 function draw_money_pickups()
 	for mp in all(money_pickups) do
-		spr(credit[1], mp[2] - 8, flr(mp[3]) - 17)
-		print(" " ..pl_credits.. " +" ..mp[1], mp[2] - 5, flr(mp[3]) - 15, 3)
+		x = mid(0, mp[2] - 5, 90)
+		y = max(flr(mp[3]) - 15, 3)
+		spr(credit[1], x - 3, y - 2)
+		print(" " ..pl_credits.. " +" ..mp[1], x, y, 3)
 		if mp[4] <= 0 then
 			del(money_pickups, mp)
 		end
