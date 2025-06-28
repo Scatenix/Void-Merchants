@@ -20,7 +20,7 @@ __lua__
 -- out of or in connection with the software or the use or other dealings in
 -- the software.
 
-GAME_VERSION = "v8.9.0"
+GAME_VERSION = "v8.9.2"
 
 -- This file is the main file
 -- shift + h = ♥
