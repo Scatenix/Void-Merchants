@@ -11,8 +11,6 @@ if [[ -n $(git status --porcelain | grep -v 'M VERSION') ]]; then
   exit
 fi
 
-exit
-
 echo "Starting to prepare release of $VERSION for void-merchants..."
 
 echo "Switching to main branch for the release..."
