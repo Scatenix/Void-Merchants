@@ -1,5 +1,8 @@
 # Void Merchants
 
+![Made with PICO-8](https://img.shields.io/badge/made%20with-PICO--8-orange)
+![Status: Beta](https://img.shields.io/badge/status-beta-yellow)
+
 Void Merchants is a Space Invaders-inspired action game built in PICO-8. Blast enemies, collect resources and trade your way to upgrades as you progress through increasingly difficult space battles!
 
 <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants.png" alt="Void Merchants" width="40%" />
@@ -18,17 +21,23 @@ Void Merchants is a Space Invaders-inspired action game built in PICO-8. Blast e
 
 Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merchants/)
 
-Control with arrow keys to move, X/V to shoot (can be held down), Y/C to interact with NPCs or trade.
+## Controls
 
-Create save games at each visit to the trader by hitting X/V.
+- ↑ ↓ ← → : Move your ship
+- Y, C    : Shoot (Can be held down)
+- X, V    : Interact with NPCs or trade
+- Create save games at each visit to the trader by hitting X or V
+- Load them again at the title screen by hitting Y or C
 
-Load them at the title screen by hitting Y/C.
+Can also be played with a controller! Tested with an Xbox controller - others may work too.
+
+The controls can be adjusted in the PICO-8 settings (pause button next to the bottom-right corner).
 
 # State of the Game
 
 The game is currently in the balancing and testing phase.
 
-Everything I envisioned is implemented, apart from a boss fight, which was not possible, due to a code length restriction from PICO-8.
+All planned features have been implemented, except for a final boss fight, which was not possible, due to a code length restriction from PICO-8.
 
 The game offers:
 - A title screen with the possibility to load the last save
@@ -40,7 +49,7 @@ The game offers:
 - Saving, which can be done whilst trading
 - Brief conversations with the trader and a mysterious being
 
-The balancing is not yet done. I find the game to be quite hard on the later levels.
+Balancing is still in progress. I find the game to be quite hard on the later levels.
 
 # Tech Stack
 
@@ -68,18 +77,11 @@ Play the web version - [Void Merchants](https://scatenix.github.io/Void-Merchant
 
 Note: The default sound volume can be a bit loud. I recommend lowering your browser's volume before starting.
 
-Controls:
-- ↑ ↓ ← → : Move your ship
-- C       : Shoot (Can be held down)
-- V       : Advance text / dialog
-
-Can also be played with a controller! Tested with an Xbox controller - others may work too.
-
-Both the sound volume and the controls can be adjusted in the settings (pause button next to the bottom-right corner).
+The sound volume can be adjusted in the settings (pause button next to the bottom-right corner).
 
 ---
 
-Or play it directly on the PICO-8 fantasy console by downloading this png and loading it into PICO8:
+Or play it directly on the PICO-8 fantasy console by downloading this png and loading it into PICO-8:
 
 <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants.p8.png" alt="Void Merchants Game Cartridge" />
 
