@@ -21,9 +21,10 @@ if git rev-parse "$VERSION" >/dev/null 2>&1; then
   exit
 fi
 
-echo "Writing $VERSION to void-merchants.p8 and the manual.txt..."
+echo "Writing $VERSION to void-merchants.p8, the manual.txt and into the release notes..."
 sed -i 's/^\(GAME_VERSION[[:space:]]*=[[:space:]]*"\)[^"]*\(".*\)/\1'"$VERSION"'\2/' ./void-merchants.p8
 sed -i 's/\(Manual for version \)[^ ]\+/\1'"$VERSION"'/' ./resources/cart/manual.txt
+sed -i 's/\(## Release \)[^ ]\+/\1'"$VERSION"'/' ./Release-Text
 
 echo "Writing the current year to all license places..."
 sed -i "s/\(Copyright (c) \)[0-9]\{4\}/\1$(date +%Y)/" LICENSE.txt

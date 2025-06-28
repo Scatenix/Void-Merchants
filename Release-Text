@@ -1,4 +1,4 @@
-## Release ${{ env.TAG_NAME }}
+## Release 9.0.0
 
 All features are now implemented.
 Release pipeline was set up.
