@@ -4,6 +4,8 @@ __lua__1
 
 -- license: all rights reserved.
 
+version = "0.9"
+
 -- This file is the main file
 -- shift + h = ♥
 

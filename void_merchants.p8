@@ -6,6 +6,8 @@ __lua__
 
 -- license: all rights reserved.
 
+version = "0.9"
+
 -- This file is the main file
 -- shift + h = ♥
 
@@ -2347,6 +2349,8 @@ end
 -- title screen
 
 function draw_titlescreen()
+	-- version
+	print("beta v" ..version, 90, 0, 10)
 	-- void merchants
 	sspr(88, 104, 40, 16, 24, 20, 80, 32)
 	-- hide enemy ship
