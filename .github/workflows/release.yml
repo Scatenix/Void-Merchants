@@ -35,6 +35,7 @@ jobs:
           body: |
             ## Release ${{ env.TAG_NAME }}
 
+            - `void-merchants.p8` — PICO-8 standard cart in clear text format
             - `void-merchants.p8.png` — PICO-8 cart image
             - `void-merchants_linux.zip` — Linux binaries
             - `void-merchants_windows.zip` — Windows binaries
