@@ -33,6 +33,7 @@ function set_pl_drone(tier)
 		drone_storage = 0
 		drone_weapons = 0
 		drone_damage = 0
+		drone_shields = 0
 		max_dr_weapons = 0
 	-- get attack drone
 	elseif tier >= 0 and tier <= 6 and drone_type_attack then

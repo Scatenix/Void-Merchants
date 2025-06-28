@@ -148,7 +148,7 @@ function _update()
 	elseif battle_mode then
 		if init_battle then
 			all_stars_speed_ctrl(1)
-			min_enemies_on_level = 10 + level
+			min_enemies_on_level = 10 + flr(level * 1.5)
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -193,8 +193,6 @@ function _update()
 		if conv_partner == 2 then
 			generate_void_noise(0, 0, 128, 128, 50)
 		end
-		conv_partner = 1
-		trader_converstaion()
 		advance_textbox()
 	elseif trading_mode then
 		ship_burner_calculation()
@@ -949,6 +947,7 @@ function set_pl_drone(tier)
 		drone_storage = 0
 		drone_weapons = 0
 		drone_damage = 0
+		drone_shields = 0
 		max_dr_weapons = 0
 	-- get attack drone
 	elseif tier >= 0 and tier <= 6 and drone_type_attack then
@@ -1356,15 +1355,15 @@ weapons_inc = {158, 50, "weapon upgrade"}
 
 -- trading items {sprite, price, name}
 credit = {171, 5, "credit"}
-scrap = {173, 5, "scrap"}
-copper = {174, 10, "copper"}
-gold = {184, 20, "gold"}
-parts_crate = {185, 25, "parts crate"}
-cobalt = {186, 35, "cobalt"}
-platinum = {187, 40, "platinum"}
-void_fragment = {188, 50, "void fragment"}
+scrap = {173, 10, "scrap"}
+copper = {174, 20, "copper"}
+gold = {184, 30, "gold"}
+parts_crate = {185, 50, "parts crate"}
+cobalt = {186, 75, "cobalt"}
+platinum = {187, 100, "platinum"}
+void_fragment = {188, 150, "void fragment"}
 super_credit = {172, 100, "super credit"}
-void_crystal = {189, 200, "void crystal"}
+void_crystal = {189, 250, "void crystal"}
 
 function add_floating_item(item_type, x, y, price)
 	if item_type > 0 then
@@ -1780,6 +1779,8 @@ end
 function travel_from_battle_animation_script()
 	if travel_after_battle_phase == 11 and time() - tme >= 30 then -- 30
 		-- go inside
+		conv_partner = 1
+		trader_converstaion()
 		travel_after_battle_phase = 0
 		travel_after_battle_mode = false
 		converstaion_mode = true
@@ -1939,10 +1940,6 @@ function void_creature_converstaion()
 	end
 end
 
-function send_to_void_creature()
-
-end
-
 -->8
 -- trading
 black_hole_x = 0
@@ -1979,6 +1976,7 @@ function trading_script()
 		end
 	elseif trading_phase == 3 and time() - tme >= 11.5  then -- 12 then
 		pause_on_text = true
+		converstaion_mode = true
 		stars_hide = true
 		trading_phase = 4
 	elseif trading_phase == 2 and time() - tme >= 10 then -- 10.5
@@ -2065,7 +2063,7 @@ function draw_tradescreen()
 		end
 	end
 
-	if drone_life < drone_max_life then
+	if drone_available and drone_life < drone_max_life then
 		print("repair drones", 10, 28, 7)
 		print("(" ..(drone_max_life-drone_life)*price_per_drone_hull_point.. ")", 63, 28, 10)
 	else
@@ -2079,7 +2077,7 @@ function draw_tradescreen()
 		print("restore ship shield", 10, 36, 5)
 	end
 
-	if drone_shields < drone_max_shields then
+	if drone_available and drone_shields < drone_max_shields then
 		print("restore drone shield", 10, 44, 7)
 		print("(" ..(drone_max_shields-drone_shields)*price_per_drone_shield.. ")", 91, 44, 10)
 	else
@@ -2190,7 +2188,7 @@ function trade()
 			end
 		elseif trade_cursor_pos == 3 then -- repair drones
 			local price = (drone_max_life-drone_life)*price_per_drone_hull_point
-			if drone_max_life-drone_life > 0 and pl_credits >= price then
+			if drone_available and drone_max_life-drone_life > 0 and pl_credits >= price then
 				drone_life = drone_max_life
 				pl_credits -= price
 				sfx(10)
@@ -2207,7 +2205,7 @@ function trade()
 			end
 		elseif trade_cursor_pos == 5 then -- restore drone shield point
 			price = (drone_max_shields-drone_shields)*price_per_drone_shield
-			if drone_shields < drone_max_shields and pl_credits >= price then
+			if drone_available and drone_shields < drone_max_shields and pl_credits >= price then
 				drone_shields += 1
 				sfx(12)
 			else
@@ -2272,6 +2270,7 @@ function trade()
 			trade_finished = true
 			all_stars_speed_ctrl(0.2)
 			stars_hide = false
+			sfx(22)
 		end
 	end
 end

@@ -146,7 +146,7 @@ function _update()
 	elseif battle_mode then
 		if init_battle then
 			all_stars_speed_ctrl(1)
-			min_enemies_on_level = 10 + level
+			min_enemies_on_level = 10 + flr(level * 1.5)
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -191,8 +191,6 @@ function _update()
 		if conv_partner == 2 then
 			generate_void_noise(0, 0, 128, 128, 50)
 		end
-		conv_partner = 1
-		trader_converstaion()
 		advance_textbox()
 	elseif trading_mode then
 		ship_burner_calculation()

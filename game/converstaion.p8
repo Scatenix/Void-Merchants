@@ -67,8 +67,4 @@ function void_creature_converstaion()
 	end
 end
 
-function send_to_void_creature()
-
-end
-
 -->8

@@ -41,6 +41,8 @@ end
 function travel_from_battle_animation_script()
 	if travel_after_battle_phase == 11 and time() - tme >= 30 then -- 30
 		-- go inside
+		conv_partner = 1
+		trader_converstaion()
 		travel_after_battle_phase = 0
 		travel_after_battle_mode = false
 		converstaion_mode = true

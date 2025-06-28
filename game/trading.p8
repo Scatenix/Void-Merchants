@@ -34,6 +34,7 @@ function trading_script()
 		end
 	elseif trading_phase == 3 and time() - tme >= 11.5  then -- 12 then
 		pause_on_text = true
+		converstaion_mode = true
 		stars_hide = true
 		trading_phase = 4
 	elseif trading_phase == 2 and time() - tme >= 10 then -- 10.5
@@ -120,7 +121,7 @@ function draw_tradescreen()
 		end
 	end
 
-	if drone_life < drone_max_life then
+	if drone_available and drone_life < drone_max_life then
 		print("repair drones", 10, 28, 7)
 		print("(" ..(drone_max_life-drone_life)*price_per_drone_hull_point.. ")", 63, 28, 10)
 	else
@@ -134,7 +135,7 @@ function draw_tradescreen()
 		print("restore ship shield", 10, 36, 5)
 	end
 
-	if drone_shields < drone_max_shields then
+	if drone_available and drone_shields < drone_max_shields then
 		print("restore drone shield", 10, 44, 7)
 		print("(" ..(drone_max_shields-drone_shields)*price_per_drone_shield.. ")", 91, 44, 10)
 	else
@@ -245,7 +246,7 @@ function trade()
 			end
 		elseif trade_cursor_pos == 3 then -- repair drones
 			local price = (drone_max_life-drone_life)*price_per_drone_hull_point
-			if drone_max_life-drone_life > 0 and pl_credits >= price then
+			if drone_available and drone_max_life-drone_life > 0 and pl_credits >= price then
 				drone_life = drone_max_life
 				pl_credits -= price
 				sfx(10)
@@ -262,7 +263,7 @@ function trade()
 			end
 		elseif trade_cursor_pos == 5 then -- restore drone shield point
 			price = (drone_max_shields-drone_shields)*price_per_drone_shield
-			if drone_shields < drone_max_shields and pl_credits >= price then
+			if drone_available and drone_shields < drone_max_shields and pl_credits >= price then
 				drone_shields += 1
 				sfx(12)
 			else
@@ -327,6 +328,7 @@ function trade()
 			trade_finished = true
 			all_stars_speed_ctrl(0.2)
 			stars_hide = false
+			sfx(22)
 		end
 	end
 end
