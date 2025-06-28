@@ -2,27 +2,19 @@
 
 Void Merchants is a Space Invaders-inspired action game built in PICO-8. Blast enemies, collect resources and trade your way to upgrades as you progress through increasingly difficult space battles!
 
-<p align="center">
-    <img src="https://github.com/user-attachments/assets/0e16e588-fac4-4c2c-aab3-096eb0bdf18c" alt="Void Merchants" width="50%" />
-</p>
+<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants.png?raw=true" alt="Void Merchants" width="50%" />
 
 # Fight
 
-<p align="center">
-    <img src="https://github.com/user-attachments/assets/aecfdb81-4f61-4cb8-81a9-6cb9e2fde013" alt="Void Merchants Fight" width="50%" />
-</p>
+<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_fight.gif?raw=true" alt="Void Merchants Fight" width="50%" />
 
 # Travel
 
-<p align="center">
-    <img src="https://github.com/user-attachments/assets/68499621-b96f-4241-a3f4-b97ee512295b" alt="Void Merchants Travel" width="50%" />
-</p>
+<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_trade.png?raw=true" alt="Void Merchants Travel" width="50%" />
 
 # Trade
 
-<p align="center">
-    <img src="https://github.com/user-attachments/assets/c0fdd560-cbb2-4cfb-bc84-0ac62686ae1f" alt="Void Merchants Trade" width="50%" />
-</p>
+<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_travel.gif?raw=true" alt="Void Merchants Trade" width="50%" />
 
 Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merchants/)
 
