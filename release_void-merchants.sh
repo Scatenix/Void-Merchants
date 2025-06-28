@@ -6,7 +6,7 @@ PICO8_EXE="/c/Program Files (x86)/PICO-8/pico8.exe"
 _7Z_EXE="/c/Program Files/7-Zip/7z.exe"
 VERSION=$(cat ./VERSION)
 
-if [[ -n $(git status --porcelain | grep -v '^. .\{0,\}VERSION$') ]]; then
+if [[ -n $(git status --porcelain | grep -v 'M VERSION') ]]; then
   echo "There are pending changes in the repository besides ther VERSION file. Commit or revert them first."
   exit
 fi
