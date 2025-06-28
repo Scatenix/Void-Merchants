@@ -21,17 +21,17 @@ if git rev-parse "$VERSION" >/dev/null 2>&1; then
   exit
 fi
 
-echo "Writing $VERSION to void_merchants.p8 and the manual.txt..."
-sed -i 's/^\(GAME_VERSION[[:space:]]*=[[:space:]]*"\)[^"]*\(".*\)/\1'"$VERSION"'\2/' ./void_merchants.p8
+echo "Writing $VERSION to void-merchants.p8 and the manual.txt..."
+sed -i 's/^\(GAME_VERSION[[:space:]]*=[[:space:]]*"\)[^"]*\(".*\)/\1'"$VERSION"'\2/' ./void-merchants.p8
 sed -i 's/\(Manual for version \)[^ ]\+/\1'"$VERSION"'/' ./resources/cart/manual.txt
 
 echo "Writing the current year to all license places..."
 sed -i "s/\(Copyright (c) \)[0-9]\{4\}/\1$(date +%Y)/" LICENSE.txt
 sed -i "s/\(Copyright (c) \)[0-9]\{4\}/\1$(date +%Y)/" README.md
-sed -i "s/\(copyright (c) \)[0-9]\{4\}/\1$(date +%Y)/" void_merchants.p8
+sed -i "s/\(copyright (c) \)[0-9]\{4\}/\1$(date +%Y)/" void-merchants.p8
 
-echo "Splitting files from void_merchants.p8..."
-./split.sh void_merchants.p8
+echo "Splitting files from void-merchants.p8..."
+./split.sh void-merchants.p8
 
 # Check if 7z is working. Exit if test fails. very important for the LICENSE.txt
 if ! "$_7Z_EXE" > /dev/null 2>&1; then
@@ -46,9 +46,9 @@ rm ./docs/index.js
 rm -rf ./resources/cart/void-merchants.bin/
 
 # generate html+js files and the .p8.png cartridge
-"$PICO8_EXE" void_merchants.p8 -export ./resources/cart/void-merchants.p8.png
-"$PICO8_EXE" void_merchants.p8 -export ./docs/index.html
-"$PICO8_EXE" void_merchants.p8 -export "-i 232 -s 2 -c 15  -e ./resources/cart/manual.txt ./resources/cart/void-merchants.bin"
+"$PICO8_EXE" void-merchants.p8 -export ./resources/cart/void-merchants.p8.png
+"$PICO8_EXE" void-merchants.p8 -export ./docs/index.html
+"$PICO8_EXE" void-merchants.p8 -export "-i 232 -s 2 -c 15  -e ./resources/cart/manual.txt ./resources/cart/void-merchants.bin"
 
 # Not using * wildcard just to be safe and to not delete something important
 echo "remove unnecessarily created non-zipped binary files..."

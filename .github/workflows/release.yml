@@ -24,14 +24,14 @@ jobs:
         with:
           tag_name: ${{ env.TAG_NAME }}
           files: |
-            ./resources/cart/void-merchants.p8.png
-            ./resources/cart/void-merchants.bin/void-merchants_linux.zip
-            ./resources/cart/void-merchants.bin/void-merchants_windows.zip
-            ./resources/cart/void-merchants.bin/void-merchants_raspi.zip
-            ./resources/cart/void-merchants.bin/void-merchants_osx.zip
-            ./void-merchants.p8
-            ./resources/cart/manual.txt
             ./LICENSE.txt
+            ./resources/cart/manual.txt
+            ./void-merchants.p8
+            ./resources/cart/void-merchants.bin/void-merchants_osx.zip
+            ./resources/cart/void-merchants.bin/void-merchants_raspi.zip
+            ./resources/cart/void-merchants.bin/void-merchants_windows.zip
+            ./resources/cart/void-merchants.bin/void-merchants_linux.zip
+            ./resources/cart/void-merchants.p8.png
           body: |
             ## Release ${{ env.TAG_NAME }}
 

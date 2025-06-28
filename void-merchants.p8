@@ -54,7 +54,7 @@ GAME_VERSION = "v8.9.0"
 function _init()
 	-- needed to save and load the game (saving at trader, loading at titlescreen)
 	-- this is a hash of this cartridge at some point. should be pretty unique
-	cartdata("void_merchants_4e40baa22f0e407277e79304514550b9e952ccef")
+	cartdata("void-merchants_4e40baa22f0e407277e79304514550b9e952ccef")
 	
 	music(0)
 
