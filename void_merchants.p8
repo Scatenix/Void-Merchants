@@ -1,7 +1,10 @@
 pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
--- main
+-- void merchants
+-- fight, travel, trade!
+
+-- This file is the main file
 -- shift + h = ♥
 
 -- SFX
@@ -942,6 +945,11 @@ function set_pl_drone(tier)
 	drone_tier = tier
 	if tier == 0 then
 		drone_available = false
+		drone_sprite = 48
+		drone_storage = 0
+		drone_weapons = 0
+		drone_damage = 0
+		max_dr_weapons = 0
 	-- get attack drone
 	elseif tier >= 0 and tier <= 6 and drone_type_attack then
 		drone_sprite = 48 + tier
@@ -1032,7 +1040,6 @@ end
 
 function kill_drone()
 	drop_items_when_drone_dies()
-	
 	set_pl_drone(0)
 end
 -->8
@@ -1140,8 +1147,8 @@ end
 function spawn_enemy_wave()
 	if min_enemies_on_level > 0 then
 		sfx(22)
-		-- have always at least 2 enemies with up to 4 more (random). 1 more enemy ever 5 levels
-		local enemy_number_this_wave = 2 + flr(rnd(4)) + flr(level * 0.2)
+		-- have always at least 2 enemies with up to 3 more (random). 1 more enemy every 5 levels
+		local enemy_number_this_wave = 2 + flr(rnd(3)) + flr(level * 0.2)
 		min_enemies_on_level -= enemy_number_this_wave
 
 		for i = 0, enemy_number_this_wave, 1 do

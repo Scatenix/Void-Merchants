@@ -29,6 +29,11 @@ function set_pl_drone(tier)
 	drone_tier = tier
 	if tier == 0 then
 		drone_available = false
+		drone_sprite = 48
+		drone_storage = 0
+		drone_weapons = 0
+		drone_damage = 0
+		max_dr_weapons = 0
 	-- get attack drone
 	elseif tier >= 0 and tier <= 6 and drone_type_attack then
 		drone_sprite = 48 + tier
@@ -119,7 +124,6 @@ end
 
 function kill_drone()
 	drop_items_when_drone_dies()
-	
 	set_pl_drone(0)
 end
 -->8

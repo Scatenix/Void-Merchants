@@ -1,5 +1,8 @@
 __lua__1
--- main
+-- void merchants
+-- fight, travel, trade!
+
+-- This file is the main file
 -- shift + h = ♥
 
 -- SFX
