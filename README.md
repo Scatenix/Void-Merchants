@@ -119,11 +119,11 @@ Currently only less than 100 of 8192 tokens are left for the game code. There sh
 
 - Major: Game balancing needs to be tested!
     - Perhaps increase storage on the early levels, or get more money for drones to increase storage
-- Major: Game save should be destroyed after loading to avoid loading the game over and over again
+- ? Major: Game save should be destroyed after loading to avoid loading the game over and over again
     - And saving should quit to title screen. Else this isn't a true roguelike
     - I might leave it like this, just to make it easier
-- Minor: no healthbar shown for enemies at very low y coords
-- Minor: Had an instance of my drone dying but the drone_shield was still greater than 0. This should not happen
+- Minor: No healthbar shown for enemies at very low y coords
+- Minor: Had an instance of my drone dying without the drone_shield being destroyed first. This should not happen
 - Minor: Down-scaled planets look terrible
     - I don't think this is possible without overly complex solutions
 - Minor: Sounds or music sometimes skips
