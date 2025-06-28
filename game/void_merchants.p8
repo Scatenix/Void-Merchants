@@ -2,9 +2,23 @@ __lua__1
 -- void merchants
 -- fight, travel, trade!
 
--- license: all rights reserved.
+-- license: 
+-- all rights reserved.
+-- copyright (c) 2025 scatenix (https://github.com/scatenix)
 
-version = "0.9"
+-- this software, including the game and all assets, is provided for personal use only.
+-- you may download and play the game, but you may not copy, modify, distribute,
+-- or use it for any other purpose without the express written permission of the copyright holder.
+
+-- the software is provided "as is", without warranty of any kind, express or
+-- implied, including but not limited to the warranties of merchantability,
+-- fitness for a particular purpose and noninfringement. in no event shall the
+-- authors or copyright holders be liable for any claim, damages or other
+-- liability, whether in an action of contract, tort or otherwise, arising from,
+-- out of or in connection with the software or the use or other dealings in
+-- the software.
+
+GAME_VERSION = "v3.0.4"
 
 -- This file is the main file
 -- shift + h = ♥

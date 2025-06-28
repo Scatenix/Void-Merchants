@@ -1,0 +1,46 @@
+# Currently only uploads files to the Release section of the project
+# Build of the game files is done locally because I do not have access to the pico-8 executable within the pipeline.
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  upload-release-assets:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Get the current tag name
+        id: get_tag
+        run: echo "TAG_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ env.TAG_NAME }}
+          files: |
+            ./resources/cart/void-merchants.p8.png
+            ./resources/cart/void-merchants.bin/void-merchants_linux.zip
+            ./resources/cart/void-merchants.bin/void-merchants_windows.zip
+            ./resources/cart/void-merchants.bin/void-merchants_raspi.zip
+            ./resources/cart/void-merchants.bin/void-merchants_osx.zip
+            ./void-merchants.p8
+            ./resources/cart/manual.txt
+            ./LICENSE.TXT
+          body: |
+            ## Release ${{ env.TAG_NAME }}
+
+            - `void-merchants.p8.png` — PICO-8 cart image
+            - `void-merchants_linux.zip` — Linux binaries
+            - `void-merchants_windows.zip` — Windows binaries
+            - `void-merchants_raspi.zip` — Raspberry Pi binaries
+            - `void-merchants_osx.zip` — macOS binaries
+            - `manual.txt` — Manual for this release
+            - `LICENSE.txt` — Licensing information
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

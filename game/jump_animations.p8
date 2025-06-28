@@ -1,4 +1,4 @@
-__lua__14
+__lua__13
 -- jump_animations
 trader_station_x = 0
 trader_station_x = 0

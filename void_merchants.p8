@@ -4,9 +4,23 @@ __lua__
 -- void merchants
 -- fight, travel, trade!
 
--- license: all rights reserved.
+-- license: 
+-- all rights reserved.
+-- copyright (c) 2025 scatenix (https://github.com/scatenix)
 
-version = "0.9"
+-- this software, including the game and all assets, is provided for personal use only.
+-- you may download and play the game, but you may not copy, modify, distribute,
+-- or use it for any other purpose without the express written permission of the copyright holder.
+
+-- the software is provided "as is", without warranty of any kind, express or
+-- implied, including but not limited to the warranties of merchantability,
+-- fitness for a particular purpose and noninfringement. in no event shall the
+-- authors or copyright holders be liable for any claim, damages or other
+-- liability, whether in an action of contract, tort or otherwise, arising from,
+-- out of or in connection with the software or the use or other dealings in
+-- the software.
+
+GAME_VERSION = "v3.0.4"
 
 -- This file is the main file
 -- shift + h = ♥
@@ -1714,39 +1728,6 @@ function load_game()
 	sfx(11)
 end
 -->8
--- debug infos
-
--- commented code to not waste tokens
-
--- function debug_coords()
--- 	line(10,70,10,70,8)
--- 	print("point x:10 y:70", 10,60,8)
-	
--- 	print("ship_x:" .. pl_ship_x, 10, 10, 7)
--- 	print("ship_y:" .. pl_ship_y, 10, 20, 7)
--- 	print("drone_x:" .. drone_x, 10, 30, 12)
--- 	print("drone_y:" .. drone_y, 10, 40, 12)
--- end
-
--- function info(text, val, plus_y)
--- 		if plus_y == nil then
--- 			plus_y = 0
--- 		end
--- 		if val == nil then
--- 			val = ""
--- 		end
--- 	print(text .. ": " .. val, 5, 5+plus_y, 8)
--- end
-
--- function show_stored_items()
--- 	y = 0
--- 	for i in all(pl_items_stored) do
--- 		info(i[2].. " :", i[1], y)
--- 		spr(i[1], 50, y+4)
--- 		y+=7
--- 	end
--- end
--->8
 -- jump_animations
 trader_station_x = 0
 trader_station_x = 0
@@ -2350,7 +2331,7 @@ end
 
 function draw_titlescreen()
 	-- version
-	print("beta v" ..version, 90, 0, 10)
+	print("beta " ..GAME_VERSION, 84, 0, 10)
 	-- void merchants
 	sspr(88, 104, 40, 16, 24, 20, 80, 32)
 	-- hide enemy ship

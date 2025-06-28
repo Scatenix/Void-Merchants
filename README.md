@@ -113,7 +113,7 @@ Because PICO-8 is using a virtualized CPU that is running at about 8 MHz, the ga
 - All off-screen elements are mostly deleted or at least deactivated to avoid heavy calculations or useless rendering
     - Exception: Enemies that spawn behind other enemies will be fully calculated and rendered as an arrow at the right screen edge
 
-Currently only less than 100 of 8192 tokens are left for the game code. There shouldn't really be any unused code, since I had to make sure there is nothing unnecessary to stay in this limit.
+Currently only less than 10 of 8192 tokens are left for the game code. There shouldn't really be any unused code, since I had to make sure there is nothing unnecessary to stay in this limit. This even includes comments.
 
 ## Known Bugs
 
@@ -133,3 +133,17 @@ Currently only less than 100 of 8192 tokens are left for the game code. There sh
 ## License
 
 All rights reserved.
+
+Copyright (c) 2025 Scatenix (https://github.com/Scatenix)
+
+This software, including the game and all assets, is provided for personal use only.
+You may download and play the game, but you may not copy, modify, distribute,
+or use it for any other purpose without the express written permission of the copyright holder.
+
+The software is provided "as is", without warranty of any kind, express or
+implied, including but not limited to the warranties of merchantability,
+fitness for a particular purpose and noninfringement. In no event shall the
+authors or copyright holders be liable for any claim, damages or other
+liability, whether in an action of contract, tort or otherwise, arising from,
+out of or in connection with the software or the use or other dealings in
+the software.
