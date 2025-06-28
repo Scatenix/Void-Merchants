@@ -11,10 +11,8 @@ function draw_titlescreen()
 	-- black hole
 	sspr(64, 72, 16, 16, 48, 55, 32, 32)
 	-- small planet
-	-- spr(0, 96, 22, 2, 2)
 	sspr(small_planets[current_small_planet][1], small_planets[current_small_planet][2], 16, 16, 96, 22, 16, 16)
 
-	
 	if wait_after_titlescreen or #pl_ship_shots > 0 then
 		print("prepare!", 48, 110, 10)	
 	else

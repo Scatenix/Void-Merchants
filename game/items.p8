@@ -24,12 +24,12 @@ credit = {171, 5, "credit"}
 scrap = {173, 10, "scrap"}
 copper = {174, 20, "copper"}
 gold = {184, 30, "gold"}
-parts_crate = {185, 40, "parts crate"}
-cobalt = {186, 50, "cobalt"}
-platinum = {187, 75, "platinum"}
-void_fragment = {188, 100, "void fragment"}
+parts_crate = {185, 50, "parts crate"}
+cobalt = {186, 75, "cobalt"}
+platinum = {187, 100, "platinum"}
+void_fragment = {188, 150, "void fragment"}
 super_credit = {172, 100, "super credit"}
-void_crystal = {189, 150, "void crystal"}
+void_crystal = {189, 250, "void crystal"}
 
 function add_floating_item(item_type, x, y, price)
 	if item_type > 0 then
@@ -190,7 +190,6 @@ end
 -- floating item speed is linked to the star_speed_multiplier!
 function calculate_floating_items_drift()
 	for item in all(floating_items) do
-		-- little hack to make the ship speed apear faster than it is for preparing the jump into the hyperspace
 		if travel_after_battle_phase == 5 then
 			item[1] -= 5
 		else

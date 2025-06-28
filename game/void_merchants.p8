@@ -2,6 +2,8 @@ __lua__1
 -- void merchants
 -- fight, travel, trade!
 
+-- license: all rights reserved.
+
 -- This file is the main file
 -- shift + h = ♥
 

@@ -3,33 +3,44 @@
 ![Made with PICO-8](https://img.shields.io/badge/made%20with-PICO--8-red)
 ![Status: Beta](https://img.shields.io/badge/status-beta-yellow)
 
-Void Merchants is a Space Invaders-inspired action game built in PICO-8. Blast enemies, collect resources and trade your way to upgrades as you progress through increasingly difficult space battles!
+Void Merchants is a Space Invaders-inspired roguelike action game built in PICO-8. Blast enemies, collect resources and trade your way to upgrades as you progress through increasingly difficult space battles!
 
 <p align="center">
-    <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants.png" alt="Void Merchants" width="40%" />
+    <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README/void-merchants.png" alt="Void Merchants" width="40%" />
 </p>
 
 ### Fight, Travel, Trade!
 
 <p align="center">
-    <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_fight.gif" alt="Void Merchants Fight" width="33%" />
-    <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_trade.gif" alt="Void Merchants Travel" width="33%" />
-    <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_travel.gif" alt="Void Merchants Trade" width="33%" />
+    <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README/void-merchants_fight.gif" alt="Void Merchants Fight" width="33%" />
+    <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README/void-merchants_trade.gif" alt="Void Merchants Travel" width="33%" />
+    <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README/void-merchants_travel.gif" alt="Void Merchants Trade" width="33%" />
 </p>
 
 Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merchants/)
 
 ## Controls
 
-- ↑ ↓ ← → : Move your ship
-- Y, C    : Shoot (Can be held down)
-- X, V    : Interact with NPCs or trade
+- ↑ ↓ ← → : Move your ship and cursor while trading
+- Y, C : Shoot (Can be held down)
+- X, V : Interact with NPCs or perform trade
 - Create save games at each visit to the trader by hitting X or V
 - Load them again at the title screen by hitting Y or C
 
 Can also be played with a controller! Tested with an Xbox controller - others may work too.
 
 The controls can be adjusted in the PICO-8 settings (pause button next to the bottom-right corner).
+
+## Abbreviations in the Game
+
+- HP      Ship health points
+- SH      Ship shield points
+- DR      Drone health points + shield points
+- STG     Combined storage of the ship and drones
+- DMG     Combined damage of the ship and drones
+- WPS     Combined number of weapons/blasters of the ship and drone
+- SP      Speed of the ship as floating point
+- STS     Shot speed of the ship and drone as floating point
 
 ## State of the Game
 
@@ -81,7 +92,7 @@ The sound volume can be adjusted in the settings (pause button next to the botto
 
 Or play it directly on the PICO-8 fantasy console by downloading this png and loading it into PICO-8:
 
-<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants.p8.png" alt="Void Merchants Game Cartridge" />
+<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/cart/void-merchants.p8.png" alt="Void Merchants Game Cartridge" />
 
 How to do this:
 - Either open PICO-8 and drag and drop `void_merchants.p8.png` into the window (Alt+Enter to toggle fullscreen)
@@ -108,11 +119,16 @@ Currently only less than 100 of 8192 tokens are left for the game code. There sh
 
 - Major: Game balancing needs to be tested!
     - Perhaps increase storage on the early levels, or get more money for drones to increase storage
+- Major: Game save should be destroyed after loading to avoid loading the game over and over again
+    - And saving should quit to title screen. Else this isn't a true roguelike
+    - I might leave it like this, just to make it easier
+- Minor: no healthbar shown for enemies at very low y coords
 - Minor: Had an instance of my drone dying but the drone_shield was still greater than 0. This should not happen
 - Minor: Down-scaled planets look terrible
     - I don't think this is possible without overly complex solutions
 - Minor: Sounds or music sometimes skips
     - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here
+- Minor: If I had the code space, I would implement a manual entry in the pause menu
 
 ## License
 

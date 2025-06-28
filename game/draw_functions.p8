@@ -103,8 +103,8 @@ function draw_textbox(text1, text2, text3, text4, in_void)
 		sspr(0, 112, 32, 16, 64, 44, 64, 32)
 		sspr(0, 112, 32, 16, 64, 74, 64, 32)
 
-		sspr(0, 96, 32, 8, 0, 106, 64, 16)
-		sspr(0, 96, 32, 8, 64, 106, 64, 16)
+		sspr(96, 120, 32, 8, 0, 106, 64, 16)
+		sspr(96, 120, 32, 8, 64, 106, 64, 16)
 		
 		-- drawing trader
 		sspr(64, 8, 8, 16, 88, 48, 8*4, 16*4)
@@ -214,10 +214,10 @@ function draw_ship()
 		local x_rand = flr(rnd(3)) - 1;
 		local y_rand = flr(rnd(3)) - 1;
 		spr(pl_ship_sprite, pl_ship_x + x_rand, pl_ship_y + y_rand)
-		spr(249 + pl_ship_shields, pl_ship_x + 9 + x_rand, pl_ship_y + y_rand, 1, 1, true, false)
+		spr(192 + pl_ship_shields, pl_ship_x + 9 + x_rand, pl_ship_y + y_rand, 1, 1, true, false)
 	else
 		spr(pl_ship_sprite, pl_ship_x, pl_ship_y)
-		spr(249 + pl_ship_shields, pl_ship_x + 9, pl_ship_y, 1, 1, true, false)
+		spr(192 + pl_ship_shields, pl_ship_x + 9, pl_ship_y, 1, 1, true, false)
 	end
 end
 
@@ -247,17 +247,17 @@ function draw_drone()
 		local x_rand = flr(rnd(3)) - 1;
 		local y_rand = flr(rnd(3)) - 1;
 		spr(drone_sprite, drone_x + x_rand, drone_y + y_rand)
-		spr(249 + drone_shields, drone_x + 9 + x_rand, drone_y + y_rand, 1, 1, true, false)
+		spr(192 + drone_shields, drone_x + 9 + x_rand, drone_y + y_rand, 1, 1, true, false)
 	else
 		spr(drone_sprite, drone_x, drone_y)
-		spr(249 + drone_shields, drone_x + 9, drone_y, 1, 1, true, false)
+		spr(192 + drone_shields, drone_x + 9, drone_y, 1, 1, true, false)
 	end
 end
 
 function draw_enemies()
 	for enemy in all(enemies) do
 		spr(enemy[5], enemy[1], enemy[2])
-		spr(249 + enemy[8], enemy[1] - 9, enemy[2])
+		spr(192 + enemy[8], enemy[1] - 9, enemy[2])
 		
 		if not prevent_enemy_moving_on_x then
 			enemy[1] -= 0.1 * enemy[11]
