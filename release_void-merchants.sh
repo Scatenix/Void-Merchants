@@ -65,6 +65,6 @@ done
 git add --all
 git commit -m "$VERSION: prepare release"
 git tag "$VERSION"
-git push origin "$VERSION"
+git push && git push origin "$VERSION"
 
 printf "\nRelease done."
