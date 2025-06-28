@@ -6,15 +6,15 @@ Void Merchants is a Space Invaders-inspired action game built in PICO-8. Blast e
 
 # Fight
 
-<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_fight.gif?raw=true" alt="Void Merchants Fight" width="40%" />
+<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_fight.gif" alt="Void Merchants Fight" width="40%" />
 
 # Travel
 
-<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_trade.png?raw=true" alt="Void Merchants Travel" width="40%" />
+<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_trade.png" alt="Void Merchants Travel" width="40%" />
 
 # Trade
 
-<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_travel.gif?raw=true" alt="Void Merchants Trade" width="40%" />
+<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants_travel.gif" alt="Void Merchants Trade" width="40%" />
 
 Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merchants/)
 
@@ -72,13 +72,15 @@ Both the sound volume and the controls can be adjusted in the settings (Pause bu
 
 ---
 
-Or play it directly on the PICO-8 fantasy console.
+Or play it directly on the PICO-8 fantasy console by downloading this png and loading it into PICO8:
+
+<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README_resources/void_merchants.p8.png" alt="Void Merchants Game Cartridge" />
 
 The game is not yet on the official `splore` game explorer.
 
 Take the following steps for Windows:
-- Copy the `void_merchants.p8` file to `%AppData%\pico-8\carts\`
-- Open PICO-8 and type `load void_merchants.p8`
+- Copy the `void_merchants.p8.png` file to `%AppData%\pico-8\carts\`
+- Open PICO-8 and type `load void_merchants.p8.png`
 - Type `run` or hit ctrl+r
 
 # About the Performance
