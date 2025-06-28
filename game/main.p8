@@ -2,13 +2,6 @@ __lua__1
 -- main
 -- shift + h = ♥
 
--- Possible void creature dialog
---	before lvl 1:
---	after lvl 5: I see you are making progress. Very good!
--- 	after lvl 10:
--- 	after lvl 15:
---  after lvl 20: finished game, sending back to menu
-
 -- SFX
 -- 0 explosion
 -- 1 big explosion
