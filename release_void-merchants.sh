@@ -72,7 +72,7 @@ case "$response" in
         git add --all
         git commit -m "Release $VERSION"
         git tag "$VERSION"
-        git push && git push origin "$VERSION"
+        git push origin main && git push origin "$VERSION"
 
         printf "\nRelease done."
         ;;
