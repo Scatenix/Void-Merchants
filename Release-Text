@@ -1,10 +1,12 @@
 ## Release v9.0.5
 
-- Fixed a but where shots fired before visiting the trader are frozen and later displayed when leaving the trader again
-- Fixed a bug where the information whether the player has attack or cargo drones was not saved
-- Fixed a bug where drones did not have any weapons when converting from a cargo drone
-- Fixed a bug where drone life was shown above the playing field
-- Improved the manual
+- Fixed shots shown after leaving the trader (for real this time!)
+- Reset cursor to first line on every visit to the trader
+- Fixed current level sometimes not shown when entering battle
+- Changed how price to restore shields shows up to be easier to understand
+- Reduced enemy damage, weapons, shot speed and amount of shots at higher levels
+- Reduced storage for the ship and attack drones to make cargo drones viable
+- Fixed bug where sending back to title screen did not work properly after the death screen
 
 ## Files included
 

@@ -23,7 +23,6 @@ __lua__
 GAME_VERSION = "v9.0.5"
 
 -- This file is the main file
--- shift + h = ♥
 
 -- SFX
 -- 0 explosion
@@ -51,11 +50,11 @@ GAME_VERSION = "v9.0.5"
 -- 22 spawn in enemies
 -- 23 cannot perform action (used at trading)
 
+-- needed to save and load the game (saving at trader, loading at titlescreen)
+-- this is a hash of this cartridge at some point. should be pretty unique
+cartdata("void-merchants_4e40baa22f0e407277e79304514550b9e952ccef")
+
 function _init()
-	-- needed to save and load the game (saving at trader, loading at titlescreen)
-	-- this is a hash of this cartridge at some point. should be pretty unique
-	cartdata("void-merchants_4e40baa22f0e407277e79304514550b9e952ccef")
-	
 	music(0)
 
 	init_passing_stars()
@@ -71,6 +70,7 @@ function _init()
 
 	init_battle = true
 	init_titlescreen = true
+	wait_after_titlescreen = false
 
 	level = 1
 	pl_credits = 200
@@ -167,6 +167,7 @@ function _update()
 		if init_battle then
 			all_stars_speed_ctrl(1)
 			min_enemies_on_level = 10 + flr(level * 1.5)
+			initial_battle_draw = true
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -272,8 +273,8 @@ function _draw()
 		draw_explosions()
 		draw_void_noise()
 	elseif battle_mode then
-		if initial_draw == true then
-			initial_draw = false
+		if initial_battle_draw == true then
+			initial_battle_draw = false
 			show_level = true
 			show_level_frames_left = 100
 			if level == 1 then
@@ -372,7 +373,7 @@ x_right_boundry = 120
 y_up_boundry = 0
 y_down_boundry = 97
 
-initial_draw = true
+initial_battle_draw = true
 
 speed_buff_time = 4.0
 shot_speed_buff_time = 4.0
@@ -381,8 +382,6 @@ max_pl_weapons = 1
 max_dr_weapons = 0
 max_drones = 6
 max_pl_extra_damage = 6
-
-wait_after_titlescreen = false
 
 travel_after_battle_phase = 0
 jump_wobble = false
@@ -798,7 +797,7 @@ function set_pl_ship(tier)
 	pl_ship_speed = 1 + tier * 0.2
 	pl_ship_default_shot_speed = tier / 3 + 1
 	pl_ship_default_speed = 1 + tier * 0.2
-	pl_ship_storage = tier * 2 + 4
+	pl_ship_storage = tier + 3
 	max_pl_weapons = min(tier, 5)
 end
 
@@ -972,7 +971,7 @@ function set_pl_drone(tier)
 		drone_max_life = 2 * tier + 1
 		drone_shields = tier
 		drone_max_shields = tier
-		drone_storage = tier + 1
+		drone_storage = tier
 		drone_available = true
 		max_dr_weapons = min(tier, 5)
 	-- get storage drone
@@ -1101,7 +1100,7 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- sprite
 	enemy[5] = 199 + lvl
 	-- damage
-	enemy[6] = lvl
+	enemy[6] = ceil(lvl / 4)
 	-- life
 	enemy[7] = calc_enemy_life(lvl)
 	-- shields
@@ -1110,9 +1109,9 @@ function add_enemy(lvl, try_avoid_placing_behind)
 		enemy[8] = 5
 	end
 	-- weapons
-	enemy[9] = ceil(lvl / 4)
+	enemy[9] = ceil(lvl / 5)
 	-- shot_speed
-	enemy[10] = 1 + 0.1 * lvl
+	enemy[10] = 1 + 0.075 * lvl
 	-- speed
 	enemy[11] = flr(lvl / 5) * 0.7 + 1
 	-- value
@@ -1146,9 +1145,9 @@ function get_shot_pattern(lvl)
 	elseif lvl >= 13 and lvl <= 15 then
 		return {2, 4, 6, 32, 34, 36}
 	elseif lvl >= 16 and lvl <= 18 then
-		return {2, 4, 6, 8, 24, 26, 28, 30}
+		return {2, 6, 8, 24, 28, 30}
 	elseif lvl >= 19 and lvl <= 20 then
-		return {2, 4, 6, 24, 26, 28, 48, 50, 52}
+		return {2, 8, 14, 24, 28, 30, 48, 54}
 	end
 end
 
@@ -1942,16 +1941,13 @@ function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30
 		all_stars_speed_ctrl(1)
 		
-		-- without this, shots shot before entering the trader are frozen and later displayed again when leaving
-		pl_ship_shots = {}
-		drone_shots = {}
-
 		trading_mode = false
 		battle_mode = true
 		init_battle = true
 		show_trader_station_near = false
 		show_trader_station_far = false
 		trading_phase = 0
+		trade_cursor_pos = 0
 		trade_finished = false
 	elseif trading_phase == 4 and not pause_on_text then
 		if level % 20 == 0 then
@@ -1979,6 +1975,10 @@ function trading_script()
 			stars_hide = true
 			trade()
 		else
+			-- without this, shots shot before entering the trader are frozen and later displayed again when leaving
+			pl_ship_shots = {}
+			drone_shots = {}
+
 			show_trader_station_near = true
 			pl_ship_x = 64
 			pl_ship_y = 64
@@ -2060,14 +2060,14 @@ function draw_tradescreen()
 
 	if pl_ship_shields < pl_ship_max_shield then
 		print("restore ship shield", 10, 36, 7)
-		print("(" ..(pl_ship_max_shield-pl_ship_shields)*price_per_ship_shield.. ")", 87, 36, 10)
+		print("(" ..(pl_ship_max_shield-pl_ship_shields).. " * " .. price_per_ship_shield.. ")", 87, 36, 10)
 	else
 		print("restore ship shield", 10, 36, 5)
 	end
 
 	if drone_available and drone_shields < drone_max_shields then
 		print("restore drone shield", 10, 44, 7)
-		print("(" ..(drone_max_shields-drone_shields)*price_per_drone_shield.. ")", 91, 44, 10)
+		print("(" ..(drone_max_shields-drone_shields).. " * " .. price_per_drone_shield.. ")", 91, 44, 10)
 	else
 		print("restore drone shield", 10, 44, 5)
 	end

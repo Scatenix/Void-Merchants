@@ -21,7 +21,6 @@ __lua__1
 GAME_VERSION = "v9.0.5"
 
 -- This file is the main file
--- shift + h = ♥
 
 -- SFX
 -- 0 explosion
@@ -49,11 +48,11 @@ GAME_VERSION = "v9.0.5"
 -- 22 spawn in enemies
 -- 23 cannot perform action (used at trading)
 
+-- needed to save and load the game (saving at trader, loading at titlescreen)
+-- this is a hash of this cartridge at some point. should be pretty unique
+cartdata("void-merchants_4e40baa22f0e407277e79304514550b9e952ccef")
+
 function _init()
-	-- needed to save and load the game (saving at trader, loading at titlescreen)
-	-- this is a hash of this cartridge at some point. should be pretty unique
-	cartdata("void-merchants_4e40baa22f0e407277e79304514550b9e952ccef")
-	
 	music(0)
 
 	init_passing_stars()
@@ -69,6 +68,7 @@ function _init()
 
 	init_battle = true
 	init_titlescreen = true
+	wait_after_titlescreen = false
 
 	level = 1
 	pl_credits = 200
@@ -165,6 +165,7 @@ function _update()
 		if init_battle then
 			all_stars_speed_ctrl(1)
 			min_enemies_on_level = 10 + flr(level * 1.5)
+			initial_battle_draw = true
 			init_battle = false
 			tme = time()
 			spawn_enemy_wave()
@@ -270,8 +271,8 @@ function _draw()
 		draw_explosions()
 		draw_void_noise()
 	elseif battle_mode then
-		if initial_draw == true then
-			initial_draw = false
+		if initial_battle_draw == true then
+			initial_battle_draw = false
 			show_level = true
 			show_level_frames_left = 100
 			if level == 1 then

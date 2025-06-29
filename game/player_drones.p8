@@ -46,7 +46,7 @@ function set_pl_drone(tier)
 		drone_max_life = 2 * tier + 1
 		drone_shields = tier
 		drone_max_shields = tier
-		drone_storage = tier + 1
+		drone_storage = tier
 		drone_available = true
 		max_dr_weapons = min(tier, 5)
 	-- get storage drone

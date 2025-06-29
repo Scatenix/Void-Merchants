@@ -17,16 +17,13 @@ function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30
 		all_stars_speed_ctrl(1)
 		
-		-- without this, shots shot before entering the trader are frozen and later displayed again when leaving
-		pl_ship_shots = {}
-		drone_shots = {}
-
 		trading_mode = false
 		battle_mode = true
 		init_battle = true
 		show_trader_station_near = false
 		show_trader_station_far = false
 		trading_phase = 0
+		trade_cursor_pos = 0
 		trade_finished = false
 	elseif trading_phase == 4 and not pause_on_text then
 		if level % 20 == 0 then
@@ -54,6 +51,10 @@ function trading_script()
 			stars_hide = true
 			trade()
 		else
+			-- without this, shots shot before entering the trader are frozen and later displayed again when leaving
+			pl_ship_shots = {}
+			drone_shots = {}
+
 			show_trader_station_near = true
 			pl_ship_x = 64
 			pl_ship_y = 64
@@ -135,14 +136,14 @@ function draw_tradescreen()
 
 	if pl_ship_shields < pl_ship_max_shield then
 		print("restore ship shield", 10, 36, 7)
-		print("(" ..(pl_ship_max_shield-pl_ship_shields)*price_per_ship_shield.. ")", 87, 36, 10)
+		print("(" ..(pl_ship_max_shield-pl_ship_shields).. " * " .. price_per_ship_shield.. ")", 87, 36, 10)
 	else
 		print("restore ship shield", 10, 36, 5)
 	end
 
 	if drone_available and drone_shields < drone_max_shields then
 		print("restore drone shield", 10, 44, 7)
-		print("(" ..(drone_max_shields-drone_shields)*price_per_drone_shield.. ")", 91, 44, 10)
+		print("(" ..(drone_max_shields-drone_shields).. " * " .. price_per_drone_shield.. ")", 91, 44, 10)
 	else
 		print("restore drone shield", 10, 44, 5)
 	end

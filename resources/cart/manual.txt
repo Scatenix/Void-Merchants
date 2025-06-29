@@ -52,8 +52,10 @@ Save with the Shoot button.
 - Restore ship shield - Restore one point of your ship's shield
 - Restore drone shield - Restore one point of your drones' shields
 - Install stored upgrades - Install stored upgrades that could not be equipped during the battle*
-- Install stronger weapons - Install a stronger weapon, increasing its damage done by one point. This only applies to the shots from your ship
-- Install new weapon - Install a new weapon. Possible number of weapons increases with upgraded ship and more drones
+- Install stronger weapons - Install a stronger weapon, increasing its damage done by one point.
+                             This only applies to the shots from your ship
+- Install new weapon - Install a new weapon. Possible number of weapons increases with upgraded ship and more drones.
+                       Tries to max out ship weapons first before equipping to drones
 - Buy attack / cargo drone - Buy additional or larger drones
 - Rebuild drones to attack / cargo - Change your drone type**
 

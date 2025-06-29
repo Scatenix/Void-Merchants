@@ -40,7 +40,7 @@ function set_pl_ship(tier)
 	pl_ship_speed = 1 + tier * 0.2
 	pl_ship_default_shot_speed = tier / 3 + 1
 	pl_ship_default_speed = 1 + tier * 0.2
-	pl_ship_storage = tier * 2 + 4
+	pl_ship_storage = tier + 3
 	max_pl_weapons = min(tier, 5)
 end
 

@@ -112,11 +112,16 @@ Currently only less than 10 of 8192 tokens are left for the game code. There sho
 ## Known Bugs
 
 - Major: Game balancing needs to be tested!
-    - Perhaps increase storage on the early levels, or get more money for drones to increase storage
+    - Storage is too high. Player should think about if it's worth to pick up low priced items
+        - The cargo drones are pretty much useless. But they should atleast in the early game be very useful
+        - Perhaps set the ships storage to only +1 per level and a base of 4
+        - I think the individual shots of the enemies deal to much damage on higher levels
+        - Gets super hard from level 15
+    - Perhaps make damage upgrades give 2 more damage after the 5th upgrade
 - ? Major: Game save should be destroyed after loading to avoid loading the game over and over again
     - And saving should quit to title screen. Else this isn't a true roguelike
     - I might leave it like this, just to make it easier
-- Minor: No healthbar shown for enemies at very low y coords
+- Minor: It is not always shown at which level the player is upon entering battle
 - Minor: Had an instance of my drone dying without the drone_shield being destroyed first. This should not happen
 - Minor: Down-scaled planets look terrible
     - I don't think this is possible without overly complex solutions

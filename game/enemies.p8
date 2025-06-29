@@ -49,7 +49,7 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- sprite
 	enemy[5] = 199 + lvl
 	-- damage
-	enemy[6] = lvl
+	enemy[6] = ceil(lvl / 4)
 	-- life
 	enemy[7] = calc_enemy_life(lvl)
 	-- shields
@@ -58,9 +58,9 @@ function add_enemy(lvl, try_avoid_placing_behind)
 		enemy[8] = 5
 	end
 	-- weapons
-	enemy[9] = ceil(lvl / 4)
+	enemy[9] = ceil(lvl / 5)
 	-- shot_speed
-	enemy[10] = 1 + 0.1 * lvl
+	enemy[10] = 1 + 0.075 * lvl
 	-- speed
 	enemy[11] = flr(lvl / 5) * 0.7 + 1
 	-- value
@@ -94,9 +94,9 @@ function get_shot_pattern(lvl)
 	elseif lvl >= 13 and lvl <= 15 then
 		return {2, 4, 6, 32, 34, 36}
 	elseif lvl >= 16 and lvl <= 18 then
-		return {2, 4, 6, 8, 24, 26, 28, 30}
+		return {2, 6, 8, 24, 28, 30}
 	elseif lvl >= 19 and lvl <= 20 then
-		return {2, 4, 6, 24, 26, 28, 48, 50, 52}
+		return {2, 8, 14, 24, 28, 30, 48, 54}
 	end
 end
 

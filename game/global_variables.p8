@@ -14,7 +14,7 @@ x_right_boundry = 120
 y_up_boundry = 0
 y_down_boundry = 97
 
-initial_draw = true
+initial_battle_draw = true
 
 speed_buff_time = 4.0
 shot_speed_buff_time = 4.0
@@ -23,8 +23,6 @@ max_pl_weapons = 1
 max_dr_weapons = 0
 max_drones = 6
 max_pl_extra_damage = 6
-
-wait_after_titlescreen = false
 
 travel_after_battle_phase = 0
 jump_wobble = false
