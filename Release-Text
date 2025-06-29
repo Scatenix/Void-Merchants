@@ -7,6 +7,8 @@
 - Reduced enemy damage, weapons, shot speed and amount of shots at higher levels
 - Reduced storage for the ship and attack drones to make cargo drones viable
 - Fixed bug where sending back to title screen did not work properly after the death screen
+- Increase player ship damage on higher upgrades
+- Lower price of damage upgrades
 
 ## Files included
 

@@ -8,7 +8,7 @@ price_per_ship_hull_point = 5
 price_per_drone_hull_point = 10
 price_increase_per_weapon = 50
 price_increase_per_drone = 100
-price_increase_per_weapon_dmg = 50
+price_increase_per_weapon_dmg = 25
 price_per_ship_shield = 25
 price_per_drone_shield = 50
 price_increase_per_ship_tier = 500
@@ -286,7 +286,7 @@ function trade()
 			local price = attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage
 			if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage and pl_credits >= price then
 				sfx(11)
-				pl_ship_damage += 1
+				pl_ship_damage += flr(pl_ship_damage_upgrades * 1.2)
 				pl_ship_damage_upgrades += 1
 				pl_credits -= price
 			else

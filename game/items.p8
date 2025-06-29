@@ -77,7 +77,7 @@ function interpret_item(item)
 	elseif item[3] == attack_damage_inc[1] then
 		if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
 			sfx(11)
-			pl_ship_damage += 1
+			pl_ship_damage += flr(pl_ship_damage_upgrades * 1.2)
 			del(floating_items, item)
 		else
 			store_item(item, attack_damage_inc[2])

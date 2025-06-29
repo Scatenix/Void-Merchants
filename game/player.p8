@@ -2,7 +2,6 @@ __lua__4
 -- player
 
 pl_credits = 0
-pl_items_stored = {}
 reputation = 0
 
 function add_credits(credits)

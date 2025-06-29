@@ -30,7 +30,7 @@ function set_pl_ship(tier)
 	htbx = get_ship_htbx_skp_pxl_width(tier)
 	pl_ship_hitbox_skip_pixel = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
-	pl_ship_damage = 2 * tier + pl_ship_damage_upgrades
+	pl_ship_damage = 2 * tier + flr(pl_ship_damage_upgrades * 1.2)
 	pl_ship_base_damage = 2 * tier
 	pl_ship_life = 5 * tier
 	pl_ship_max_life = pl_ship_life

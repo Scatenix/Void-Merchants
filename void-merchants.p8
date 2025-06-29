@@ -719,7 +719,6 @@ end
 -- player
 
 pl_credits = 0
-pl_items_stored = {}
 reputation = 0
 
 function add_credits(credits)
@@ -787,7 +786,7 @@ function set_pl_ship(tier)
 	htbx = get_ship_htbx_skp_pxl_width(tier)
 	pl_ship_hitbox_skip_pixel = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
-	pl_ship_damage = 2 * tier + pl_ship_damage_upgrades
+	pl_ship_damage = 2 * tier + flr(pl_ship_damage_upgrades * 1.2)
 	pl_ship_base_damage = 2 * tier
 	pl_ship_life = 5 * tier
 	pl_ship_max_life = pl_ship_life
@@ -1420,7 +1419,7 @@ function interpret_item(item)
 	elseif item[3] == attack_damage_inc[1] then
 		if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
 			sfx(11)
-			pl_ship_damage += 1
+			pl_ship_damage += flr(pl_ship_damage_upgrades * 1.2)
 			del(floating_items, item)
 		else
 			store_item(item, attack_damage_inc[2])
@@ -1932,7 +1931,7 @@ price_per_ship_hull_point = 5
 price_per_drone_hull_point = 10
 price_increase_per_weapon = 50
 price_increase_per_drone = 100
-price_increase_per_weapon_dmg = 50
+price_increase_per_weapon_dmg = 25
 price_per_ship_shield = 25
 price_per_drone_shield = 50
 price_increase_per_ship_tier = 500
@@ -2210,7 +2209,7 @@ function trade()
 			local price = attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage
 			if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage and pl_credits >= price then
 				sfx(11)
-				pl_ship_damage += 1
+				pl_ship_damage += flr(pl_ship_damage_upgrades * 1.2)
 				pl_ship_damage_upgrades += 1
 				pl_credits -= price
 			else
