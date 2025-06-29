@@ -382,15 +382,7 @@ max_dr_weapons = 0
 max_drones = 6
 max_pl_extra_damage = 6
 
-titlescreen_mode = false
-init_titlescreen = false
 wait_after_titlescreen = false
-battle_mode = false
-travel_to_battle_mode = false
-travel_after_battle_mode = false
-converstaion_mode = false
-trading_mode = false
-death_mode = false
 
 travel_after_battle_phase = 0
 jump_wobble = false
@@ -409,7 +401,6 @@ money_pickup_animation_frames = 50
 explosions = {}
 hitmarkers = {}
 
-current_planet = 1
 planets = {
 	{80, 0},
 	{0, 32},
@@ -418,7 +409,6 @@ planets = {
 	{96, 32},
 	{0, 64},
 }
-current_small_planet = 1
 
 -- number 7 is void creatues portal
 small_planets = {
@@ -717,8 +707,8 @@ function draw_enemies()
 
 		if show_enemy_life and enemy[7] < calc_enemy_life(enemy[12]) and not prevent_enemy_moving_on_x then
 			life_line = enemy[7] * 8 / calc_enemy_life(enemy[12])
-			line(enemy[1], enemy[2]-2, enemy[1]+8, enemy[2]-2, 2)
-			line(enemy[1], enemy[2]-2, enemy[1]+life_line, enemy[2]-2, 8)
+			line(enemy[1], max(enemy[2]-2, 1), enemy[1]+8, max(enemy[2]-2, 1), 2)
+			line(enemy[1], max(enemy[2]-2, 1), enemy[1]+life_line, max(enemy[2]-2, 1), 8)
 		end
 
 		if enemy[1] <= -7 then
@@ -1685,6 +1675,7 @@ function save_game()
 	dset(8, drone_life)
 	dset(9, drone_shields)
 	dset(10, drone_weapons)
+	if drone_type_attack then dset(63, 1) end
 
 	-- store to game slot 11 to max 61 (50 slots)
 	-- (because player can have max 25 items and we need 2 slots per item)
@@ -1714,6 +1705,7 @@ function load_game()
 	pl_ship_shields = dget(6)
 
 	drone_tier = dget(7)
+	drone_type_attack = dget(63) == 1
 	set_pl_drone(drone_tier)
 	drone_life = dget(8)
 	drone_shields = dget(9)
@@ -1949,6 +1941,11 @@ price_increase_per_ship_tier = 500
 function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30
 		all_stars_speed_ctrl(1)
+		
+		-- without this, shots shot before entering the trader are frozen and later displayed again when leaving
+		pl_ship_shots = {}
+		drone_shots = {}
+
 		trading_mode = false
 		battle_mode = true
 		init_battle = true
@@ -2252,6 +2249,7 @@ function trade()
 			else
 				max_drones = 6
 				drone_type_attack = not drone_type_attack
+				drone_weapons = 1
 				set_pl_drone(drone_tier)
 			end
 			sfx(12)

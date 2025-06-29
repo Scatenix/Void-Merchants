@@ -23,7 +23,7 @@ fi
 
 echo "Writing $VERSION to void-merchants.p8, the manual.txt, Readme and into the release notes..."
 sed -i 's/^\(GAME_VERSION[[:space:]]*=[[:space:]]*"\)[^"]*\(".*\)/\1'"$VERSION"'\2/' ./void-merchants.p8
-sed -i 's/\(Manual for version \)[^ ]\+/\1'"$VERSION"'/' ./resources/cart/manual.txt
+sed -i 's/\(Manual for \)[^ ]\+/\1'"$VERSION"'/' ./resources/cart/manual.txt
 sed -i 's#\(!\[Status: Beta](https://img.shields.io/badge/status-beta%20\)[^)]*\(-yellow)\)#\1'"$VERSION"'\2#' ./README.md
 sed -i 's/\(## Release \)[^ ]\+/\1'"$VERSION"'/' ./Release-Text
 

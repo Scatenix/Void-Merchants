@@ -1,6 +1,6 @@
 Void Merchants
 
-Manual for version v9.0.4
+Manual for v9.0.4
 
 Void Merchants is a Space Invaders-inspired roguelike action game built in PICO-8.
 Blast enemies, collect resources and trade your way to upgrades
@@ -11,14 +11,17 @@ as you progress through increasingly difficult space battles!
 Controls
 
 ↑ ↓ ← → : Move your ship and cursor while trading
-Y, C : Shoot (Can be held down)
-X, V : Interact with NPCs or perform trade
+X, V : Shoot (Can be held down)
+Y, C : Interact (talk to NPCs or perform trades)
 Create save games at each visit to the trader by hitting X or V
 Load them again at the title screen by hitting Y or C
 
 Can also be played with a controller! Tested with an Xbox controller - others may work too.
 
-The controls can be adjusted in the PICO-8 settings (pause button next to the bottom-right corner).
+The buttons shown on screen are meant for the Playstation controller layout,
+meaning that the X-button in-game is actually not the X-button on a Xbox controller. 
+
+The controls can be adjusted in the PICO-8 settings (pause button located next to the bottom-right corner).
 
 ---
 
@@ -30,5 +33,34 @@ DR      Drone health points + shield points
 STG     Combined storage of the ship and drones
 DMG     Combined damage of the ship and drones
 WPS     Combined number of weapons/blasters of the ship and drone
-SP      Speed of the ship as floating point
-STS     Shot speed of the ship and drone as floating point
+SP      Speed of the ship as decimal value
+STS     Shot speed of the ship and drone as decimal value
+
+---
+
+Trading
+
+Navigate with ↑ and ↓.
+Sell or buy with the Interact button.
+Save with the Shoot button.
+
+- Sell goods - Sell everything you've picked up that is not an upgrade
+- Sell upgrades - Sell all your stored upgrades
+- Repair ship hull - Fully restore your ship's life
+- Upgrade ship - Upgrade your ship tier. This is only available when your ship is at full life
+- Repair drones - Fully restore your drones' life
+- Restore ship shield - Restore one point of your ship's shield
+- Restore drone shield - Restore one point of your drones' shields
+- Install stored upgrades - Install stored upgrades that could not be equipped during the battle*
+- Install stronger weapons - Install a stronger weapon, increasing its damage done by one point. This only applies to the shots from your ship
+- Install new weapon - Install a new weapon. Possible number of weapons increases with upgraded ship and more drones
+- Buy attack / cargo drone - Buy additional or larger drones
+- Rebuild drones to attack / cargo - Change your drone type**
+
+*If you cannot equip any upgrades anymore that are dropped by enemies,
+you can keep them for now and install them later when your ship was upgraded.
+Or you can just sell them for credits!
+
+**Beware when changing your drone type.
+Changing from attack to cargo will remove all but one of the drones' weapons, which will then be permanently lost.
+Even when converting back to an attack drone.

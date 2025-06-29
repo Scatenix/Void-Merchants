@@ -22,25 +22,19 @@ Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merch
 ## Controls
 
 - ↑ ↓ ← → : Move your ship and cursor while trading
-- Y, C : Shoot (Can be held down)
-- X, V : Interact with NPCs or perform trade
+- X, V : Shoot (Can be held down)
+- Y, C : Interact (talk to NPCs or perform trades)
 - Create save games at each visit to the trader by hitting X or V
 - Load them again at the title screen by hitting Y or C
 
 Can also be played with a controller! Tested with an Xbox controller - others may work too.
 
-The controls can be adjusted in the PICO-8 settings (pause button next to the bottom-right corner).
+The buttons shown on screen are meant for the Playstation controller layout,
+meaning that the X-button in-game is actually not the X-button on a Xbox controller. 
 
-## Abbreviations in the Game
+The controls can be adjusted in the PICO-8 settings (pause button located next to the bottom-right corner).
 
-- HP      Ship health points
-- SH      Ship shield points
-- DR      Drone health points + shield points
-- STG     Combined storage of the ship and drones
-- DMG     Combined damage of the ship and drones
-- WPS     Combined number of weapons/blasters of the ship and drone
-- SP      Speed of the ship as floating point
-- STS     Shot speed of the ship and drone as floating point
+Make sure to check the manual for more information about the game. Can be found on the release section!
 
 ## State of the Game
 
