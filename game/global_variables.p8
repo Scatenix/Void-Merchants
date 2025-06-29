@@ -24,15 +24,7 @@ max_dr_weapons = 0
 max_drones = 6
 max_pl_extra_damage = 6
 
-titlescreen_mode = false
-init_titlescreen = false
 wait_after_titlescreen = false
-battle_mode = false
-travel_to_battle_mode = false
-travel_after_battle_mode = false
-converstaion_mode = false
-trading_mode = false
-death_mode = false
 
 travel_after_battle_phase = 0
 jump_wobble = false
@@ -51,7 +43,6 @@ money_pickup_animation_frames = 50
 explosions = {}
 hitmarkers = {}
 
-current_planet = 1
 planets = {
 	{80, 0},
 	{0, 32},
@@ -60,7 +51,6 @@ planets = {
 	{96, 32},
 	{0, 64},
 }
-current_small_planet = 1
 
 -- number 7 is void creatues portal
 small_planets = {

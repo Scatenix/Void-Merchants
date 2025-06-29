@@ -16,6 +16,11 @@ price_increase_per_ship_tier = 500
 function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30
 		all_stars_speed_ctrl(1)
+		
+		-- without this, shots shot before entering the trader are frozen and later displayed again when leaving
+		pl_ship_shots = {}
+		drone_shots = {}
+
 		trading_mode = false
 		battle_mode = true
 		init_battle = true
@@ -319,6 +324,7 @@ function trade()
 			else
 				max_drones = 6
 				drone_type_attack = not drone_type_attack
+				drone_weapons = 1
 				set_pl_drone(drone_tier)
 			end
 			sfx(12)

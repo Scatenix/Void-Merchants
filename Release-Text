@@ -1,4 +1,4 @@
-## Release v9.0.4
+## Release v9.0.5
 
 - Fixed a but where shots fired before visiting the trader are frozen and later displayed when leaving the trader again
 - Fixed a bug where the information whether the player has attack or cargo drones was not saved

@@ -29,6 +29,7 @@ function save_game()
 	dset(8, drone_life)
 	dset(9, drone_shields)
 	dset(10, drone_weapons)
+	if drone_type_attack then dset(63, 1) end
 
 	-- store to game slot 11 to max 61 (50 slots)
 	-- (because player can have max 25 items and we need 2 slots per item)
@@ -58,6 +59,7 @@ function load_game()
 	pl_ship_shields = dget(6)
 
 	drone_tier = dget(7)
+	drone_type_attack = dget(63) == 1
 	set_pl_drone(drone_tier)
 	drone_life = dget(8)
 	drone_shields = dget(9)
