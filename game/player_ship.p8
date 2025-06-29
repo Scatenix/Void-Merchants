@@ -44,6 +44,7 @@ function set_pl_ship(tier)
 	max_pl_weapons = min(tier, 5)
 end
 
+-- {y start of ship on sprite, y width of ship}
 function get_ship_htbx_skp_pxl_width(tier)
 	if tier == 1 then
 		return {2, 5}
@@ -54,7 +55,8 @@ function get_ship_htbx_skp_pxl_width(tier)
 	end
 end
 
--- shotmask is used to tell at which positions shots come out of the enemy. -1 means no shot
+-- shotmask is used to tell at which positions shots come out of the player ship, drone and enemy.
+-- -1 means no shot, 0-8 is the y position of a shot
 function get_shot_mask(weapons)
 	local shot_mask = {}
 	
@@ -65,13 +67,13 @@ function get_shot_mask(weapons)
 		shot_mask = {-1, -1, 4, -1, -1}
 	end
 		if weapons == 2 then
-		shot_mask = {-1, -1, 3, 5, -1}
+		shot_mask = {-1, -1, 2, 6, -1}
 	end
 	if weapons == 3 then
 		shot_mask = {-1, 2, 4, 6, -1}
 	end
 	if weapons == 4 then
-		shot_mask = {1, 3, 5, 7, -1}
+		shot_mask = {0, 2, 4, 6, -1}
 	end
 	if weapons == 5 then
 		shot_mask = {0, 2, 4, 6, 8}
@@ -100,7 +102,7 @@ function ship_and_drone_shoot()
 			local shot_mask = get_shot_mask(drone_weapons)
 			for shm in all(shot_mask) do
 				if shm != -1 then
-					local shot = {drone_x + 10, drone_y + shm -2}
+					local shot = {drone_x + 10, drone_y + shm}
 					add(drone_shots, shot)
 				end
 			end

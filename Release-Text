@@ -1,6 +1,7 @@
 ## Release v9.0.3
 
-Fixed a bug for the version on the badge in the Readme.
+- Re-placed some drones to either be nearer to the player and be more in line with their shield
+- Fixed where shots come out of the player ship, drone and enemies to make it more natural
 
 ## Files included
 

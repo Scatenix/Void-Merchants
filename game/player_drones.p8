@@ -67,22 +67,19 @@ function set_pl_drone(tier)
 	end
 end
 
+-- {y start of drone on sprite, y width of drone}
 function get_drone_htbx_skp_pxl_width(tier)
- if tier == 1 then
- 	return {3, 3}
- elseif tier == 2 or tier == 3 or tier == 5 then
-  return {0, 7}
- elseif tier == 4 then
-  return {2, 5}
- elseif tier == 6 then
-  return {1, 7}
- elseif tier == 7 then
-  return {4, 4}
- elseif tier == 8 then
-  return {0, 8}
- elseif tier == 9 then
-  return {1, 6}
- end
+	if not drone_type_attack and tier == 1 then
+		return {3, 4}
+	elseif tier == 1 then
+ 		return {3, 3}
+	elseif tier == 2 then
+		return {1, 6}
+	elseif tier == 3 or tier == 5 or tier == 6 then
+		return {1, 7}
+	elseif tier == 4 then
+		return {2, 5}
+	end
 end
 
 function drone_ctrl()

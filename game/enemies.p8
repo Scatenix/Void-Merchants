@@ -118,6 +118,7 @@ function calc_enemy_life(lvl)
 	return lvl * 2 + 1
 end
 
+-- {y start of enemy on sprite, y width of enemy}
 function get_enemy_htbx_skp_pxl_width(lvl)
 	if lvl == 1 or 3 or 11 then
  		return {0, 7}
@@ -147,7 +148,7 @@ function enemy_shoot()
 	
 			for shm in all(shot_mask) do
 				if shm != -1 then
-					local shot = {enemy[1] -3, enemy[2] + shm, enemy[10], enemy[6]}
+					local shot = {enemy[1] -1, enemy[2] + shm, enemy[10], enemy[6]}
 					add(enemy_shots, shot)
 				end
 			end
