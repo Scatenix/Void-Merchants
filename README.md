@@ -56,7 +56,7 @@ The game offers:
 
 - Lua (PICO-8 dialect)
 - The PICO-8 fantasy console
-- Bash (For splitting and merging the cartridge files for easier development and readability)
+- Bash
 
 ## What is PICO-8?
 
