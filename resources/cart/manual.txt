@@ -1,6 +1,6 @@
 Void Merchants
 
-Manual for v9.2.0
+Manual for v9.3.0
 
 Void Merchants is a Space Invaders-inspired roguelike action game built in PICO-8.
 Blast enemies, collect resources and trade your way to upgrades
