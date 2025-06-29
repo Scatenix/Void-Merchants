@@ -52,8 +52,6 @@ The game offers:
 - Saving, which can be done whilst trading
 - Brief conversations with the trader and a mysterious being
 
-Balancing is still in progress. I find the game to be quite hard on the later levels.
-
 ## Tech Stack
 
 - Lua (PICO-8 dialect)
