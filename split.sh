@@ -24,7 +24,7 @@ if [[ ! $1 = *.p8 ]]; then
 fi
 
 if [ $ALWAYS_CLEAR_GAME_DIR == true ]; then
-    echo "Deleting and regernaring the game directory"
+    echo "Deleting and re-generating the game directory"
     rm -r ./game
 fi
 
