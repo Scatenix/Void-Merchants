@@ -30,7 +30,7 @@ Abbreviations
 HP      Ship health points
 SH      Ship shield points
 DR      Drone health points + shield points
-STG     Combined storage of the ship and drones
+STG     Combined storage of the ship and drones that is still available
 DMG     Combined damage of the ship and drones
 WPS     Combined number of weapons/blasters of the ship and drone
 SP      Speed of the ship as decimal value

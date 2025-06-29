@@ -65,15 +65,13 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 9
 		trader_station_x = 130
 		show_trader_station_far = true
-		pl_ship_speed = pl_ship_default_speed
+		pl_ship_default_speed = temp_pl_ship_default_speed
+		pl_ship_speed = temp_pl_ship_default_speed
 		all_stars_speed_ctrl(1)
 		sfx(20)
 		sfx(18)
 	elseif travel_after_battle_phase == 7 and time() - tme >= 16.5 then -- 16.5
 		-- jump out of hyperspace
-		-- turning off buff sounds, sometimes they randomly re-appear
-		sfx(9, -2)
-		sfx(4, -2)
 		travel_after_battle_phase = 8
 		all_stars_speed_ctrl(5)
 	elseif travel_after_battle_phase == 6 and time() - tme >= 11.5 then -- 11.5
@@ -91,30 +89,30 @@ function travel_from_battle_animation_script()
 		sfx(19)
 	elseif travel_after_battle_phase == 5 and time() - tme >= 11 then -- 11
 		-- jumping into hyperspace
+		pl_ship_shot_speed_buff_time = 0
+		pl_ship_speed_buff_time = 0
 		travel_after_battle_phase = 6
 		jump_wobble = false
 		jump_to_hyperspce = true
-		
-		-- turning off buffs
-		sfx(9, -2)
-		sfx(4, -2)
-		pl_ship_shot_speed_buff_time = 0
-		pl_ship_speed_buff_time = 0
-		pl_ship_shot_speed = pl_ship_default_shot_speed
-		
 		all_stars_speed_ctrl(10)
 		floating_items = {}
 		sfx(15)
 	elseif travel_after_battle_phase == 4 and time() - tme >= 10 then -- 10
 		-- approaching hyperspace
+		pl_ship_shot_speed_buff_time = 0
+		pl_ship_speed_buff_time = 0
 		travel_after_battle_phase = 5
 		stars_hyperspeed = true
 		all_stars_speed_ctrl(1)
 	elseif travel_after_battle_phase == 3 and time() - tme >= 6 then -- 6
 		-- engaging thrusters
+		pl_ship_shot_speed_buff_time = 0
+		pl_ship_speed_buff_time = 0
 		travel_after_battle_phase = 4
 		jump_wobble = true
 		battle_mode = false
+		temp_pl_ship_default_speed = pl_ship_default_speed
+		pl_ship_default_speed *= 0.2
 		pl_ship_speed *= 0.2
 		all_stars_speed_ctrl(0.2)
 		sfx(14)

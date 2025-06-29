@@ -106,6 +106,8 @@ function _update()
 		enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixel, drone_hitbox_width, 2)
 		calculate_floating_items_drift()
 		floating_items_colides_player()
+		speed_buff_timer()
+		shot_speed_buff_timer()
 
 		if jump_to_hyperspce then
 			jump_to_hyperspce_animation()

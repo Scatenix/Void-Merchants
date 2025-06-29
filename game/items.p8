@@ -46,14 +46,14 @@ function interpret_item(item)
 		if pl_ship_speed_buff_time == 0 then
 			sfx(9)
 			pl_ship_speed *= 1.5
-			pl_ship_speed_buff_time = time()
+			pl_ship_speed_buff_time = 120
 			del(floating_items, item)
 		end
 	elseif item[3] == shot_speed_buff[1] then
 		if pl_ship_shot_speed_buff_time == 0 then
 			sfx(4)
 			pl_ship_shot_speed *= 2
-			pl_ship_shot_speed_buff_time = time()
+			pl_ship_shot_speed_buff_time = 120
 			del(floating_items, item)
 		end
 	elseif item[3] == life_up[1] then
@@ -123,24 +123,20 @@ function add_money_pickup(money)
 end
 
 function speed_buff_timer()
-	if pl_ship_speed_buff_time >= 0 then
-		local delta = time() - pl_ship_speed_buff_time
-		if delta >= speed_buff_time then
-			sfx(9, -2)
-			pl_ship_speed = pl_ship_default_speed
-			pl_ship_speed_buff_time = 0
-		end
+	if pl_ship_speed_buff_time > 0 then
+			pl_ship_speed_buff_time -= 1
+	else
+		pl_ship_speed = pl_ship_default_speed
+		sfx(9, -2)
 	end
 end
 
 function shot_speed_buff_timer()
 	if pl_ship_shot_speed_buff_time > 0 then
-		local delta = time() - pl_ship_shot_speed_buff_time
-		if delta >= shot_speed_buff_time then
-			sfx(4, -2)
-			pl_ship_shot_speed = pl_ship_default_shot_speed
-			pl_ship_shot_speed_buff_time = 0
-		end
+		pl_ship_shot_speed_buff_time -= 1
+	else
+		sfx(4, -2)
+		pl_ship_shot_speed = pl_ship_default_shot_speed
 	end
 end
 
@@ -175,13 +171,13 @@ function drop_item()
 		return speed_buff
 	elseif num >=645 then --6%
 		return copper
-	elseif num >=575 then --7%
+	elseif num >=605 then --4%
 		return shot_speed_buff
-	elseif num >=470 then --10,5%
+	elseif num >=500 then --10.5%
 		return scrap
-	elseif num >=370 then --10%
+	elseif num >=400 then --10%
 		return credit
-	else --37%
+	else --40%
 		return {-1, 0, "nothing"} -- no drop
 	end
 end

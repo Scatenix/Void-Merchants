@@ -108,6 +108,8 @@ function _update()
 		enemy_shots_hit_friendly(drone_x, drone_y, drone_hitbox_skip_pixel, drone_hitbox_width, 2)
 		calculate_floating_items_drift()
 		floating_items_colides_player()
+		speed_buff_timer()
+		shot_speed_buff_timer()
 
 		if jump_to_hyperspce then
 			jump_to_hyperspce_animation()
@@ -375,9 +377,6 @@ y_up_boundry = 0
 y_down_boundry = 97
 
 initial_battle_draw = true
-
-speed_buff_time = 4.0
-shot_speed_buff_time = 4.0
 
 max_pl_weapons = 1
 max_dr_weapons = 0
@@ -782,9 +781,9 @@ function set_pl_ship(tier)
 	pl_ship_max_life = pl_ship_life
 	pl_ship_shields = flr(tier/2)
 	pl_ship_max_shield = tier
-	pl_ship_shot_speed = tier / 3 + 1
+	pl_ship_shot_speed = min(tier / 3 + 1, 2.5)
 	pl_ship_speed = 1 + tier * 0.2
-	pl_ship_default_shot_speed = tier / 3 + 1
+	pl_ship_default_shot_speed = min(tier / 3 + 1, 2.5)
 	pl_ship_default_speed = 1 + tier * 0.2
 	pl_ship_storage = 3 + ceil(tier * 1.5)
 	max_pl_weapons = min(tier, 5)
@@ -955,8 +954,8 @@ function set_pl_drone(tier)
 		drone_hitbox_skip_pixel = htbx[1]
 		drone_hitbox_width = htbx[2]
 		drone_damage = tier + 1
-		drone_life = 2 * tier + 1
-		drone_max_life = 2 * tier + 1
+		drone_life = 4 * tier
+		drone_max_life = 4 * tier
 		drone_shields = tier
 		drone_max_shields = tier
 		drone_storage = tier
@@ -969,8 +968,8 @@ function set_pl_drone(tier)
 		drone_hitbox_skip_pixel = htbx[1]
 		drone_hitbox_width = htbx[2]
 		drone_damage = 0
-		drone_life = 3 * tier
-		drone_max_life = 3 * tier
+		drone_life = 12 * tier
+		drone_max_life = 12 * tier
 		drone_shields = tier * 2
 		drone_max_shields = tier * 2
 		drone_storage = tier * 3
@@ -1281,6 +1280,10 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 							death_mode = true
 							battle_mode = false
 							travel_after_battle_mode = false
+							pl_ship_shot_speed_buff_time = 0
+							pl_ship_speed_buff_time = 0
+							speed_buff_timer()
+							shot_speed_buff_timer()
 					elseif player1_drone2 == 2 then
 						kill_drone()
 					end
@@ -1375,14 +1378,14 @@ function interpret_item(item)
 		if pl_ship_speed_buff_time == 0 then
 			sfx(9)
 			pl_ship_speed *= 1.5
-			pl_ship_speed_buff_time = time()
+			pl_ship_speed_buff_time = 120
 			del(floating_items, item)
 		end
 	elseif item[3] == shot_speed_buff[1] then
 		if pl_ship_shot_speed_buff_time == 0 then
 			sfx(4)
 			pl_ship_shot_speed *= 2
-			pl_ship_shot_speed_buff_time = time()
+			pl_ship_shot_speed_buff_time = 120
 			del(floating_items, item)
 		end
 	elseif item[3] == life_up[1] then
@@ -1452,24 +1455,20 @@ function add_money_pickup(money)
 end
 
 function speed_buff_timer()
-	if pl_ship_speed_buff_time >= 0 then
-		local delta = time() - pl_ship_speed_buff_time
-		if delta >= speed_buff_time then
-			sfx(9, -2)
-			pl_ship_speed = pl_ship_default_speed
-			pl_ship_speed_buff_time = 0
-		end
+	if pl_ship_speed_buff_time > 0 then
+			pl_ship_speed_buff_time -= 1
+	else
+		pl_ship_speed = pl_ship_default_speed
+		sfx(9, -2)
 	end
 end
 
 function shot_speed_buff_timer()
 	if pl_ship_shot_speed_buff_time > 0 then
-		local delta = time() - pl_ship_shot_speed_buff_time
-		if delta >= shot_speed_buff_time then
-			sfx(4, -2)
-			pl_ship_shot_speed = pl_ship_default_shot_speed
-			pl_ship_shot_speed_buff_time = 0
-		end
+		pl_ship_shot_speed_buff_time -= 1
+	else
+		sfx(4, -2)
+		pl_ship_shot_speed = pl_ship_default_shot_speed
 	end
 end
 
@@ -1504,13 +1503,13 @@ function drop_item()
 		return speed_buff
 	elseif num >=645 then --6%
 		return copper
-	elseif num >=575 then --7%
+	elseif num >=605 then --4%
 		return shot_speed_buff
-	elseif num >=470 then --10,5%
+	elseif num >=500 then --10.5%
 		return scrap
-	elseif num >=370 then --10%
+	elseif num >=400 then --10%
 		return credit
-	else --37%
+	else --40%
 		return {-1, 0, "nothing"} -- no drop
 	end
 end
@@ -1768,15 +1767,13 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 9
 		trader_station_x = 130
 		show_trader_station_far = true
-		pl_ship_speed = pl_ship_default_speed
+		pl_ship_default_speed = temp_pl_ship_default_speed
+		pl_ship_speed = temp_pl_ship_default_speed
 		all_stars_speed_ctrl(1)
 		sfx(20)
 		sfx(18)
 	elseif travel_after_battle_phase == 7 and time() - tme >= 16.5 then -- 16.5
 		-- jump out of hyperspace
-		-- turning off buff sounds, sometimes they randomly re-appear
-		sfx(9, -2)
-		sfx(4, -2)
 		travel_after_battle_phase = 8
 		all_stars_speed_ctrl(5)
 	elseif travel_after_battle_phase == 6 and time() - tme >= 11.5 then -- 11.5
@@ -1794,30 +1791,30 @@ function travel_from_battle_animation_script()
 		sfx(19)
 	elseif travel_after_battle_phase == 5 and time() - tme >= 11 then -- 11
 		-- jumping into hyperspace
+		pl_ship_shot_speed_buff_time = 0
+		pl_ship_speed_buff_time = 0
 		travel_after_battle_phase = 6
 		jump_wobble = false
 		jump_to_hyperspce = true
-		
-		-- turning off buffs
-		sfx(9, -2)
-		sfx(4, -2)
-		pl_ship_shot_speed_buff_time = 0
-		pl_ship_speed_buff_time = 0
-		pl_ship_shot_speed = pl_ship_default_shot_speed
-		
 		all_stars_speed_ctrl(10)
 		floating_items = {}
 		sfx(15)
 	elseif travel_after_battle_phase == 4 and time() - tme >= 10 then -- 10
 		-- approaching hyperspace
+		pl_ship_shot_speed_buff_time = 0
+		pl_ship_speed_buff_time = 0
 		travel_after_battle_phase = 5
 		stars_hyperspeed = true
 		all_stars_speed_ctrl(1)
 	elseif travel_after_battle_phase == 3 and time() - tme >= 6 then -- 6
 		-- engaging thrusters
+		pl_ship_shot_speed_buff_time = 0
+		pl_ship_speed_buff_time = 0
 		travel_after_battle_phase = 4
 		jump_wobble = true
 		battle_mode = false
+		temp_pl_ship_default_speed = pl_ship_default_speed
+		pl_ship_default_speed *= 0.2
 		pl_ship_speed *= 0.2
 		all_stars_speed_ctrl(0.2)
 		sfx(14)
@@ -1860,9 +1857,9 @@ function trader_converstaion()
 		conv_text_4 = "take a look!"
 	elseif level < 10 then
 		conv_text_1 = "nice you've maded it here!"
-		conv_text_2 = "make sure you stock up on"
-		conv_text_3 = "these drones."
-		conv_text_4 = "it's dangerous to go alone..."
+		conv_text_2 = "it's dangerous to go alone..."
+		conv_text_3 = "make sure you stock up on"
+		conv_text_4 = "these drones."
 	elseif level < 15 then
 		conv_text_1 = "my best customer!"
 		conv_text_2 = "come in, come in!"
@@ -1875,7 +1872,7 @@ function trader_converstaion()
 		conv_text_4 = "your credits are welcome."
 	elseif level >= 20 then
 		conv_text_1 = "hello my friend!"
-		conv_text_2 = "you are pretty capable!"
+		conv_text_2 = "you must be pretty capable"
 		conv_text_3 = "to make it this far."
 		conv_text_4 = "congratulations!"
 	end
@@ -1901,7 +1898,7 @@ function void_creature_converstaion()
 		conv_text_1 = "you have mastered my little"
 		conv_text_2 = "game. very well..."
 		conv_text_3 = "i deem you... sufficient."
-		conv_text_4 = "let us return to the title..."
+		conv_text_4 = "let us return to the title."
 	end
 end
 
@@ -2252,7 +2249,7 @@ function calc_player_goods_price(sell)
 	local price = 0
 	for item in all(pl_items_stored) do
 		if item[1] > 172 then
-			price += ceil(item[2] * (1 + (level - 1) / 19))
+			price += ceil(item[2] * (1 + (level - 1) / 28))
 			if sell then
 				sfx(17)
 				del(pl_items_stored, item)

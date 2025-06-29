@@ -36,9 +36,9 @@ function set_pl_ship(tier)
 	pl_ship_max_life = pl_ship_life
 	pl_ship_shields = flr(tier/2)
 	pl_ship_max_shield = tier
-	pl_ship_shot_speed = tier / 3 + 1
+	pl_ship_shot_speed = min(tier / 3 + 1, 2.5)
 	pl_ship_speed = 1 + tier * 0.2
-	pl_ship_default_shot_speed = tier / 3 + 1
+	pl_ship_default_shot_speed = min(tier / 3 + 1, 2.5)
 	pl_ship_default_speed = 1 + tier * 0.2
 	pl_ship_storage = 3 + ceil(tier * 1.5)
 	max_pl_weapons = min(tier, 5)

@@ -345,7 +345,7 @@ function calc_player_goods_price(sell)
 	local price = 0
 	for item in all(pl_items_stored) do
 		if item[1] > 172 then
-			price += ceil(item[2] * (1 + (level - 1) / 19))
+			price += ceil(item[2] * (1 + (level - 1) / 28))
 			if sell then
 				sfx(17)
 				del(pl_items_stored, item)

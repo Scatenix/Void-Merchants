@@ -22,9 +22,9 @@ function trader_converstaion()
 		conv_text_4 = "take a look!"
 	elseif level < 10 then
 		conv_text_1 = "nice you've maded it here!"
-		conv_text_2 = "make sure you stock up on"
-		conv_text_3 = "these drones."
-		conv_text_4 = "it's dangerous to go alone..."
+		conv_text_2 = "it's dangerous to go alone..."
+		conv_text_3 = "make sure you stock up on"
+		conv_text_4 = "these drones."
 	elseif level < 15 then
 		conv_text_1 = "my best customer!"
 		conv_text_2 = "come in, come in!"
@@ -37,7 +37,7 @@ function trader_converstaion()
 		conv_text_4 = "your credits are welcome."
 	elseif level >= 20 then
 		conv_text_1 = "hello my friend!"
-		conv_text_2 = "you are pretty capable!"
+		conv_text_2 = "you must be pretty capable"
 		conv_text_3 = "to make it this far."
 		conv_text_4 = "congratulations!"
 	end
@@ -63,7 +63,7 @@ function void_creature_converstaion()
 		conv_text_1 = "you have mastered my little"
 		conv_text_2 = "game. very well..."
 		conv_text_3 = "i deem you... sufficient."
-		conv_text_4 = "let us return to the title..."
+		conv_text_4 = "let us return to the title."
 	end
 end
 

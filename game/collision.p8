@@ -68,6 +68,10 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 							death_mode = true
 							battle_mode = false
 							travel_after_battle_mode = false
+							pl_ship_shot_speed_buff_time = 0
+							pl_ship_speed_buff_time = 0
+							speed_buff_timer()
+							shot_speed_buff_timer()
 					elseif player1_drone2 == 2 then
 						kill_drone()
 					end

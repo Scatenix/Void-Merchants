@@ -41,8 +41,8 @@ function set_pl_drone(tier)
 		drone_hitbox_skip_pixel = htbx[1]
 		drone_hitbox_width = htbx[2]
 		drone_damage = tier + 1
-		drone_life = 2 * tier + 1
-		drone_max_life = 2 * tier + 1
+		drone_life = 4 * tier
+		drone_max_life = 4 * tier
 		drone_shields = tier
 		drone_max_shields = tier
 		drone_storage = tier
@@ -55,8 +55,8 @@ function set_pl_drone(tier)
 		drone_hitbox_skip_pixel = htbx[1]
 		drone_hitbox_width = htbx[2]
 		drone_damage = 0
-		drone_life = 3 * tier
-		drone_max_life = 3 * tier
+		drone_life = 12 * tier
+		drone_max_life = 12 * tier
 		drone_shields = tier * 2
 		drone_max_shields = tier * 2
 		drone_storage = tier * 3

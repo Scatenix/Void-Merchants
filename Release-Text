@@ -1,20 +1,17 @@
 ## Release v9.2.0
 
-### Balancing
+## Balancing
 
-- Player gradually gets higher prices for their goods every levels
-- Increased player ship storage
-- Increased maximum number of purchasable weapon damage upgrades
+- Increased drone life to make them more viable
+- Decreased drop chance of the shot speed buff
+- Capped player shot speed at 2.5 (without the buff drop)
+- Decreased the selling price multiplier based on the current level for goods
 
-### Bugs
+### Misc
 
-- Moved version number on the title screen 1 pixel down
-- Fixed bug where shields did not remove credits from your account
-- Fixed price for damage upgrades
-- Fixed a bug where the player could not purchase any more damage upgrades
-- Fixed wront calculation of weapon damage increase on buying and loading the game
-- Fixed a bug where picking up a shield pick-up would restore the shield of a destroyed drone
-- Skipping trade after beating the last level
+- Simplified buff sytem code
+- Slightly changed NPC dialog
+- Improved manual
 
 ## Files included
 
