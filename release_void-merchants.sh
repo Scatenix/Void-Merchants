@@ -8,7 +8,7 @@ VERSION=$(cat ./VERSION)
 
 if [[ -n $(git status --porcelain | grep -v 'M VERSION') ]]; then
   echo "There are pending changes in the repository besides ther VERSION file. Commit or revert them first."
-  exit
+  exit 1
 fi
 
 echo "Starting to prepare release of $VERSION for void-merchants..."
@@ -18,7 +18,7 @@ git switch main
 
 if git rev-parse "$VERSION" >/dev/null 2>&1; then
   echo "Git tag $VERSION already exists. Change the version in <project_root>/VERSION"
-  exit
+  exit 1
 fi
 
 echo "Writing $VERSION to void-merchants.p8, the manual.txt, Readme and into the release notes..."
@@ -38,7 +38,7 @@ echo "Splitting files from void-merchants.p8..."
 # Check if 7z is working. Exit if test fails. very important for the LICENSE.txt
 if ! "$_7Z_EXE" > /dev/null 2>&1; then
     echo "7z appears to no work. Exit script"
-    exit
+    exit 1
 fi
 
 # pico-8 -export seems to not always overwrite these exported files
@@ -64,9 +64,20 @@ for file in ./resources/cart/void-merchants.bin/void-merchants_*.zip; do
   "$_7Z_EXE" a -tzip "$file" ./LICENSE.TXT
 done
 
-git add --all
-git commit -m "Release $VERSION"
-git tag "$VERSION"
-git push && git push origin "$VERSION"
+read -r -p "Are you sure everything is ready to release, including the release notes? [y/N] " response
+case "$response" in
+    [yY][eE][sS]|[yY])
+        echo "Proceeding with release..."
 
-printf "\nRelease done."
+        git add --all
+        git commit -m "Release $VERSION"
+        git tag "$VERSION"
+        git push && git push origin "$VERSION"
+
+        printf "\nRelease done."
+        ;;
+    *)
+        echo "Release aborted."
+        exit 1
+        ;;
+esac
