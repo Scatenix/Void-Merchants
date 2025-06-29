@@ -2,11 +2,9 @@ __lua__2
 -- global variables
 tme = 0 -- here to track times with time()
 
-level = 1
 show_level = false
 show_level_frames_left = 0
 
-init_battle = false
 animation_counter = 0
 long_animation_counter = 0
 x_left_boundry = 0
@@ -22,7 +20,7 @@ shot_speed_buff_time = 4.0
 max_pl_weapons = 1
 max_dr_weapons = 0
 max_drones = 6
-max_pl_extra_damage = 6
+max_pl_extra_damage = 10
 
 travel_after_battle_phase = 0
 jump_wobble = false
@@ -35,11 +33,7 @@ trading_phase = 0
 talk_to_void_creature = false
 skip_void = false
 
-money_pickups = {} -- amount, x, y, animation_frames_remainung
 money_pickup_animation_frames = 50
-
-explosions = {}
-hitmarkers = {}
 
 planets = {
 	{80, 0},

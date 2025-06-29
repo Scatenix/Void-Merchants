@@ -37,9 +37,9 @@ function trader_converstaion()
 		conv_text_4 = "your credits are welcome."
 	elseif level >= 20 then
 		conv_text_1 = "hello my friend!"
-		conv_text_2 = "you are pretty capable"
+		conv_text_2 = "you are pretty capable!"
 		conv_text_3 = "to make it this far."
-		conv_text_4 = "prepare for the final wave!"
+		conv_text_4 = "congratulations!"
 	end
 end
 

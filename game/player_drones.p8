@@ -16,7 +16,6 @@ drone_max_life = 0
 drone_shields = 0
 drone_max_shields = 0
 drone_storage = 0
-drone_shots = {}
 drone_available = false
 -- 0: attack; 1: cargo
 drone_type_attack = true

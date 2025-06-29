@@ -282,7 +282,7 @@ function draw_enemies()
 		end
 		enemy[16] += 1
 
-		if show_enemy_life and enemy[7] < calc_enemy_life(enemy[12]) and not prevent_enemy_moving_on_x then
+		if enemy[7] < calc_enemy_life(enemy[12]) and not prevent_enemy_moving_on_x then
 			life_line = enemy[7] * 8 / calc_enemy_life(enemy[12])
 			line(enemy[1], max(enemy[2]-2, 1), enemy[1]+8, max(enemy[2]-2, 1), 2)
 			line(enemy[1], max(enemy[2]-2, 1), enemy[1]+life_line, max(enemy[2]-2, 1), 8)

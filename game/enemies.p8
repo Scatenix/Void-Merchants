@@ -2,9 +2,7 @@ __lua__7
 -- enemies
 
 enemies_max_y = 96
-enemies = {}
 min_enemies_on_level = 0
-enemy_shots = {}
 enemy_shot_cooldown = 0
 prevent_enemy_moving_on_x = false
 

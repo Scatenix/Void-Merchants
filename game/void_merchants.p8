@@ -82,6 +82,7 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 
 	-- for game restart
+	stars = {} -- 1: x 2: y 3: speed
 	enemies = {}
 	explosions = {}
 	hitmarkers = {}
@@ -90,6 +91,8 @@ function _init()
 	drone_shots = {}
 	enemy_shots = {}
 	pl_items_stored = {}
+	floating_items = {}
+	money_pickups = {} -- amount, x, y, animation_frames_remainung
 	trading_phase = 0
 end
 

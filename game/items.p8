@@ -1,8 +1,6 @@
 __lua__9
 -- items
 
-floating_items = {}
-
 -- buffs are at 154 to 157
 -- upgrades are at 158 to 170
 -- credits are at 171 to 172
@@ -69,15 +67,16 @@ function interpret_item(item)
 			sfx(12)
 			pl_ship_shields += 1
 			del(floating_items, item)
-		elseif drone_shields < drone_max_shields then
+		elseif drone_available and drone_shields < drone_max_shields then
 			sfx(12)
 			drone_shields += 1
 			del(floating_items, item)
 		end
 	elseif item[3] == attack_damage_inc[1] then
-		if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
+		if pl_ship_damage_upgrades < max_pl_extra_damage then
 			sfx(11)
-			pl_ship_damage += flr(pl_ship_damage_upgrades * 1.2)
+			pl_ship_damage_upgrades += 1
+			pl_ship_damage += flr(1 + (pl_ship_damage_upgrades) / 5)
 			del(floating_items, item)
 		else
 			store_item(item, attack_damage_inc[2])

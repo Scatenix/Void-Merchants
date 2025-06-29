@@ -8,9 +8,7 @@ max_star_speed = 5
 stars_counter_threshold = 2
 stars_counter = 0
 stars_max_y = 0
-stars = {} -- 1: x 2: y 3: speed
 stars_hyperspeed = false
-stars_hide = false
 star_base_speed = 1
 
 function init_passing_stars()

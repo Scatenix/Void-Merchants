@@ -1,19 +1,12 @@
 __lua__4
 -- player
 
-pl_credits = 0
-reputation = 0
-
 function add_credits(credits)
 	pl_credits += credits
 	if pl_credits > 9999 then
 		pl_credits = 9999
 	end
 end
-
--- perks
-
-show_enemy_life = true
 
 function store_item(item, price)
 	if get_free_storage() > 0 then

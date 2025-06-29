@@ -84,6 +84,7 @@ function _init()
 	current_small_planet = flr(rnd(6)) + 1
 
 	-- for game restart
+	stars = {} -- 1: x 2: y 3: speed
 	enemies = {}
 	explosions = {}
 	hitmarkers = {}
@@ -92,6 +93,8 @@ function _init()
 	drone_shots = {}
 	enemy_shots = {}
 	pl_items_stored = {}
+	floating_items = {}
+	money_pickups = {} -- amount, x, y, animation_frames_remainung
 	trading_phase = 0
 end
 
@@ -361,11 +364,9 @@ end
 -- global variables
 tme = 0 -- here to track times with time()
 
-level = 1
 show_level = false
 show_level_frames_left = 0
 
-init_battle = false
 animation_counter = 0
 long_animation_counter = 0
 x_left_boundry = 0
@@ -381,7 +382,7 @@ shot_speed_buff_time = 4.0
 max_pl_weapons = 1
 max_dr_weapons = 0
 max_drones = 6
-max_pl_extra_damage = 6
+max_pl_extra_damage = 10
 
 travel_after_battle_phase = 0
 jump_wobble = false
@@ -394,11 +395,7 @@ trading_phase = 0
 talk_to_void_creature = false
 skip_void = false
 
-money_pickups = {} -- amount, x, y, animation_frames_remainung
 money_pickup_animation_frames = 50
-
-explosions = {}
-hitmarkers = {}
 
 planets = {
 	{80, 0},
@@ -704,7 +701,7 @@ function draw_enemies()
 		end
 		enemy[16] += 1
 
-		if show_enemy_life and enemy[7] < calc_enemy_life(enemy[12]) and not prevent_enemy_moving_on_x then
+		if enemy[7] < calc_enemy_life(enemy[12]) and not prevent_enemy_moving_on_x then
 			life_line = enemy[7] * 8 / calc_enemy_life(enemy[12])
 			line(enemy[1], max(enemy[2]-2, 1), enemy[1]+8, max(enemy[2]-2, 1), 2)
 			line(enemy[1], max(enemy[2]-2, 1), enemy[1]+life_line, max(enemy[2]-2, 1), 8)
@@ -718,19 +715,12 @@ end
 -->8
 -- player
 
-pl_credits = 0
-reputation = 0
-
 function add_credits(credits)
 	pl_credits += credits
 	if pl_credits > 9999 then
 		pl_credits = 9999
 	end
 end
-
--- perks
-
-show_enemy_life = true
 
 function store_item(item, price)
 	if get_free_storage() > 0 then
@@ -763,7 +753,6 @@ pl_ship_hitbox_skip_pixel = 0 -- from mid
 pl_ship_hitbox_width = 0 -- from mid
 pl_ship_sprite=0
 pl_ship_damage=0
-pl_ship_base_damage=0
 pl_ship_life=5
 pl_ship_max_life=0
 pl_ship_shields=0
@@ -773,7 +762,6 @@ pl_ship_speed=0 -- float
 pl_ship_default_shot_speed=0
 pl_ship_default_speed=0
 pl_ship_storage=0
-pl_ship_shots = {}
 pl_ship_shot_timer = 0
 pl_ship_can_shoot = false
 pl_ship_tier = 1
@@ -786,17 +774,19 @@ function set_pl_ship(tier)
 	htbx = get_ship_htbx_skp_pxl_width(tier)
 	pl_ship_hitbox_skip_pixel = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
-	pl_ship_damage = 2 * tier + flr(pl_ship_damage_upgrades * 1.2)
-	pl_ship_base_damage = 2 * tier
+	pl_ship_damage = 2 * tier
+	for i = 1, pl_ship_damage_upgrades do
+		pl_ship_damage += flr(1 + (i) / 5)
+	end
 	pl_ship_life = 5 * tier
 	pl_ship_max_life = pl_ship_life
 	pl_ship_shields = flr(tier/2)
-	pl_ship_max_shield = pl_ship_shields
+	pl_ship_max_shield = tier
 	pl_ship_shot_speed = tier / 3 + 1
 	pl_ship_speed = 1 + tier * 0.2
 	pl_ship_default_shot_speed = tier / 3 + 1
 	pl_ship_default_speed = 1 + tier * 0.2
-	pl_ship_storage = tier + 3
+	pl_ship_storage = 3 + ceil(tier * 1.5)
 	max_pl_weapons = min(tier, 5)
 end
 
@@ -940,7 +930,6 @@ drone_max_life = 0
 drone_shields = 0
 drone_max_shields = 0
 drone_storage = 0
-drone_shots = {}
 drone_available = false
 -- 0: attack; 1: cargo
 drone_type_attack = true
@@ -1052,9 +1041,7 @@ end
 -- enemies
 
 enemies_max_y = 96
-enemies = {}
 min_enemies_on_level = 0
-enemy_shots = {}
 enemy_shot_cooldown = 0
 prevent_enemy_moving_on_x = false
 
@@ -1343,8 +1330,6 @@ end
 -->8
 -- items
 
-floating_items = {}
-
 -- buffs are at 154 to 157
 -- upgrades are at 158 to 170
 -- credits are at 171 to 172
@@ -1411,15 +1396,16 @@ function interpret_item(item)
 			sfx(12)
 			pl_ship_shields += 1
 			del(floating_items, item)
-		elseif drone_shields < drone_max_shields then
+		elseif drone_available and drone_shields < drone_max_shields then
 			sfx(12)
 			drone_shields += 1
 			del(floating_items, item)
 		end
 	elseif item[3] == attack_damage_inc[1] then
-		if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
+		if pl_ship_damage_upgrades < max_pl_extra_damage then
 			sfx(11)
-			pl_ship_damage += flr(pl_ship_damage_upgrades * 1.2)
+			pl_ship_damage_upgrades += 1
+			pl_ship_damage += flr(1 + (pl_ship_damage_upgrades) / 5)
 			del(floating_items, item)
 		else
 			store_item(item, attack_damage_inc[2])
@@ -1580,9 +1566,7 @@ max_star_speed = 5
 stars_counter_threshold = 2
 stars_counter = 0
 stars_max_y = 0
-stars = {} -- 1: x 2: y 3: speed
 stars_hyperspeed = false
-stars_hide = false
 star_base_speed = 1
 
 function init_passing_stars()
@@ -1891,9 +1875,9 @@ function trader_converstaion()
 		conv_text_4 = "your credits are welcome."
 	elseif level >= 20 then
 		conv_text_1 = "hello my friend!"
-		conv_text_2 = "you are pretty capable"
+		conv_text_2 = "you are pretty capable!"
 		conv_text_3 = "to make it this far."
-		conv_text_4 = "prepare for the final wave!"
+		conv_text_4 = "congratulations!"
 	end
 end
 
@@ -1970,7 +1954,7 @@ function trading_script()
 		all_stars_speed_ctrl(0.2)
 		trading_phase = 2
 	elseif trading_phase == 0 then
-		if not trade_finished then
+		if not trade_finished and level != 20 then
 			stars_hide = true
 			trade()
 		else
@@ -2078,9 +2062,9 @@ function draw_tradescreen()
 		print("install stored upgrades", 10, 52, 5)
 	end
 
-	if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage then
+	if pl_ship_damage_upgrades < max_pl_extra_damage then
 		print("install stronger weapons", 10, 60, 7)
-		print("(" ..attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage.. ")", 107, 60, 10)
+		print("(" ..attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage_upgrades.. ")", 107, 60, 10)
 	else
 		print("install stronger weapons", 10, 60, 5)
 	end
@@ -2183,17 +2167,17 @@ function trade()
 				sfx(23)
 			end
 		elseif trade_cursor_pos == 4 then -- restore ship shield point
-			price = (pl_ship_max_shield-pl_ship_shields)*price_per_ship_shield
-			if pl_ship_shields < pl_ship_max_shield and pl_credits >= price then
+			if pl_ship_shields < pl_ship_max_shield and pl_credits >= price_per_ship_shield then
 				pl_ship_shields += 1
+				pl_credits -= price_per_ship_shield
 				sfx(12)
 			else
 				sfx(23)
 			end
 		elseif trade_cursor_pos == 5 then -- restore drone shield point
-			price = (drone_max_shields-drone_shields)*price_per_drone_shield
-			if drone_available and drone_shields < drone_max_shields and pl_credits >= price then
+			if drone_available and drone_shields < drone_max_shields and pl_credits >= price_per_drone_shield then
 				drone_shields += 1
+				pl_credits -= price_per_drone_shield
 				sfx(12)
 			else
 				sfx(23)
@@ -2206,11 +2190,11 @@ function trade()
 				sfx(11)
 			end
 		elseif trade_cursor_pos == 7 then -- install stronger weapons
-			local price = attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage
-			if pl_ship_damage-pl_ship_base_damage < max_pl_extra_damage and pl_credits >= price then
+			local price = attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage_upgrades
+			if pl_ship_damage_upgrades < max_pl_extra_damage and pl_credits >= price then
 				sfx(11)
-				pl_ship_damage += flr(pl_ship_damage_upgrades * 1.2)
 				pl_ship_damage_upgrades += 1
+				pl_ship_damage += flr(1 + (pl_ship_damage_upgrades) / 5)
 				pl_credits -= price
 			else
 				sfx(23)
@@ -2268,7 +2252,7 @@ function calc_player_goods_price(sell)
 	local price = 0
 	for item in all(pl_items_stored) do
 		if item[1] > 172 then
-			price += item[2]
+			price += ceil(item[2] * (1 + (level - 1) / 19))
 			if sell then
 				sfx(17)
 				del(pl_items_stored, item)
@@ -2307,7 +2291,7 @@ function get_number_of_stored_upgrades(equip)
 			local skip = false
 			if (item[1] == drone_inc[1] and drone_tier >= max_drones)
 				or (item[1] == weapons_inc[1] and pl_ship_weapons >= max_pl_weapons and drone_weapons >= max_dr_weapons)
-				or (item[1] == attack_damage_inc[1] and pl_ship_damage-pl_ship_base_damage >= max_pl_extra_damage)
+				or (item[1] == attack_damage_inc[1] and pl_ship_damage_upgrades >= max_pl_extra_damage)
 				then
 				skip = true
 			end
@@ -2328,7 +2312,7 @@ end
 
 function draw_titlescreen()
 	-- version
-	print("beta " ..GAME_VERSION, 84, 0, 10)
+	print("beta " ..GAME_VERSION, 84, 1, 10)
 	-- void merchants
 	sspr(88, 104, 40, 16, 24, 20, 80, 32)
 	-- hide enemy ship

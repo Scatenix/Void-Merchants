@@ -112,21 +112,14 @@ Currently only less than 10 of 8192 tokens are left for the game code. There sho
 ## Known Bugs
 
 - Major: Game balancing needs to be tested!
-    - Storage is too high. Player should think about if it's worth to pick up low priced items
-        - The cargo drones are pretty much useless. But they should atleast in the early game be very useful
-        - Enemies become to strong on higher levels
-        - Gets super hard from level 15-16
-    - Perhaps make damage upgrades give 2 more damage after the 5th upgrade. damage += (flr(current_damage * 1.2))
+    - Gets very hard from level 15-16
 - ? Major: Game save should be destroyed after loading to avoid loading the game over and over again
     - And saving should quit to title screen. Else this isn't a true roguelike
-    - I might leave it like this, just to make it easier
-- Minor: It is not always shown at which level the player is upon entering battle
-- Minor: Had an instance of my drone dying without the drone_shield being destroyed first. This should not happen
+    - I might leave it like this, just to make it easier and let the player decide
 - Minor: Down-scaled planets look terrible
     - I don't think this is possible without overly complex solutions
 - Minor: Sounds or music sometimes skips
     - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here
-- Minor: If I had the code space, I would implement a manual entry in the pause menu
 
 ## License
 
