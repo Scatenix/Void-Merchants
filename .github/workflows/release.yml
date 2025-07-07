@@ -26,7 +26,7 @@ jobs:
           tag_name: ${{ env.TAG_NAME }}
           files: |
             ./LICENSE.txt
-            ./resources/manual/manual.txt
+            ./resources/manual/manual.pdf
             ./void-merchants.p8
             ./resources/cart/void-merchants.bin/void-merchants_osx.zip
             ./resources/cart/void-merchants.bin/void-merchants_raspi.zip

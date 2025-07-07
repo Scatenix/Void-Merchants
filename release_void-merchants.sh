@@ -31,9 +31,8 @@ if git rev-parse "$VERSION" >/dev/null 2>&1; then
   exit 1
 fi
 
-echo "Writing $VERSION to void-merchants.p8, the manual.txt, Readme and into the release notes..."
+echo "Writing $VERSION to void-merchants.p8, Readme and into the release notes..."
 sed -i 's/^\(GAME_VERSION[[:space:]]*=[[:space:]]*"\)[^"]*\(".*\)/\1'"$VERSION"'\2/' ./void-merchants.p8
-sed -i 's/\(Manual for \)[^ ]\+/\1'"$VERSION"'/' ./resources/manual/manual.txt
 sed -i 's#\(!\[Status: Beta](https://img.shields.io/badge/status-beta%20\)[^)]*\(-yellow)\)#\1'"$VERSION"'\2#' ./README.md
 sed -i 's/\(## Release \)[^ ]\+/\1'"$VERSION"'/' ./Release-Text
 
@@ -58,7 +57,7 @@ rm -rf ./resources/cart/void-merchants.bin/
 # generate html+js files and the .p8.png cartridge.
 "$PICO8_EXE" void-merchants.p8 -export ./resources/cart/void-merchants.p8.png
 "$PICO8_EXE" void-merchants.p8 -export ./docs/index.html
-"$PICO8_EXE" void-merchants.p8 -export "-i 232 -s 2 -c 15  -e ./resources/manual/manual.txt ./resources/cart/void-merchants.bin"
+"$PICO8_EXE" void-merchants.p8 -export "-i 232 -s 2 -c 15  -e ./resources/manual/manual.pdf ./resources/cart/void-merchants.bin"
 
 # Not using * wildcard just to be safe and to not delete something important.
 echo "remove unnecessarily created non-zipped binary files..."

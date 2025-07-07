@@ -1,14 +1,8 @@
 ## Release v9.4.0
 
-## Balancing
+### Misc
 
-- Increased emeny life by about 33 %
-- Created a better manual as PDF
-
-### Bugs
-
-- Fixed a bug where the player could buy tier 4-6 storage drones after saving and loading a game
-- Fixed a bug where converting drone from cargo to attack left you with more life than what should be possible
+- Properly include PDF manual everywhere
 
 ## Files included
 
@@ -18,5 +12,5 @@
 - `void-merchants_windows.zip` — Windows binaries
 - `void-merchants_raspi.zip` — Raspberry Pi binaries
 - `void-merchants_osx.zip` — macOS binaries
-- `manual.txt` — Manual for this release
+- `manual.pdf` — Manual for this release
 - `LICENSE.txt` — Licensing information
