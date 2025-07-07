@@ -134,9 +134,11 @@ Following apps are needed for `release_void-merchants.sh`:
 
 3 variables need to be set within the script `release_void-merchants.sh`. This is done to avoid needing to have these apps in the PATH.
 
-PICO8_EXE="/path/to/pico8.exe"
-_7Z_EXE="/path/to/7z.exe"
-LIBRE_OFFICE_EXE="/path/to/soffice.exe"
+`PICO8_EXE="/path/to/pico8.exe"`
+
+`_7Z_EXE="/path/to/7z.exe"`
+
+`LIBRE_OFFICE_EXE="/path/to/soffice.exe"`
 
 ### Prepare the Release
 
