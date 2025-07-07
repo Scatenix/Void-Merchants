@@ -82,10 +82,10 @@ done
 sed -i "s/{{VERSION}}/$VERSION/g" "resources/manual/temp/content.xml"
 
 # Zip manual again
-"$_7Z_EXE" a -tzip "resources/manual/temp/manual.odt" resources/manual/temp/*
+cd resources/manual/temp && "$_7Z_EXE" a -tzip manual.odt ./* && cd -
 
 # Export to PDF
-"$LIBRE_OFFICE_EXE" --headless --convert-to pdf "resources/manual/manual.odt" --outdir resources/manual/
+"$LIBRE_OFFICE_EXE" --headless --convert-to pdf "resources/manual/temp/manual.odt" --outdir resources/manual/
 
 # Delete temporary files again
 rm -rf resources/manual/temp/
