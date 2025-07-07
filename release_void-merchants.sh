@@ -87,8 +87,8 @@ cd resources/manual/temp && "$_7Z_EXE" a -tzip manual.odt ./* && cd -
 # Export to PDF
 "$LIBRE_OFFICE_EXE" --headless --convert-to pdf "resources/manual/temp/manual.odt" --outdir resources/manual/
 
-# Delete temporary files again
-rm -rf resources/manual/temp/
+# Delete temporary files again. Sleep is there to not accidentally check in files to soon, before they are actually deleted.
+rm -rf resources/manual/temp/ && sleep 1
 
 ### Confirm the release before tagging in pushing. 
 read -r -p "Are you sure everything is ready to release, including the release notes? [y/N] " response
