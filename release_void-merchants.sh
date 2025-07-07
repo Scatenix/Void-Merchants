@@ -82,7 +82,7 @@ done
 sed -i "s/{{VERSION}}/$VERSION/g" "resources/manual/temp/content.xml"
 
 # Zip manual again
-7z a -tzip "resources/manual/temp/manual.odt" resources/manual/temp/*
+"$_7Z_EXE" a -tzip "resources/manual/temp/manual.odt" resources/manual/temp/*
 
 # Export to PDF
 "$LIBRE_OFFICE_EXE" --headless --convert-to pdf "resources/manual/manual.odt" --outdir resources/manual/
