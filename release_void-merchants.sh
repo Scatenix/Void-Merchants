@@ -3,7 +3,7 @@
 # Set to app paths. Done to avoid needing to have everything in the PATH.
 PICO8_EXE="/c/Program Files (x86)/PICO-8/pico8.exe"
 _7Z_EXE="/c/Program Files/7-Zip/7z.exe"
-LIBRE_OFFICE_EXE="/c/Program\ Files/LibreOffice/program/soffice.exe"
+LIBRE_OFFICE_EXE="/c/Program Files/LibreOffice/program/soffice.exe"
 VERSION=$(cat ./VERSION)
 
 ### Fail the script early.
@@ -16,12 +16,6 @@ fi
 # Check if 7z is working. Exit if test fails. very important for the LICENSE.txt.
 if ! "$_7Z_EXE" > /dev/null 2>&1; then
     echo "7z appears to not be installed. Exit script"
-    exit 1
-fi
-
-# Needed to publish a new manual with the adjusted version number.
-if ! "$LIBRE_OFFICE_EXE" > /dev/null 2>&1; then
-    echo "Libre Office appears to not be installed. Exit script"
     exit 1
 fi
 
