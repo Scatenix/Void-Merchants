@@ -41,6 +41,23 @@ sed -i "s/\(Copyright (c) \)[0-9]\{4\}/\1$(date +%Y)/" LICENSE.txt
 sed -i "s/\(Copyright (c) \)[0-9]\{4\}/\1$(date +%Y)/" README.md
 sed -i "s/\(copyright (c) \)[0-9]\{4\}/\1$(date +%Y)/" void-merchants.p8
 
+### Generate new manual.pdf with the current version.
+
+# Unzip manual to temporary directory.
+"$_7Z_EXE" x ./resources/manual/manual.odt -o./resources/manual/temp/
+
+# Replace {{VERSION}} placeholder.
+sed -i "s/{{VERSION}}/$VERSION/g" "resources/manual/temp/content.xml"
+
+# Zip manual again.
+cd resources/manual/temp && "$_7Z_EXE" a -tzip manual.odt ./* && cd -
+
+# Export to PDF.
+"$LIBRE_OFFICE_EXE" --headless --convert-to pdf "resources/manual/temp/manual.odt" --outdir resources/manual/
+
+# Delete temporary files again.
+rm -rf resources/manual/temp/
+
 ### Splitting the game cartridge files to ensure up to date code in the game directory. 
 
 echo "Splitting files from void-merchants.p8..."
@@ -71,23 +88,6 @@ rm -r ./resources/cart/void-merchants.bin/windows/
 for file in ./resources/cart/void-merchants.bin/void-merchants_*.zip; do
   "$_7Z_EXE" a -tzip "$file" ./LICENSE.TXT
 done
-
-### Generate new manual.pdf with the current version.
-
-# Unzip manual to temporary directory.
-"$_7Z_EXE" x ./resources/manual/manual.odt -o./resources/manual/temp/
-
-# Replace {{VERSION}} placeholder.
-sed -i "s/{{VERSION}}/$VERSION/g" "resources/manual/temp/content.xml"
-
-# Zip manual again.
-cd resources/manual/temp && "$_7Z_EXE" a -tzip manual.odt ./* && cd -
-
-# Export to PDF.
-"$LIBRE_OFFICE_EXE" --headless --convert-to pdf "resources/manual/temp/manual.odt" --outdir resources/manual/
-
-# Delete temporary files again.
-rm -rf resources/manual/temp/
 
 ### Confirm the release before tagging in pushing. 
 read -r -p "Are you sure everything is ready to release, including the release notes? [y/N] " response
