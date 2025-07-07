@@ -13,7 +13,7 @@ if [[ -n $(git status --porcelain | grep -v 'M VERSION') ]]; then
   exit 1
 fi
 
-# Check if 7z is working. Exit if test fails. very important for the LICENSE.txt.
+# Very important for the LICENSE.txt.
 if ! "$_7Z_EXE" > /dev/null 2>&1; then
     echo "7z appears to not be installed. Exit script"
     exit 1
@@ -49,25 +49,25 @@ echo "Splitting files from void-merchants.p8..."
 
 ### Exporting the release game artifacts from the game cartridge.
 
-# pico-8 -export seems to not always overwrite these exported files
+# pico-8 -export seems to not always overwrite these exported files.
 rm ./resources/cart/void-merchants.p8.png
 rm ./docs/index.html
 rm ./docs/index.js
 rm -rf ./resources/cart/void-merchants.bin/
 
-# generate html+js files and the .p8.png cartridge
+# generate html+js files and the .p8.png cartridge.
 "$PICO8_EXE" void-merchants.p8 -export ./resources/cart/void-merchants.p8.png
 "$PICO8_EXE" void-merchants.p8 -export ./docs/index.html
 "$PICO8_EXE" void-merchants.p8 -export "-i 232 -s 2 -c 15  -e ./resources/manual/manual.txt ./resources/cart/void-merchants.bin"
 
-# Not using * wildcard just to be safe and to not delete something important
+# Not using * wildcard just to be safe and to not delete something important.
 echo "remove unnecessarily created non-zipped binary files..."
 rm -r ./resources/cart/void-merchants.bin/linux/
 rm -r ./resources/cart/void-merchants.bin/raspi/
 rm -r ./resources/cart/void-merchants.bin/void-merchants.app/
 rm -r ./resources/cart/void-merchants.bin/windows/
 
-### Add the LICENSE.txt to the ZIP files
+### Add the LICENSE.txt to the ZIP files.
 
 for file in ./resources/cart/void-merchants.bin/void-merchants_*.zip; do
   "$_7Z_EXE" a -tzip "$file" ./LICENSE.TXT
@@ -75,20 +75,20 @@ done
 
 ### Generate new manual.pdf with the current version.
 
-# Unzip manual to temporary directory
+# Unzip manual to temporary directory.
 "$_7Z_EXE" x ./resources/manual/manual.odt -o./resources/manual/temp/
 
-# Replace {{VERSION}} placeholder
+# Replace {{VERSION}} placeholder.
 sed -i "s/{{VERSION}}/$VERSION/g" "resources/manual/temp/content.xml"
 
-# Zip manual again
+# Zip manual again.
 cd resources/manual/temp && "$_7Z_EXE" a -tzip manual.odt ./* && cd -
 
-# Export to PDF
+# Export to PDF.
 "$LIBRE_OFFICE_EXE" --headless --convert-to pdf "resources/manual/temp/manual.odt" --outdir resources/manual/
 
-# Delete temporary files again. Sleep is there to not accidentally check in files to soon, before they are actually deleted.
-rm -rf resources/manual/temp/ && sleep 1
+# Delete temporary files again.
+rm -rf resources/manual/temp/
 
 ### Confirm the release before tagging in pushing. 
 read -r -p "Are you sure everything is ready to release, including the release notes? [y/N] " response
