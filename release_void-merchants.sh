@@ -100,7 +100,7 @@ case "$response" in
         git tag "$VERSION"
         git push origin main && git push origin "$VERSION"
 
-        printf "\nRelease done."
+        printf "\nRelease of %s done." "$VERSION"
         ;;
     *)
         echo "Release aborted."
