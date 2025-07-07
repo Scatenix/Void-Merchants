@@ -13,12 +13,6 @@ if [[ -n $(git status --porcelain | grep -v 'M VERSION') ]]; then
   exit 1
 fi
 
-# Needed to create the release artifacts from the raw game cartridge.
-if ! "$PICO8_EXE" > /dev/null 2>&1; then
-    echo "PICO-8 appears to not be installed. Exit script"
-    exit 1
-fi
-
 # Check if 7z is working. Exit if test fails. very important for the LICENSE.txt.
 if ! "$_7Z_EXE" > /dev/null 2>&1; then
     echo "7z appears to not be installed. Exit script"
@@ -26,7 +20,7 @@ if ! "$_7Z_EXE" > /dev/null 2>&1; then
 fi
 
 # Needed to publish a new manual with the adjusted version number.
-if ! "$LIBRE_OFFICE_WRITE_EXE" > /dev/null 2>&1; then
+if ! "$LIBRE_OFFICE_EXE" > /dev/null 2>&1; then
     echo "Libre Office appears to not be installed. Exit script"
     exit 1
 fi
