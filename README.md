@@ -107,10 +107,56 @@ Because PICO-8 is using a virtualized CPU that is running at about 8 MHz, the ga
 
 Currently only less than 10 of 8192 tokens are left for the game code. There shouldn't really be any unused code, since I had to make sure there is nothing unnecessary to stay in this limit. This even includes comments.
 
+## How to create a new Release
+
+The majority of the release is being done on the local development environment through a bash script `release_void-merchants.sh`.
+This approach was chosen to avoid having to include some of the unusual needed apps in a docker image for the release process.
+Especially because of PICO-8 which I am not allowed to distribute.
+
+The GitHub Action (`.github/workflows/release.yml`) only copies the release artifacts to the new release within the GitHub repository.
+
+Pushing to main will automatically trigger a deploy of the contents in `docs/` to the repositories GitHub Pages site.
+This is meant to contain the game as .html and .js, exported by PICO-8.
+
+### Prerequisites
+
+Following apps are needed for `release_void-merchants.sh`:
+
+- Common Unix utilities
+    - bash
+    - sed
+- PICO-8
+- Git
+- Libre Office
+- 7-Zip
+
+### Adjust the Release Script for your development Environment
+
+3 variables need to be set within the script `release_void-merchants.sh`. This is done to avoid needing to have these apps in the PATH.
+
+PICO8_EXE="/path/to/pico8.exe"
+_7Z_EXE="/path/to/7z.exe"
+LIBRE_OFFICE_EXE="/path/to/soffice.exe"
+
+### Prepare the Release
+
+- Make sure every change for the new release is commited, including the text in `Release-Text` that is used for the Release section on the GitHub repository.
+- Adjust the new version number in the `VERSION` file in the project root. Else the release will fail.
+
+### Release
+
+- Execute the scripe `release_void-merchants.sh`
+    - This will take a few seconds to generate all release artifacts
+- You will be asked to check if everything is fine before committing and tagging the release
+    - Use a git diff view. A handful of things will be automatically adjusted, like the version number accross different files
+    - Cancel with n (no)
+    - Confirm with y (yes)
+
+The script will then automatically push the new version tag and to main and trigger the GitHub Actions.
+
 ## Known Bugs
 
 - Major: Game balancing needs to be tested!
-    - Gets very hard from level 15-16
 - ? Major: Game save should be destroyed after loading to avoid loading the game over and over again
     - And saving should quit to title screen. Else this isn't a true roguelike
     - I might leave it like this, just to make it easier and let the player decide

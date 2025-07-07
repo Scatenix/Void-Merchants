@@ -320,17 +320,17 @@ function trade()
 			ds = drone_shields
 			if drone_type_attack then
 				max_drones = 3
-				drone_type_attack = not drone_type_attack
+				drone_type_attack = false
 				set_pl_drone(min(3, drone_tier))
 			else
 				max_drones = 6
-				drone_type_attack = not drone_type_attack
+				drone_type_attack = true
 				drone_weapons = 1
 				set_pl_drone(drone_tier)
 			end
 			sfx(12)
-			drone_life = dl
-			drone_shields = ds
+			drone_life = min(dl, drone_life)
+			drone_shields = min(ds, drone_shields)
 		elseif trade_cursor_pos == 11 then -- leave
 			trade_finished = true
 			all_stars_speed_ctrl(0.2)

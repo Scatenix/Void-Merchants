@@ -2,16 +2,13 @@
 
 ## Balancing
 
-- Increased drone life to make them more viable
-- Decreased drop chance of the shot speed buff
-- Capped player shot speed at 2.5 (without the buff drop)
-- Decreased the selling price multiplier based on the current level for goods
+- Increased emeny life by about 33 %
+- Created a better manual as PDF
 
-### Misc
+### Bugs
 
-- Simplified buff sytem code
-- Slightly changed NPC dialog
-- Improved manual
+- Fixed a bug where the player could buy tier 4-6 storage drones after saving and loading a game
+- Fixed a bug where converting drone from cargo to attack left you with more life than what should be possible
 
 ## Files included
 

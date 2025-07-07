@@ -358,6 +358,5 @@ function _draw()
 	-- print("memory: "..stat(0).." KiB", 0, 0, 7)
 	-- print("pico cpu: " ..stat(1), 0, 8, 7)
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
-	-- info(test)
 end
 -->8

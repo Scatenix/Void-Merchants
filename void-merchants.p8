@@ -360,7 +360,6 @@ function _draw()
 	-- print("memory: "..stat(0).." KiB", 0, 0, 7)
 	-- print("pico cpu: " ..stat(1), 0, 8, 7)
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
-	-- info(test)
 end
 -->8
 -- global variables
@@ -1151,7 +1150,7 @@ function spawn_enemy_wave()
 end
 
 function calc_enemy_life(lvl)
-	return lvl * 2 + 1
+	return lvl * 3 + 1
 end
 
 -- {y start of enemy on sprite, y width of enemy}
@@ -1656,6 +1655,7 @@ function save_game()
 	dset(8, drone_life)
 	dset(9, drone_shields)
 	dset(10, drone_weapons)
+	dset(62, max_drones)
 	if drone_type_attack then dset(63, 1) end
 
 	-- store to game slot 11 to max 61 (50 slots)
@@ -1685,6 +1685,7 @@ function load_game()
 	pl_ship_life = dget(5)
 	pl_ship_shields = dget(6)
 
+	max_drones = dget(62)
 	drone_tier = dget(7)
 	drone_type_attack = dget(63) == 1
 	set_pl_drone(drone_tier)
@@ -2224,17 +2225,17 @@ function trade()
 			ds = drone_shields
 			if drone_type_attack then
 				max_drones = 3
-				drone_type_attack = not drone_type_attack
+				drone_type_attack = false
 				set_pl_drone(min(3, drone_tier))
 			else
 				max_drones = 6
-				drone_type_attack = not drone_type_attack
+				drone_type_attack = true
 				drone_weapons = 1
 				set_pl_drone(drone_tier)
 			end
 			sfx(12)
-			drone_life = dl
-			drone_shields = ds
+			drone_life = min(dl, drone_life)
+			drone_shields = min(ds, drone_shields)
 		elseif trade_cursor_pos == 11 then -- leave
 			trade_finished = true
 			all_stars_speed_ctrl(0.2)

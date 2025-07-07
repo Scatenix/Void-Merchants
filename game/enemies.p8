@@ -113,7 +113,7 @@ function spawn_enemy_wave()
 end
 
 function calc_enemy_life(lvl)
-	return lvl * 2 + 1
+	return lvl * 3 + 1
 end
 
 -- {y start of enemy on sprite, y width of enemy}
