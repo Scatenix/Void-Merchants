@@ -76,7 +76,7 @@ done
 ### Generate new manual.pdf with the current version.
 
 # Unzip manual to temporary directory
-"$_7Z_EXE" x ./resources/manual/test_manual.odt -o./resources/manual/temp/
+"$_7Z_EXE" x ./resources/manual/manual.odt -o./resources/manual/temp/
 
 # Replace {{VERSION}} placeholder
 sed -i "s/{{VERSION}}/$VERSION/g" "resources/manual/temp/content.xml"
