@@ -2,7 +2,23 @@
 
 ### Misc
 
-- Fix old PDF manual version copied to binarie zips
+- Changed game balancing
+  - Overall decreased storage to make it more important what to pick up and harder to get all upgrades
+    - Player ship now calculates storage based on: mid(3, ceil(tier * 1.5), 8) (min 3, max 8)
+    - Attack drones now calculates storage based on: ceil(tier * 0.5) (min 1, max 3)
+    - Cargo drones now calculates storage based on: tier * 2 (min 2, max 6)
+  - Made difficulty spike a little bit flater and decreased overall difficulty a little bit
+- Finishing the game now shows a score based on the players credits + value stored of goods and upgrades - negative-credits
+  - This change hopefully adds some purpose actually play the game and not try to abuse some mechanics because of the missing boss at the end
+  - loading the game increases negative-credits by 50 to give an incentive to load as little as possible for score hunters
+- Adjusted void creature dialouge to make the game slightly more coherent
+- Added sound when hitting an enemy
+- Show explosion when drone was killed
+- Show explosion on death screen
+- Fixed some small sound issues
+- Removed showing life and shields as 3 symbols when < 4 to safe some needed pico8 code tokens
+- Adjustments to readme
+- Fixed version to make more sense. It is now 0.x.x now before the 1.0 release
 
 ## Files included
 

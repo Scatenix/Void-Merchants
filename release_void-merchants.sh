@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Set to app paths. Done to avoid needing to have everything in the PATH.
-PICO8_EXE="/c/Program Files (x86)/PICO-8/pico8.exe"
-_7Z_EXE="/c/Program Files/7-Zip/7z.exe"
-LIBRE_OFFICE_EXE="/c/Program Files/LibreOffice/program/soffice.exe"
+PICO8_EXE="/usr/local/bin/pico8"
+_7Z_EXE="/usr/bin/7z"
+LIBRE_OFFICE_EXE="/usr/bin/soffice"
 VERSION=$(cat ./VERSION)
 
 ### Fail the script early.

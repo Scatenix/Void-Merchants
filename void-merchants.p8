@@ -1,5 +1,5 @@
 pico-8 cartridge // http://www.pico-8.com
-version 42
+version 43
 __lua__
 -- void merchants
 -- fight, travel, trade!
@@ -28,11 +28,11 @@ GAME_VERSION = "v9.4.2"
 -- 0 explosion
 -- 1 big explosion
 -- 2 music part 1
--- 3 hit sound?
+-- 3 hit enemy
 -- 4 increased shooting speed sound
 -- 5 shooting sound
 -- 6 collect item sound
--- 7 hit sound?
+-- 7 hit player
 -- 8 music part 2
 -- 9 speed increase sound
 -- 10 life pickup
@@ -51,7 +51,6 @@ GAME_VERSION = "v9.4.2"
 -- 23 cannot perform action (used at trading)
 
 -- needed to save and load the game (saving at trader, loading at titlescreen)
--- this is a hash of this cartridge at some point. should be pretty unique
 cartdata("void-merchants_4e40baa22f0e407277e79304514550b9e952ccef")
 
 function _init()
@@ -74,6 +73,7 @@ function _init()
 
 	level = 1
 	pl_credits = 200
+	negative_score = 0
 	set_pl_ship(1)
 	pl_ship_weapons = 1
 	set_pl_drone(0)
@@ -262,6 +262,7 @@ function _draw()
 	if death_mode then
 		print("your ship was destroyed!", 15, 56, 8)
 		print("press 🅾️ to play again!", 16, 72, 7)
+		draw_explosions()
 		if btnp(4) then
 			_init()
 		end
@@ -320,6 +321,7 @@ function _draw()
 	elseif converstaion_mode then
 		draw_passing_stars()
 		draw_textbox()
+		draw_money_pickups()
 	elseif travel_after_battle_mode then
 		draw_passing_stars()
 		draw_floating_items()
@@ -360,6 +362,10 @@ function _draw()
 	-- print("memory: "..stat(0).." KiB", 0, 0, 7)
 	-- print("pico cpu: " ..stat(1), 0, 8, 7)
 	-- print("sys cpu: " ..stat(2), 0, 16, 7)
+	-- print(negative_score, 0, 0, 7)
+	-- print(pl_credits, 0, 8, 7)
+	-- print(calc_player_goods_price(false), 0, 16, 7)
+	-- print(calc_player_upgrades_price(false), 0, 24, 7)
 end
 -->8
 -- global variables
@@ -584,13 +590,13 @@ function draw_battle_stats()
 	end
 
 	print("hp:", 4, 110, 7)
-	print(get_ship_life_as_string(), 15, 110, 8)
+	print(" " .. pl_ship_life, 15, 110, 8)
 
 	print("sh:", 41, 110, 7)
-	print(get_ship_shields_as_string(), 52, 110, 12)
+	print(" " .. pl_ship_shields, 52, 110, 12)
 
 	print("dr:", 78, 110, 7)
-	print(get_drone_life_as_string(), 89, 110, 8)
+	print(" " .. drone_life, 89, 110, 8)
 
 	local draw_drone_shield_offset_y
 	if drone_life < 4 then
@@ -774,7 +780,7 @@ function set_pl_ship(tier)
 	pl_ship_hitbox_width = htbx[2]
 	pl_ship_damage = 2 * tier
 	for i = 1, pl_ship_damage_upgrades do
-		pl_ship_damage += flr(1 + (i) / 5)
+		pl_ship_damage += flr(1 + i / 5)
 	end
 	pl_ship_life = 5 * tier
 	pl_ship_max_life = pl_ship_life
@@ -784,7 +790,7 @@ function set_pl_ship(tier)
 	pl_ship_speed = 1 + tier * 0.2
 	pl_ship_default_shot_speed = min(tier / 3 + 1, 2.5)
 	pl_ship_default_speed = 1 + tier * 0.2
-	pl_ship_storage = 3 + ceil(tier * 1.5)
+	pl_ship_storage = mid(3, ceil(tier * 1.5), 8)
 	max_pl_weapons = min(tier, 5)
 end
 
@@ -877,30 +883,6 @@ function ship_ctrl()
 	end
 end
 
-function get_ship_life_as_string()
-	local ship_life = ""
-	if pl_ship_life < 4 then
-		for i = 1, pl_ship_life do
-			ship_life = ship_life .. "♥"
-		end
-	else
-		ship_life = " " .. pl_ship_life
-	end
-	return ship_life
-end
-
-function get_ship_shields_as_string()
-	local ship_shields = ""
-	if pl_ship_shields < 4 then
-		for i = 1, pl_ship_shields do
-			ship_shields = ship_shields .. "◆"
-		end
-	else
-		ship_shields = " " .. pl_ship_shields
-	end
-	return ship_shields
-end
-
 function ship_burner_calculation()
 	if animation_counter == 10 or animation_counter == 20 then
 	 	pl_ship_sprite += 16
@@ -957,7 +939,7 @@ function set_pl_drone(tier)
 		drone_max_life = 4 * tier
 		drone_shields = tier
 		drone_max_shields = tier
-		drone_storage = tier
+		drone_storage = ceil(tier * 0.5)
 		drone_available = true
 		max_dr_weapons = min(tier, 5)
 	-- get storage drone
@@ -971,7 +953,7 @@ function set_pl_drone(tier)
 		drone_max_life = 12 * tier
 		drone_shields = tier * 2
 		drone_max_shields = tier * 2
-		drone_storage = tier * 3
+		drone_storage = tier * 2
 		drone_available = true
 		drone_weapons = 0
 		max_dr_weapons = 0
@@ -1019,19 +1001,8 @@ function drone_ctrl()
 	end
 end
 
-function get_drone_life_as_string()
-	local drone_life_string = ""
-	if drone_life < 4 then
-		for i = 1, drone_life do
-			drone_life_string = drone_life_string .. "♥"
-		end
-	else
-		drone_life_string = " " .. drone_life
-	end
-	return drone_life_string
-end
-
 function kill_drone()
+	add(explosions, {drone_x, drone_y, 139})
 	drop_items_when_drone_dies()
 	set_pl_drone(0)
 end
@@ -1084,7 +1055,7 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- sprite
 	enemy[5] = 199 + lvl
 	-- damage
-	enemy[6] = ceil(lvl / 4)
+	enemy[6] = ceil(lvl / 5)
 	-- life
 	enemy[7] = calc_enemy_life(lvl)
 	-- shields
@@ -1095,7 +1066,7 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- weapons
 	enemy[9] = ceil(lvl / 5)
 	-- shot_speed
-	enemy[10] = 1 + 0.075 * lvl
+	enemy[10] = 1 + 0.065 * lvl
 	-- speed
 	enemy[11] = flr(lvl / 5) * 0.7 + 1
 	-- value
@@ -1226,12 +1197,15 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 			
 			if hit_x and hit_y then
 				if enemy[8] > 0 then
-				 enemy[8] -= 1
+					enemy[8] -= 1
+					sfx(3)
 				else
 					enemy[7] -= damage_from
+					sfx(3)
 				end
 				if flr(enemy[7]) <= 0 then
-					create_explosion(enemy[1], enemy[2])
+					add(explosions, {enemy[1], enemy[2], 139})
+					sfx(0)
 					enemy_drop_item(enemy)
 					del(enemies, enemy)
 				end
@@ -1274,9 +1248,10 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 				sfx(7)
 				
 				if flr(life) <= 0 then
-					create_explosion(posx, posy)
+					sfx(1)
 					if player1_drone2 == 1 then
 							death_mode = true
+							add(explosions, {56, 90, 139})
 							battle_mode = false
 							travel_after_battle_mode = false
 							pl_ship_shot_speed_buff_time = 0
@@ -1546,11 +1521,6 @@ function clear_screen()
  	rectfill(0, 0, 128, 128, 0)
 end
 
-function create_explosion(posx, posy)
-	add(explosions, {posx, posy, 139})
-	sfx(0)
-end
-
 function create_hitmarker(posx, posy, ship_drone_enemy)
 	add(hitmarkers, {posx, posy, 0, ship_drone_enemy})
 end
@@ -1655,12 +1625,12 @@ function save_game()
 	dset(8, drone_life)
 	dset(9, drone_shields)
 	dset(10, drone_weapons)
-	dset(62, max_drones)
-	if drone_type_attack then dset(63, 1) end
+	dset(11, max_drones)
+	if drone_type_attack then dset(12, 1) end
+	dset(13, negative_score)
 
-	-- store to game slot 11 to max 61 (50 slots)
-	-- (because player can have max 25 items and we need 2 slots per item)
-	j = 11
+	-- for loop for stored items + sprite, saved to slot 20-60 (max stg: 14 * 2 + buffer)
+	j = 20
 	for item in all(pl_items_stored) do
 		dset(j, item[1])
 		dset(j+1, item[2])
@@ -1684,21 +1654,25 @@ function load_game()
 	set_pl_ship(pl_ship_tier)
 	pl_ship_life = dget(5)
 	pl_ship_shields = dget(6)
-
-	max_drones = dget(62)
+	max_drones = dget(11)
 	drone_tier = dget(7)
-	drone_type_attack = dget(63) == 1
+	drone_type_attack = dget(12) == 1
 	set_pl_drone(drone_tier)
 	drone_life = dget(8)
 	drone_shields = dget(9)
 	drone_weapons = dget(10)
+	negative_score = dget(13) - 100
 
-	-- for loop for stored items, saved to slot 11-61, max storage = 25 * 2 because we need the sprite and the price
-	for i = 11, 61, 2 do
+	-- for loop for stored items + sprite, saved to slot 20-60 (max stg: 14 * 2 + buffer)
+	for i = 20, 60, 2 do
 		if dget(i) ~= 0 then
 			add(pl_items_stored, {dget(i), dget(i+1)})
 		end
 	end
+
+	-- doing this to save negative_score permanently
+	save_game()
+
 	sfx(11)
 end
 -->8
@@ -1873,9 +1847,13 @@ function trader_converstaion()
 		conv_text_4 = "your credits are welcome."
 	elseif level >= 20 then
 		conv_text_1 = "hello my friend!"
-		conv_text_2 = "you must be pretty capable"
-		conv_text_3 = "to make it this far."
-		conv_text_4 = "congratulations!"
+		conv_text_2 = "you must be pretty capable!"
+		conv_text_3 = "congratulations!"
+		conv_text_4 = "let's trade a last time..."
+		price = calc_player_goods_price(true)
+		price += calc_player_upgrades_price(true)
+		add(money_pickups, {price, 25, 50, 150})
+		sfx(17)
 	end
 end
 
@@ -1883,8 +1861,8 @@ function void_creature_converstaion()
 	if level == 5 then
 		conv_text_1 = "i have been watching you."
 		conv_text_2 = "you are making progress."
-		conv_text_3 = "not many come this far."
-		conv_text_4 = "very well... continue..."
+		conv_text_3 = "very well... continue..."
+		conv_text_4 = "reversing time for you."
 	elseif level == 10 then
 		conv_text_1 = "you are changing destiny."
 		conv_text_2 = "i did not expect that."
@@ -1896,9 +1874,9 @@ function void_creature_converstaion()
 		conv_text_3 = "rise and shine, little pilot."
 		conv_text_4 = "rise and shine..."
 	elseif level == 20 then
-		conv_text_1 = "you have mastered my little"
-		conv_text_2 = "game. very well..."
-		conv_text_3 = "i deem you... sufficient."
+		conv_text_1 = "you beat my game. good..."
+		conv_text_2 = "i deem you... sufficient."
+		conv_text_3 = "your score sums up to " .. max(0, pl_credits - negative_score)
 		conv_text_4 = "let us return to the title."
 	end
 end
@@ -2190,7 +2168,7 @@ function trade()
 		elseif trade_cursor_pos == 7 then -- install stronger weapons
 			local price = attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage_upgrades
 			if pl_ship_damage_upgrades < max_pl_extra_damage and pl_credits >= price then
-				sfx(11)
+				sfx(21)
 				pl_ship_damage_upgrades += 1
 				pl_ship_damage += flr(1 + (pl_ship_damage_upgrades) / 5)
 				pl_credits -= price
@@ -2200,11 +2178,11 @@ function trade()
 		elseif trade_cursor_pos == 8 then -- install new weapon
 			local price = weapons_inc[2]+price_increase_per_weapon*(pl_ship_weapons+drone_weapons)
 			if pl_ship_weapons < max_pl_weapons and pl_credits >= price then
-				sfx(11)
+				sfx(21)
 				pl_ship_weapons += 1
 				pl_credits -= price
 			elseif drone_weapons < max_dr_weapons and pl_credits >= price then
-				sfx(11)
+				sfx(21)
 				drone_weapons += 1
 				pl_credits -= price
 			else
@@ -2213,7 +2191,7 @@ function trade()
 		elseif trade_cursor_pos == 9 then -- buy drone
 			price = drone_inc[2]+price_increase_per_drone*drone_tier
 			if drone_tier < max_drones and pl_credits >= price then
-				sfx(11)
+				sfx(21)
 				drone_available = true
 				set_pl_drone(drone_tier + 1)
 				pl_credits -= price
@@ -2603,7 +2581,7 @@ __sfx__
 000500001f353226531e3531d65318353166531434311643123430f6430b343086230732303623043230261302313006130131300613003130230302303033030230301303013030030300302003020130201300
 0010000037620266201c65015650116500e6500c6500a650086500565003650026500065000640006400064000630006300063000620006200062000610006100061000610006000060000600006000060000600
 34200020307103271033710377103a71037710327102e710307103271033710377103a71037710337103271030710327103771030710327103771030710327103071032710377103a7103c7103a7103771035710
-000a00001d3232c333283331a3231031310313103030a303103031030310303103031030310303103030030300303003030030300303003030030300303003030030300303003030130300302003020030208300
+000a000023243172530c223082030420310303103030a303103031030310303103031030310303103030030300303003030030300303003030030300303003030030300303003030130300302003020030208300
 000c0005203342032420314223041a3041b3041b30400004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000002d753207031d7030000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 001000002b33528305004050740524b0524b0524b0524b0524b0524b052f10524b0524b0524b0524b0524b0524b0524b051c0051b00526b0526b0526b0526b0526b0526b0526b0526b0528b0528b0528b052ab05

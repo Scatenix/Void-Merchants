@@ -38,7 +38,9 @@ Make sure to check the manual for more information about the game. Can be found 
 
 ## State of the Game
 
-The game is currently in the balancing and testing phase.
+The game is currently in the balancing and testing phase, but already very playable.
+
+There are only a few minor bugs and a few small game design oversights left.
 
 All planned features have been implemented, except for a final boss fight, which was not possible, due to a code length restriction from PICO-8.
 
@@ -99,7 +101,7 @@ The game is not yet on the official splore game explorer.
 
 Because PICO-8 is using a virtualized CPU that is running at about 8 MHz, the game should run on pretty much every system.
 
-- No more than 300 KiB RAM is being used in all scenarios I have tested
+- No more than 300 KiB RAM is being used, on top of what the PICO-8 runtime needs, in all scenarios I have tested
 - For 20 enemies at level 20 (highest level) on one screen: rarely more than 0.3 CPUs of the virtualized PICO-8 Processor (a score of > 1.0 = game slowdown)
     - One wave can have a maximum of 9 enemies spawned at a time. A second wave will be spawned after some time. No more than 2 waves at the same time are possible
 - All off-screen elements are mostly deleted or at least deactivated to avoid heavy calculations or useless rendering
@@ -116,15 +118,14 @@ Especially because of PICO-8 which I am not allowed to distribute.
 The GitHub Action (`.github/workflows/release.yml`) only copies the release artifacts to the new release within the GitHub repository.
 
 Pushing to main will automatically trigger a deploy of the contents in `docs/` to the repositories GitHub Pages site.
-This is meant to contain the game as .html and .js, exported by PICO-8.
+This will push the game as .html and .js, exported by PICO-8, to provide a playable web version.
 
 ### Prerequisites
 
 Following apps are needed for `release_void-merchants.sh`:
 
-- Common Unix utilities
-    - bash
-    - sed
+- bash
+- sed
 - PICO-8
 - Git
 - Libre Office
@@ -159,13 +160,16 @@ The script will then automatically push the new version tag and to main and trig
 ## Known Bugs
 
 - Major: Game balancing needs to be tested!
-- ? Major: Game save should be destroyed after loading to avoid loading the game over and over again
-    - And saving should quit to title screen. Else this isn't a true roguelike
-    - I might leave it like this, just to make it easier and let the player decide
+    - Currently the player has to much storage space. Storage is almost never full. Getting all upgrades is almost guaranteed
+    - The difficullty spikes dramatically at around level 11-13 from a walk in the park to (at least for me) almost impossible without dying a few times before beating the game
+- Minor: With the game save functionallity, Void Merchants is not a true rogue-like anymore.
+    - I will leave it like this, just to make it easier and let the player decide
+- Minor: Music is a bit to loud (Can I even controll this in a good way?)
 - Minor: Down-scaled planets look terrible
-    - I don't think this is possible without overly complex solutions
+    - I don't think this is possible without overly complex solutions, because there is no space for sprites left
 - Minor: Sounds or music sometimes skips
     - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here
+- Minor: If the ship is at the left edge of the screen, it might temporarily glitch out of the game area when approaching the trading-station
 
 ## License
 
