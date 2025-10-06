@@ -61,7 +61,7 @@ rm -rf resources/manual/temp/
 ### Splitting the game cartridge files to ensure up to date code in the game directory. 
 
 echo "Splitting files from void-merchants.p8..."
-./split.sh void-merchants.p8
+sh ./split.sh void-merchants.p8
 
 ### Exporting the release game artifacts from the game cartridge.
 
@@ -86,7 +86,7 @@ rm -r ./resources/cart/void-merchants.bin/windows/
 ### Add the LICENSE.txt to the ZIP files.
 
 for file in ./resources/cart/void-merchants.bin/void-merchants_*.zip; do
-  "$_7Z_EXE" a -tzip "$file" ./LICENSE.TXT
+  "$_7Z_EXE" a -tzip "$file" ./LICENSE.txt
 done
 
 ### Confirm the release before tagging in pushing. 
