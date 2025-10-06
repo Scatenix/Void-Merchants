@@ -26,11 +26,12 @@ Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merch
 - Y, C : Interact (talk to NPCs or perform trades)
 - Create save games at each visit to the trader by hitting X or V
 - Load them again at the title screen by hitting Y or C
+- Enter : Open Pico-8s pause menu. E.g. to adjust the volume (Start button on a controller)
 
 Can also be played with a controller! Tested with an Xbox controller - others may work too.
 
 The buttons shown on screen are meant for the Playstation controller layout,
-meaning that the X-button in-game is actually not the X-button on a Xbox controller. 
+meaning that the X-button in-game is actually not the X-button on an Xbox controller. 
 
 The controls can be adjusted in the PICO-8 settings (pause button located next to the bottom-right corner).
 
