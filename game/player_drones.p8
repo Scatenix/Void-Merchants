@@ -45,7 +45,7 @@ function set_pl_drone(tier)
 		drone_max_life = 4 * tier
 		drone_shields = tier
 		drone_max_shields = tier
-		drone_storage = tier
+		drone_storage = ceil(tier * 0.5)
 		drone_available = true
 		max_dr_weapons = min(tier, 5)
 	-- get storage drone
@@ -59,7 +59,7 @@ function set_pl_drone(tier)
 		drone_max_life = 12 * tier
 		drone_shields = tier * 2
 		drone_max_shields = tier * 2
-		drone_storage = tier * 3
+		drone_storage = tier * 2
 		drone_available = true
 		drone_weapons = 0
 		max_dr_weapons = 0
@@ -107,19 +107,8 @@ function drone_ctrl()
 	end
 end
 
-function get_drone_life_as_string()
-	local drone_life_string = ""
-	if drone_life < 4 then
-		for i = 1, drone_life do
-			drone_life_string = drone_life_string .. "♥"
-		end
-	else
-		drone_life_string = " " .. drone_life
-	end
-	return drone_life_string
-end
-
 function kill_drone()
+	add(explosions, {drone_x, drone_y, 139})
 	drop_items_when_drone_dies()
 	set_pl_drone(0)
 end

@@ -1,7 +1,6 @@
 __lua__7
 -- enemies
 
-enemies_max_y = 96
 min_enemies_on_level = 0
 enemy_shot_cooldown = 0
 prevent_enemy_moving_on_x = false
@@ -10,7 +9,7 @@ prevent_enemy_moving_on_x = false
 -- try_avoid_placing_behind: Try to not place an enemy behind another enemy.
 --							 Places behind anyways if not avoidable because of to many enemies.
 function add_enemy(lvl, try_avoid_placing_behind)
-	local y = flr(rnd(enemies_max_y))
+	local y = flr(rnd(96))
 	local x = 127
 	local htbx = get_enemy_htbx_skp_pxl_width(lvl)
 	local htbx_skp_pxl = htbx[1]
@@ -27,7 +26,7 @@ function add_enemy(lvl, try_avoid_placing_behind)
 		elseif try_avoid_placing_behind then
 			placement_tries += 1
 			y += 12
-			if y > enemies_max_y then
+			if y > 96 then
 				y = 3
 			end
 		else
@@ -47,7 +46,7 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- sprite
 	enemy[5] = 199 + lvl
 	-- damage
-	enemy[6] = ceil(lvl / 4)
+	enemy[6] = ceil(lvl / 5)
 	-- life
 	enemy[7] = calc_enemy_life(lvl)
 	-- shields
@@ -58,7 +57,7 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- weapons
 	enemy[9] = ceil(lvl / 5)
 	-- shot_speed
-	enemy[10] = 1 + 0.075 * lvl
+	enemy[10] = 1 + 0.065 * lvl
 	-- speed
 	enemy[11] = flr(lvl / 5) * 0.7 + 1
 	-- value

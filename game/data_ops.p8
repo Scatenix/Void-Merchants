@@ -29,12 +29,12 @@ function save_game()
 	dset(8, drone_life)
 	dset(9, drone_shields)
 	dset(10, drone_weapons)
-	dset(62, max_drones)
-	if drone_type_attack then dset(63, 1) end
+	dset(11, max_drones)
+	if drone_type_attack then dset(12, 1) end
+	dset(13, negative_score)
 
-	-- store to game slot 11 to max 61 (50 slots)
-	-- (because player can have max 25 items and we need 2 slots per item)
-	j = 11
+	-- for loop for stored items + sprite, saved to slot 20-60 (max stg: 14 * 2 + buffer)
+	j = 20
 	for item in all(pl_items_stored) do
 		dset(j, item[1])
 		dset(j+1, item[2])
@@ -58,21 +58,25 @@ function load_game()
 	set_pl_ship(pl_ship_tier)
 	pl_ship_life = dget(5)
 	pl_ship_shields = dget(6)
-
-	max_drones = dget(62)
+	max_drones = dget(11)
 	drone_tier = dget(7)
-	drone_type_attack = dget(63) == 1
+	drone_type_attack = dget(12) == 1
 	set_pl_drone(drone_tier)
 	drone_life = dget(8)
 	drone_shields = dget(9)
 	drone_weapons = dget(10)
+	negative_score = dget(13) - 100
 
-	-- for loop for stored items, saved to slot 11-61, max storage = 25 * 2 because we need the sprite and the price
-	for i = 11, 61, 2 do
+	-- for loop for stored items + sprite, saved to slot 20-60 (max stg: 14 * 2 + buffer)
+	for i = 20, 60, 2 do
 		if dget(i) ~= 0 then
 			add(pl_items_stored, {dget(i), dget(i+1)})
 		end
 	end
+
+	-- doing this to save negative_score permanently
+	save_game()
+
 	sfx(11)
 end
 -->8

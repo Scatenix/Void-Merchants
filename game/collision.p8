@@ -15,12 +15,15 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 			
 			if hit_x and hit_y then
 				if enemy[8] > 0 then
-				 enemy[8] -= 1
+					enemy[8] -= 1
+					sfx(3)
 				else
 					enemy[7] -= damage_from
+					sfx(3)
 				end
 				if flr(enemy[7]) <= 0 then
-					create_explosion(enemy[1], enemy[2])
+					add(explosions, {enemy[1], enemy[2], 139})
+					sfx(0)
 					enemy_drop_item(enemy)
 					del(enemies, enemy)
 				end
@@ -63,9 +66,10 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 				sfx(7)
 				
 				if flr(life) <= 0 then
-					create_explosion(posx, posy)
+					sfx(1)
 					if player1_drone2 == 1 then
 							death_mode = true
+							add(explosions, {56, 90, 139})
 							battle_mode = false
 							travel_after_battle_mode = false
 							pl_ship_shot_speed_buff_time = 0

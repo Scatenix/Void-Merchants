@@ -26,11 +26,11 @@ GAME_VERSION = "v9.4.2"
 -- 0 explosion
 -- 1 big explosion
 -- 2 music part 1
--- 3 hit sound?
+-- 3 hit enemy
 -- 4 increased shooting speed sound
 -- 5 shooting sound
 -- 6 collect item sound
--- 7 hit sound?
+-- 7 hit player
 -- 8 music part 2
 -- 9 speed increase sound
 -- 10 life pickup
@@ -49,7 +49,6 @@ GAME_VERSION = "v9.4.2"
 -- 23 cannot perform action (used at trading)
 
 -- needed to save and load the game (saving at trader, loading at titlescreen)
--- this is a hash of this cartridge at some point. should be pretty unique
 cartdata("void-merchants_4e40baa22f0e407277e79304514550b9e952ccef")
 
 function _init()
@@ -72,6 +71,7 @@ function _init()
 
 	level = 1
 	pl_credits = 200
+	negative_score = 0
 	set_pl_ship(1)
 	pl_ship_weapons = 1
 	set_pl_drone(0)
@@ -121,7 +121,9 @@ function _update()
 		if show_trader_station_near then
 			if not stop_trader_station_near then
 				trader_station_x -= 0.5
-				pl_ship_x -= 0.15
+				if pl_ship_x > 0.14 then
+					pl_ship_x -= 0.15
+				end
 			end
 		end
 		travel_from_battle_animation_script()
@@ -131,15 +133,14 @@ function _update()
 			
 			-- set ship and drone
 			pl_ship_x = 20
-			pl_ship_y = 96
+			pl_ship_y = 90
 			
 			add_enemy(flr(rnd(7)) + 14)
 			-- set x, y, life, shield, speed, wobble_state
 			enemies[1][1] = 100
-			enemies[1][2] = 96
+			enemies[1][2] = 89
 			enemies[1][7] = 1
 			enemies[1][8] = 0
-			enemies[1][11] = 1
 			prevent_enemy_moving_on_x = true
 		end
 		drone_ctrl()
@@ -260,6 +261,7 @@ function _draw()
 	if death_mode then
 		print("your ship was destroyed!", 15, 56, 8)
 		print("press 🅾️ to play again!", 16, 72, 7)
+		draw_explosions()
 		if btnp(4) then
 			_init()
 		end
@@ -318,6 +320,7 @@ function _draw()
 	elseif converstaion_mode then
 		draw_passing_stars()
 		draw_textbox()
+		draw_money_pickups()
 	elseif travel_after_battle_mode then
 		draw_passing_stars()
 		draw_floating_items()

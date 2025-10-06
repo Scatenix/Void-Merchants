@@ -34,7 +34,7 @@ meaning that the X-button in-game is actually not the X-button on a Xbox control
 
 The controls can be adjusted in the PICO-8 settings (pause button located next to the bottom-right corner).
 
-Make sure to check the manual for more information about the game. Can be found on the release section!
+Make sure to check the [manual](https://github.com/Scatenix/Void-Merchants/releases/download/v9.4.2/manual.pdf) for more information about the game. Can be found on the release section!
 
 ## State of the Game
 
@@ -120,6 +120,8 @@ The GitHub Action (`.github/workflows/release.yml`) only copies the release arti
 Pushing to main will automatically trigger a deploy of the contents in `docs/` to the repositories GitHub Pages site.
 This will push the game as .html and .js, exported by PICO-8, to provide a playable web version.
 
+Note: The binary icon will be taken from sprites 232, 233, 248 and 249. The beige pixels are configured to be transparent.
+
 ### Prerequisites
 
 Following apps are needed for `release_void-merchants.sh`:
@@ -160,16 +162,16 @@ The script will then automatically push the new version tag and to main and trig
 ## Known Bugs
 
 - Major: Game balancing needs to be tested!
-    - Currently the player has to much storage space. Storage is almost never full. Getting all upgrades is almost guaranteed
-    - The difficullty spikes dramatically at around level 11-13 from a walk in the park to (at least for me) almost impossible without dying a few times before beating the game
+    - The difficullty spikes dramatically at around level 11-13
+
+The following points will likely not be tackled anymore, but leaving them here to keep them in mind.
 - Minor: With the game save functionallity, Void Merchants is not a true rogue-like anymore.
     - I will leave it like this, just to make it easier and let the player decide
-- Minor: Music is a bit to loud (Can I even controll this in a good way?)
+    - Loading will deduct 100 points from the score in the end to have at least a small incentive to play it without loading to often
 - Minor: Down-scaled planets look terrible
-    - I don't think this is possible without overly complex solutions, because there is no space for sprites left
-- Minor: Sounds or music sometimes skips
-    - Unavoidable at the moment because of only 4 sound channels. Game design would need to improve here
-- Minor: If the ship is at the left edge of the screen, it might temporarily glitch out of the game area when approaching the trading-station
+    - I don't think this is possible easily, because there is no space for sprites left
+- Minor: Sounds or music sometimes isn't played
+    - Unavoidable at the moment because of only 4 sound channels, 2 of which are the game music. Game design would need to improve here
 
 ## License
 

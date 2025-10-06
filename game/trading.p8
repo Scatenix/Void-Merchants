@@ -285,7 +285,7 @@ function trade()
 		elseif trade_cursor_pos == 7 then -- install stronger weapons
 			local price = attack_damage_inc[2]+price_increase_per_weapon_dmg*pl_ship_damage_upgrades
 			if pl_ship_damage_upgrades < max_pl_extra_damage and pl_credits >= price then
-				sfx(11)
+				sfx(21)
 				pl_ship_damage_upgrades += 1
 				pl_ship_damage += flr(1 + (pl_ship_damage_upgrades) / 5)
 				pl_credits -= price
@@ -295,11 +295,11 @@ function trade()
 		elseif trade_cursor_pos == 8 then -- install new weapon
 			local price = weapons_inc[2]+price_increase_per_weapon*(pl_ship_weapons+drone_weapons)
 			if pl_ship_weapons < max_pl_weapons and pl_credits >= price then
-				sfx(11)
+				sfx(21)
 				pl_ship_weapons += 1
 				pl_credits -= price
 			elseif drone_weapons < max_dr_weapons and pl_credits >= price then
-				sfx(11)
+				sfx(21)
 				drone_weapons += 1
 				pl_credits -= price
 			else
@@ -308,7 +308,7 @@ function trade()
 		elseif trade_cursor_pos == 9 then -- buy drone
 			price = drone_inc[2]+price_increase_per_drone*drone_tier
 			if drone_tier < max_drones and pl_credits >= price then
-				sfx(11)
+				sfx(21)
 				drone_available = true
 				set_pl_drone(drone_tier + 1)
 				pl_credits -= price

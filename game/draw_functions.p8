@@ -167,13 +167,13 @@ function draw_battle_stats()
 	end
 
 	print("hp:", 4, 110, 7)
-	print(get_ship_life_as_string(), 15, 110, 8)
+	print(" " .. pl_ship_life, 15, 110, 8)
 
 	print("sh:", 41, 110, 7)
-	print(get_ship_shields_as_string(), 52, 110, 12)
+	print(" " .. pl_ship_shields, 52, 110, 12)
 
 	print("dr:", 78, 110, 7)
-	print(get_drone_life_as_string(), 89, 110, 8)
+	print(" " .. drone_life, 89, 110, 8)
 
 	local draw_drone_shield_offset_y
 	if drone_life < 4 then
@@ -267,9 +267,9 @@ function draw_enemies()
 			spr(199, 119, enemy[2])
 		end
 		
-		-- this if is for the enemy_wobble
+		-- this is for the enemy_wobble
 		if enemy[16] >= 20 / enemy[11] then
-			if enemy[2] > 0 and enemy[2] < enemies_max_y + 1 and not enemy_colides_enemy(enemy[1], enemy[2], enemy[17]) then
+			if enemy[2] > 0 and enemy[2] < 96 + 1 and not enemy_colides_enemy(enemy[1], enemy[2], enemy[17]) then
 				enemy[2] += enemy[14]
 				if enemy[15] + enemy[13] <= enemy[2] or enemy[15] - enemy[13] >= enemy[2] then
 					enemy[14] = enemy[14] - enemy[14] * 2

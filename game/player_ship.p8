@@ -30,7 +30,7 @@ function set_pl_ship(tier)
 	pl_ship_hitbox_width = htbx[2]
 	pl_ship_damage = 2 * tier
 	for i = 1, pl_ship_damage_upgrades do
-		pl_ship_damage += flr(1 + (i) / 5)
+		pl_ship_damage += flr(1 + i / 5)
 	end
 	pl_ship_life = 5 * tier
 	pl_ship_max_life = pl_ship_life
@@ -40,7 +40,7 @@ function set_pl_ship(tier)
 	pl_ship_speed = 1 + tier * 0.2
 	pl_ship_default_shot_speed = min(tier / 3 + 1, 2.5)
 	pl_ship_default_speed = 1 + tier * 0.2
-	pl_ship_storage = 3 + ceil(tier * 1.5)
+	pl_ship_storage = mid(3, ceil(tier * 1.5), 8)
 	max_pl_weapons = min(tier, 5)
 end
 
@@ -133,36 +133,12 @@ function ship_ctrl()
 	end
 end
 
-function get_ship_life_as_string()
-	local ship_life = ""
-	if pl_ship_life < 4 then
-		for i = 1, pl_ship_life do
-			ship_life = ship_life .. "♥"
-		end
-	else
-		ship_life = " " .. pl_ship_life
-	end
-	return ship_life
-end
-
-function get_ship_shields_as_string()
-	local ship_shields = ""
-	if pl_ship_shields < 4 then
-		for i = 1, pl_ship_shields do
-			ship_shields = ship_shields .. "◆"
-		end
-	else
-		ship_shields = " " .. pl_ship_shields
-	end
-	return ship_shields
-end
-
 function ship_burner_calculation()
-	if animation_counter == 10 or animation_counter == 20 then
+	if animation_counter % 10 == 0 then
 	 	pl_ship_sprite += 16
 	end
 	if pl_ship_sprite > 37 then
-	 	pl_ship_sprite -= 3*16
+	 	pl_ship_sprite -= 48
 	end
 end
 

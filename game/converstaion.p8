@@ -37,9 +37,13 @@ function trader_converstaion()
 		conv_text_4 = "your credits are welcome."
 	elseif level >= 20 then
 		conv_text_1 = "hello my friend!"
-		conv_text_2 = "you must be pretty capable"
-		conv_text_3 = "to make it this far."
-		conv_text_4 = "congratulations!"
+		conv_text_2 = "you must be pretty capable!"
+		conv_text_3 = "congratulations!"
+		conv_text_4 = "let's trade a last time..."
+		price = calc_player_goods_price(true)
+		price += calc_player_upgrades_price(true)
+		add(money_pickups, {price, 25, 50, 150})
+		sfx(17)
 	end
 end
 
@@ -47,8 +51,8 @@ function void_creature_converstaion()
 	if level == 5 then
 		conv_text_1 = "i have been watching you."
 		conv_text_2 = "you are making progress."
-		conv_text_3 = "not many come this far."
-		conv_text_4 = "very well... continue..."
+		conv_text_3 = "very well... continue..."
+		conv_text_4 = "reversing time for you."
 	elseif level == 10 then
 		conv_text_1 = "you are changing destiny."
 		conv_text_2 = "i did not expect that."
@@ -60,9 +64,9 @@ function void_creature_converstaion()
 		conv_text_3 = "rise and shine, little pilot."
 		conv_text_4 = "rise and shine..."
 	elseif level == 20 then
-		conv_text_1 = "you have mastered my little"
-		conv_text_2 = "game. very well..."
-		conv_text_3 = "i deem you... sufficient."
+		conv_text_1 = "you beat my game. good..."
+		conv_text_2 = "i deem you... sufficient."
+		conv_text_3 = "your score sums up to " .. max(0, pl_credits - negative_score)
 		conv_text_4 = "let us return to the title."
 	end
 end

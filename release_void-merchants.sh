@@ -33,7 +33,7 @@ fi
 
 echo "Writing $VERSION to void-merchants.p8, Readme and into the release notes..."
 sed -i 's/^\(GAME_VERSION[[:space:]]*=[[:space:]]*"\)[^"]*\(".*\)/\1'"$VERSION"'\2/' ./void-merchants.p8
-sed -i 's#\(!\[Status: Beta](https://img.shields.io/badge/status-beta%20\)[^)]*\(-yellow)\)#\1'"$VERSION"'\2#' ./README.md
+sed -i "s|v[0-9][0-9.]*|v$VERSION|" ./README.md
 sed -i 's/\(## Release \)[^ ]\+/\1'"$VERSION"'/' ./Release-Text
 
 echo "Writing the current year to all license places..."
