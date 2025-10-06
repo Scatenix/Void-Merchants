@@ -115,6 +115,8 @@ The majority of the release is being done on the local development environment t
 This approach was chosen to avoid having to include some of the unusual needed apps in a docker image for the release process.
 Especially because of PICO-8 which I am not allowed to distribute.
 
+The script is tested on Linux and Windows with the git-for-windows Bash.
+
 The GitHub Action (`.github/workflows/release.yml`) only copies the release artifacts to the new release within the GitHub repository.
 
 Pushing to main will automatically trigger a deploy of the contents in `docs/` to the repositories GitHub Pages site.
@@ -159,6 +161,13 @@ Following apps are needed for `release_void-merchants.sh`:
 
 The script will then automatically push the new version tag and to main and trigger the GitHub Actions.
 
+## Disclaimer for Developers
+
+Yes the code is messy. It got worse and worse throughout the commit history.
+This is because of the extreme Pico-8 limitations, which forced me to rewrite some logic to use as little code as possible, remove a lot of comments and even stuff like magic numbers to avoid a single line of initialization of a variable (yes, I am that much on the edge of the limitations, e.g. v0.9.5 uses 8191 / 8192 tokens and a compressed capacity of 99.88%). All that while maintaining as much features as possible. Also, this is my first game ever, so things might be hackier than they really need to be. Especially the earlier code.
+
+Yet, I am very happy and proud of my little game, which I believe, feels pretty polished :)
+
 ## Known Bugs
 
 - Major: Game balancing needs to be tested!
@@ -166,7 +175,7 @@ The script will then automatically push the new version tag and to main and trig
 
 The following points will likely not be tackled anymore, but leaving them here to keep them in mind.
 - Minor: With the game save functionallity, Void Merchants is not a true rogue-like anymore.
-    - I will leave it like this, just to make it easier and let the player decide
+    - I will leave it like this, to make it easier to play through and let the player decide
     - Loading will deduct 100 points from the score in the end to have at least a small incentive to play it without loading to often
 - Minor: Down-scaled planets look terrible
     - I don't think this is possible easily, because there is no space for sprites left
