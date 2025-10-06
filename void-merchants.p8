@@ -2306,7 +2306,7 @@ function draw_titlescreen()
 		p = 1
 	end
 
-	sspr(48, 8, 8, 16, 69, 40, 8, 16)
+	sspr(48, 8, 8, 16, 69, 41, 8, 16)
 	sspr(32, 112, 16, 16, 5, 4-p, 32, 32)
 	
 	if wait_after_titlescreen or #pl_ship_shots > 0 then
