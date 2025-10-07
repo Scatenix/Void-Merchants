@@ -258,7 +258,7 @@ function animation_counters()
 end
 
 function _draw()
-	clear_screen()
+	rectfill(0, 0, 128, 128, 0)
 	
 	if death_mode then
 		print("your ship was destroyed!", 15, 56, 8)
@@ -748,8 +748,6 @@ end
 -->8
 -- player ship
 
-pl_ship_x=50
-pl_ship_y=20
 pl_ship_hitbox_skip_pixel = 0 -- from mid
 pl_ship_hitbox_width = 0 -- from mid
 pl_ship_sprite=0
@@ -775,11 +773,11 @@ function set_pl_ship(tier)
 	htbx = get_ship_htbx_skp_pxl_width(tier)
 	pl_ship_hitbox_skip_pixel = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
-	pl_ship_damage = 2 * tier
+	pl_ship_damage = tier
 	for i = 1, pl_ship_damage_upgrades do
 		pl_ship_damage += flr(1 + i / 5)
 	end
-	pl_ship_life = 5 * tier
+	pl_ship_life = 7 * tier
 	pl_ship_max_life = pl_ship_life
 	pl_ship_shields = flr(tier/2)
 	pl_ship_max_shield = tier
@@ -868,7 +866,7 @@ function ship_ctrl()
 	if btn(0) then -- left
 		pl_ship_x = max(pl_ship_x - pl_ship_speed, x_left_boundry)
 	end
-	if btn(1) then -- right
+	if not jump_to_hyperspce and btn(1) then -- right
 		-- - 5 because of the shield that a player can have
 		pl_ship_x = min(pl_ship_x + pl_ship_speed, x_right_boundry - 5)
 	end
@@ -931,7 +929,7 @@ function set_pl_drone(tier)
 		htbx = get_drone_htbx_skp_pxl_width(tier)
 		drone_hitbox_skip_pixel = htbx[1]
 		drone_hitbox_width = htbx[2]
-		drone_damage = tier + 1
+		drone_damage = tier
 		drone_life = 4 * tier
 		drone_max_life = 4 * tier
 		drone_shields = tier
@@ -1006,7 +1004,6 @@ end
 -->8
 -- enemies
 
-min_enemies_on_level = 0
 enemy_shot_cooldown = 0
 prevent_enemy_moving_on_x = false
 
@@ -1017,8 +1014,6 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	local y = flr(rnd(96))
 	local x = 127
 	local htbx = get_enemy_htbx_skp_pxl_width(lvl)
-	local htbx_skp_pxl = htbx[1]
-	local htbx_wdth = htbx[2]
 	
 	-- This counts how often we already tried to unsucessfully place an enemy
 	-- If we tried more then 10 times, just place it behind an enemy
@@ -1040,14 +1035,14 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	end
 	
 	enemy = {}
-	--posx
+	-- posx
 	enemy[1] = x
-	--posy
+	-- posy
 	enemy[2] = y
-	--	h_sk_px
-	enemy[3] = htbx_skp_pxl 
+	-- h_sk_px
+	enemy[3] = htbx[1] 
 	-- h_width
-	enemy[4] = htbx_wdth 
+	enemy[4] = htbx[2] 
 	-- sprite
 	enemy[5] = 199 + lvl
 	-- damage
@@ -1064,7 +1059,7 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- shot_speed
 	enemy[10] = 1 + 0.065 * lvl
 	-- speed
-	enemy[11] = flr(lvl / 5) * 0.7 + 1
+	enemy[11] = flr(lvl / 5) * 0.5 + 1
 	-- value
 	enemy[12] = lvl
 	-- wobble
@@ -1090,9 +1085,9 @@ function get_shot_pattern(lvl)
 	elseif lvl >= 4 and lvl <= 6 then
 		return {6, 12, 36}
 	elseif lvl >= 7 and lvl <= 9 then
-		return {6, 14, 36, 44}
+		return {6, 14, 44, 52}
 	elseif lvl >= 10 and lvl <= 12 then
-		return {4, 8, 12, 16, 20}
+		return {4, 10, 16, 22, 28}
 	elseif lvl >= 13 and lvl <= 15 then
 		return {2, 4, 6, 32, 34, 36}
 	elseif lvl >= 16 and lvl <= 18 then
@@ -1140,8 +1135,6 @@ function enemy_shoot()
 		enemy_shot_cooldown = 0
 	end
 	enemy_shot_cooldown += 1
-
-	--if enemy_shot_cooldown == 6 or enemy_shot_cooldown == 12 or enemy_shot_cooldown == 18 then
 	
 	for enemy in all(enemies) do
 		if contains(enemy_shot_cooldown, enemy[18]) then
@@ -1184,7 +1177,7 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 	for shot in all(shot_array) do
 		for enemy in all(enemies) do
 			local hit_x
-			if enemy[7] > 0 then
+			if enemy[8] > 0 then
 				hit_x = shot[1] + 5 >= enemy[1] and shot[1] <= enemy[1] + 7
 			else
 				hit_x = shot[1] + 2 >= enemy[1] and shot[1] <= enemy[1] + 7
@@ -1206,7 +1199,7 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 					del(enemies, enemy)
 				end
 
-				create_hitmarker(shot[1], shot[2], ship1_drone2)
+				add(hitmarkers, {shot[1] + rnd(6), shot[2], 0, ship1_drone2})
 				del(shot_array, shot)
 			end
 		end
@@ -1259,7 +1252,7 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 					end
 				end
 
-				create_hitmarker(shot[1], shot[2], 3)
+				add(hitmarkers, {shot[1] - rnd(5), shot[2], 0, 3})
 				del(enemy_shots, shot)
 			end
 		end
@@ -1278,7 +1271,6 @@ function enemy_colides_enemy(posx, posy, id)
 	end
 	return false
 end
-
 
 function floating_items_colides_player()
 	local hit_x_drone = false
@@ -1315,9 +1307,9 @@ life_up = {156, 0, "life up"}
 shield_up = {157, 50, "shield up"}
 
 -- stat increases {sprite, price, name}
-attack_damage_inc = {170, 50, "damage upgrade"}
-drone_inc = {159, 100, "drone upgrade"}
-weapons_inc = {158, 50, "weapon upgrade"}
+attack_damage_inc = {170, 100, "damage upgrade"}
+drone_inc = {159, 200, "drone upgrade"}
+weapons_inc = {158, 150, "weapon upgrade"}
 
 -- trading items {sprite, price, name}
 credit = {171, 5, "credit"}
@@ -1362,6 +1354,10 @@ function interpret_item(item)
 		if pl_ship_life < pl_ship_max_life then
 			sfx(10)
 			pl_ship_life += 1
+			del(floating_items, item)
+		elseif drone_available and drone_life < drone_max_life then
+			sfx(10)
+			drone_life += 1
 			del(floating_items, item)
 		end
 	elseif item[3] == shield_up[1] then
@@ -1445,41 +1441,41 @@ end
 -- calculate drop (random chance)
 function drop_item()
 	local num = rnd(1000)
-	if num >= 995 then    --0.5%
+	if num > 995 then    --0.5%
 		return void_crystal
-	elseif num >= 985 then --1%
-		return super_credit
-	elseif num >=975 then --1%
+	elseif num > 990 then --0.5%
 		return drone_inc
-	elseif num >=965 then --1%
+	elseif num > 985 then --0.5%
 		return weapons_inc
-	elseif num >=955 then --1%
+	elseif num > 980 then --0.5%
 		return attack_damage_inc
-	elseif num >=935 then --2%
+	elseif num > 970 then --1%
+		return super_credit
+	elseif num > 950 then --2%
 		return void_fragment
-	elseif num >=915 then --2%
+	elseif num > 930 then --2%
 		return shield_up
-	elseif num >=890 then --2,5%
+	elseif num > 905 then --2,5%
 		return platinum
-	elseif num >=860 then --3%
+	elseif num > 835 then --7%
 		return life_up
-	elseif num >=830 then --3%
+	elseif num > 805 then --3%
 		return cobalt
-	elseif num >=795 then --3,5%
+	elseif num > 770 then --3,5%
 		return parts_crate
-	elseif num >=755 then --4%
+	elseif num > 730 then --4%
 		return gold
-	elseif num >=705 then --5%
+	elseif num > 680 then --5%
 		return speed_buff
-	elseif num >=645 then --6%
+	elseif num > 620 then --6%
 		return copper
-	elseif num >=605 then --4%
+	elseif num > 590 then --3%
 		return shot_speed_buff
-	elseif num >=500 then --10.5%
+	elseif num > 440 then --15%
 		return scrap
-	elseif num >=400 then --10%
+	elseif num > 100 then --34%
 		return credit
-	else --40%
+	else --10%
 		return {-1, 0, "nothing"} -- no drop
 	end
 end
@@ -1499,7 +1495,8 @@ function calculate_floating_items_drift()
 			item[2] = item[2] + 1
 		end
 
-		if item[1] < 0 then
+		-- -7 because else the item will just vanish before actually going out of screen
+		if item[1] < -7 then
 			del(floating_items, item)
 		end
 	end
@@ -1509,16 +1506,6 @@ function draw_floating_items()
 	for item in all(floating_items) do
 		spr(item[3], item[1], item[2])	
 	end
-end
--->8
--- common
-
-function clear_screen()
- 	rectfill(0, 0, 128, 128, 0)
-end
-
-function create_hitmarker(posx, posy, ship_drone_enemy)
-	add(hitmarkers, {posx, posy, 0, ship_drone_enemy})
 end
 -->8
 -- stars
@@ -1883,14 +1870,14 @@ black_hole_x = 0
 trade_finished = false
 trade_cursor_pos = 0
 selling_upgrades_multiplier = 0.8
-price_per_ship_hull_point = 5
+price_per_ship_hull_point = 10
 price_per_drone_hull_point = 10
-price_increase_per_weapon = 50
-price_increase_per_drone = 100
-price_increase_per_weapon_dmg = 25
+price_increase_per_weapon = 150
+price_increase_per_drone = 200
+price_increase_per_weapon_dmg = 100
 price_per_ship_shield = 25
 price_per_drone_shield = 50
-price_increase_per_ship_tier = 500
+price_increase_per_ship_tier = 750
 
 function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30

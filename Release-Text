@@ -2,6 +2,25 @@
 
 ### Misc
 
+- Balancing changes
+  - Increased player ship hull points by 40%
+  - Changed drop rates for
+    - Ship/Drone upgrades from 1% to 0.5%
+    - Scrap from 10.5% to 10%
+    - Shot-speed buff from 4% to 3%
+  - Changes to Player stats
+    - Drones generally deal 1 damage less
+    - Player base damage is halved for every tier
+  - Increased drop rate of heart pickups, scrap and credits
+  - Increased price for ship upgrades and repairs
+  - Small changes to shooting pattern of enemies
+  - Decreased speed of enemies by 30%
+- Improved hit-marker system
+- Fixed bug where heart pick-up did not restore the life of drones if the player ship was already at full hull points
+- Fixed bug where hit detection was always calculated as if the enemies had a shield
+- Fixed bug where ship sometimes did not properly jump out of screen at jump to hyperspace
+- Fixed bug where items are deleted to early before floating out of screen
+- Changed manual to refer to ship and drone health as hull points now
 - Small adjustment to the title-screen
 
 ## Files included
