@@ -1,17 +1,17 @@
-__lua__15
+__lua__14
 -- trading
 black_hole_x = 0
 trade_finished = false
 trade_cursor_pos = 0
 selling_upgrades_multiplier = 0.8
-price_per_ship_hull_point = 5
+price_per_ship_hull_point = 10
 price_per_drone_hull_point = 10
-price_increase_per_weapon = 50
-price_increase_per_drone = 100
-price_increase_per_weapon_dmg = 25
+price_increase_per_weapon = 150
+price_increase_per_drone = 200
+price_increase_per_weapon_dmg = 100
 price_per_ship_shield = 25
 price_per_drone_shield = 50
-price_increase_per_ship_tier = 500
+price_increase_per_ship_tier = 750
 
 function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30

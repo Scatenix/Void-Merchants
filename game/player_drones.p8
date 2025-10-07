@@ -40,7 +40,7 @@ function set_pl_drone(tier)
 		htbx = get_drone_htbx_skp_pxl_width(tier)
 		drone_hitbox_skip_pixel = htbx[1]
 		drone_hitbox_width = htbx[2]
-		drone_damage = tier + 1
+		drone_damage = tier
 		drone_life = 4 * tier
 		drone_max_life = 4 * tier
 		drone_shields = tier

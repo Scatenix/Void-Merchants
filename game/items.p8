@@ -13,9 +13,9 @@ life_up = {156, 0, "life up"}
 shield_up = {157, 50, "shield up"}
 
 -- stat increases {sprite, price, name}
-attack_damage_inc = {170, 50, "damage upgrade"}
-drone_inc = {159, 100, "drone upgrade"}
-weapons_inc = {158, 50, "weapon upgrade"}
+attack_damage_inc = {170, 100, "damage upgrade"}
+drone_inc = {159, 200, "drone upgrade"}
+weapons_inc = {158, 150, "weapon upgrade"}
 
 -- trading items {sprite, price, name}
 credit = {171, 5, "credit"}
@@ -60,6 +60,10 @@ function interpret_item(item)
 		if pl_ship_life < pl_ship_max_life then
 			sfx(10)
 			pl_ship_life += 1
+			del(floating_items, item)
+		elseif drone_available and drone_life < drone_max_life then
+			sfx(10)
+			drone_life += 1
 			del(floating_items, item)
 		end
 	elseif item[3] == shield_up[1] then
@@ -143,41 +147,41 @@ end
 -- calculate drop (random chance)
 function drop_item()
 	local num = rnd(1000)
-	if num >= 995 then    --0.5%
+	if num > 995 then    --0.5%
 		return void_crystal
-	elseif num >= 985 then --1%
-		return super_credit
-	elseif num >=975 then --1%
+	elseif num > 990 then --0.5%
 		return drone_inc
-	elseif num >=965 then --1%
+	elseif num > 985 then --0.5%
 		return weapons_inc
-	elseif num >=955 then --1%
+	elseif num > 980 then --0.5%
 		return attack_damage_inc
-	elseif num >=935 then --2%
+	elseif num > 970 then --1%
+		return super_credit
+	elseif num > 950 then --2%
 		return void_fragment
-	elseif num >=915 then --2%
+	elseif num > 930 then --2%
 		return shield_up
-	elseif num >=890 then --2,5%
+	elseif num > 905 then --2,5%
 		return platinum
-	elseif num >=860 then --3%
+	elseif num > 835 then --7%
 		return life_up
-	elseif num >=830 then --3%
+	elseif num > 805 then --3%
 		return cobalt
-	elseif num >=795 then --3,5%
+	elseif num > 770 then --3,5%
 		return parts_crate
-	elseif num >=755 then --4%
+	elseif num > 730 then --4%
 		return gold
-	elseif num >=705 then --5%
+	elseif num > 680 then --5%
 		return speed_buff
-	elseif num >=645 then --6%
+	elseif num > 620 then --6%
 		return copper
-	elseif num >=605 then --4%
+	elseif num > 590 then --3%
 		return shot_speed_buff
-	elseif num >=500 then --10.5%
+	elseif num > 440 then --15%
 		return scrap
-	elseif num >=400 then --10%
+	elseif num > 100 then --34%
 		return credit
-	else --40%
+	else --10%
 		return {-1, 0, "nothing"} -- no drop
 	end
 end
@@ -197,7 +201,8 @@ function calculate_floating_items_drift()
 			item[2] = item[2] + 1
 		end
 
-		if item[1] < 0 then
+		-- -7 because else the item will just vanish before actually going out of screen
+		if item[1] < -7 then
 			del(floating_items, item)
 		end
 	end

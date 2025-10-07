@@ -6,7 +6,7 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 	for shot in all(shot_array) do
 		for enemy in all(enemies) do
 			local hit_x
-			if enemy[7] > 0 then
+			if enemy[8] > 0 then
 				hit_x = shot[1] + 5 >= enemy[1] and shot[1] <= enemy[1] + 7
 			else
 				hit_x = shot[1] + 2 >= enemy[1] and shot[1] <= enemy[1] + 7
@@ -28,7 +28,7 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 					del(enemies, enemy)
 				end
 
-				create_hitmarker(shot[1], shot[2], ship1_drone2)
+				add(hitmarkers, {shot[1] + rnd(6), shot[2], 0, ship1_drone2})
 				del(shot_array, shot)
 			end
 		end
@@ -81,7 +81,7 @@ function enemy_shots_hit_friendly(posx, posy, htbx_skip_pxl, htbx_width, player1
 					end
 				end
 
-				create_hitmarker(shot[1], shot[2], 3)
+				add(hitmarkers, {shot[1] - rnd(5), shot[2], 0, 3})
 				del(enemy_shots, shot)
 			end
 		end
@@ -100,7 +100,6 @@ function enemy_colides_enemy(posx, posy, id)
 	end
 	return false
 end
-
 
 function floating_items_colides_player()
 	local hit_x_drone = false

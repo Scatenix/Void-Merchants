@@ -1,8 +1,6 @@
 __lua__5
 -- player ship
 
-pl_ship_x=50
-pl_ship_y=20
 pl_ship_hitbox_skip_pixel = 0 -- from mid
 pl_ship_hitbox_width = 0 -- from mid
 pl_ship_sprite=0
@@ -28,11 +26,11 @@ function set_pl_ship(tier)
 	htbx = get_ship_htbx_skp_pxl_width(tier)
 	pl_ship_hitbox_skip_pixel = htbx[1]
 	pl_ship_hitbox_width = htbx[2]
-	pl_ship_damage = 2 * tier
+	pl_ship_damage = tier
 	for i = 1, pl_ship_damage_upgrades do
 		pl_ship_damage += flr(1 + i / 5)
 	end
-	pl_ship_life = 5 * tier
+	pl_ship_life = 7 * tier
 	pl_ship_max_life = pl_ship_life
 	pl_ship_shields = flr(tier/2)
 	pl_ship_max_shield = tier
@@ -121,7 +119,7 @@ function ship_ctrl()
 	if btn(0) then -- left
 		pl_ship_x = max(pl_ship_x - pl_ship_speed, x_left_boundry)
 	end
-	if btn(1) then -- right
+	if not jump_to_hyperspce and btn(1) then -- right
 		-- - 5 because of the shield that a player can have
 		pl_ship_x = min(pl_ship_x + pl_ship_speed, x_right_boundry - 5)
 	end

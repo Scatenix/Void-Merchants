@@ -18,7 +18,7 @@ __lua__1
 -- out of or in connection with the software or the use or other dealings in
 -- the software.
 
-GAME_VERSION = "v0.9.5"
+GAME_VERSION = "v0.9.6"
 
 -- This file is the main file
 
@@ -256,7 +256,7 @@ function animation_counters()
 end
 
 function _draw()
-	clear_screen()
+	rectfill(0, 0, 128, 128, 0)
 	
 	if death_mode then
 		print("your ship was destroyed!", 15, 56, 8)

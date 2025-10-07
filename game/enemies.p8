@@ -1,7 +1,6 @@
 __lua__7
 -- enemies
 
-min_enemies_on_level = 0
 enemy_shot_cooldown = 0
 prevent_enemy_moving_on_x = false
 
@@ -12,8 +11,6 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	local y = flr(rnd(96))
 	local x = 127
 	local htbx = get_enemy_htbx_skp_pxl_width(lvl)
-	local htbx_skp_pxl = htbx[1]
-	local htbx_wdth = htbx[2]
 	
 	-- This counts how often we already tried to unsucessfully place an enemy
 	-- If we tried more then 10 times, just place it behind an enemy
@@ -35,14 +32,14 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	end
 	
 	enemy = {}
-	--posx
+	-- posx
 	enemy[1] = x
-	--posy
+	-- posy
 	enemy[2] = y
-	--	h_sk_px
-	enemy[3] = htbx_skp_pxl 
+	-- h_sk_px
+	enemy[3] = htbx[1] 
 	-- h_width
-	enemy[4] = htbx_wdth 
+	enemy[4] = htbx[2] 
 	-- sprite
 	enemy[5] = 199 + lvl
 	-- damage
@@ -59,7 +56,7 @@ function add_enemy(lvl, try_avoid_placing_behind)
 	-- shot_speed
 	enemy[10] = 1 + 0.065 * lvl
 	-- speed
-	enemy[11] = flr(lvl / 5) * 0.7 + 1
+	enemy[11] = flr(lvl / 5) * 0.5 + 1
 	-- value
 	enemy[12] = lvl
 	-- wobble
@@ -85,9 +82,9 @@ function get_shot_pattern(lvl)
 	elseif lvl >= 4 and lvl <= 6 then
 		return {6, 12, 36}
 	elseif lvl >= 7 and lvl <= 9 then
-		return {6, 14, 36, 44}
+		return {6, 14, 44, 52}
 	elseif lvl >= 10 and lvl <= 12 then
-		return {4, 8, 12, 16, 20}
+		return {4, 10, 16, 22, 28}
 	elseif lvl >= 13 and lvl <= 15 then
 		return {2, 4, 6, 32, 34, 36}
 	elseif lvl >= 16 and lvl <= 18 then
@@ -135,8 +132,6 @@ function enemy_shoot()
 		enemy_shot_cooldown = 0
 	end
 	enemy_shot_cooldown += 1
-
-	--if enemy_shot_cooldown == 6 or enemy_shot_cooldown == 12 or enemy_shot_cooldown == 18 then
 	
 	for enemy in all(enemies) do
 		if contains(enemy_shot_cooldown, enemy[18]) then

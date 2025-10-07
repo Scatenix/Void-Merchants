@@ -1,4 +1,4 @@
-__lua__14
+__lua__13
 -- converstaion
 pause_on_text=false
 conv_partner=1 -- 1: trader, 2 void-creature
