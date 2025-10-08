@@ -97,8 +97,8 @@ end
 function spawn_enemy_wave()
 	if min_enemies_on_level > 0 then
 		sfx(22)
-		-- have always at least 2 enemies with up to 3 more (random). 1 more enemy every 5 levels
-		local enemy_number_this_wave = 2 + flr(rnd(3)) + flr(level * 0.2)
+		-- have always at least 2 enemies with up to 3 more (random) + about 1 more enemy every 5 levels
+		local enemy_number_this_wave = 2 + flr(rnd(3)) + flr(level * 0.15)
 		min_enemies_on_level -= enemy_number_this_wave
 
 		for i = 0, enemy_number_this_wave, 1 do

@@ -9,9 +9,9 @@ price_per_drone_hull_point = 10
 price_increase_per_weapon = 150
 price_increase_per_drone = 200
 price_increase_per_weapon_dmg = 100
-price_per_ship_shield = 25
-price_per_drone_shield = 50
-price_increase_per_ship_tier = 750
+price_per_ship_shield = 20
+price_per_drone_shield = 20
+price_increase_per_ship_tier = 600
 
 function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30

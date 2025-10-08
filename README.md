@@ -1,7 +1,7 @@
 # Void Merchants
 
 ![Made with PICO-8](https://img.shields.io/badge/made%20with-PICO--8-red)
-![Status: Beta](https://img.shields.io/badge/status-beta%20v0.9.6-yellow)
+![Status: Beta](https://img.shields.io/badge/status-beta%20v0.9.7-yellow)
 
 Void Merchants is a Space Invaders-inspired roguelike action game built in PICO-8. Blast enemies, collect resources and trade your way to upgrades as you progress through increasingly difficult space battles!
 
@@ -35,7 +35,7 @@ meaning that the X-button in-game is actually not the X-button on an Xbox contro
 
 The controls can be adjusted in the PICO-8 settings (pause button located next to the bottom-right corner).
 
-Make sure to check the [manual](https://github.com/Scatenix/Void-Merchants/releases/download/v0.9.6/manual.pdf) for more information about the game. Can be found on the release section!
+Make sure to check the [manual](https://github.com/Scatenix/Void-Merchants/releases/download/v0.9.7/manual.pdf) for more information about the game. Can be found on the release section!
 
 ## State of the Game
 
@@ -165,7 +165,7 @@ The script will then automatically push the new version tag and to main and trig
 ## Disclaimer for Developers
 
 Yes the code is messy. It got worse and worse throughout the commit history.
-This is because of the extreme Pico-8 limitations, which forced me to rewrite some logic to use as little code as possible, remove a lot of comments and even stuff like magic numbers to avoid a single line of initialization of a variable (yes, I am that much on the edge of the limitations, e.g. v0.9.6 uses 8191 / 8192 tokens and a compressed capacity of 99.88%). All that while maintaining as much features as possible. Also, this is my first game ever, so things might be hackier than they really need to be. Especially the earlier code.
+This is because of the extreme Pico-8 limitations, which forced me to rewrite some logic to use as little code as possible, remove a lot of comments and even stuff like magic numbers to avoid a single line of initialization of a variable (yes, I am that much on the edge of the limitations, e.g. v0.9.7 uses 8191 / 8192 tokens and a compressed capacity of 99.88%). All that while maintaining as much features as possible. Also, this is my first game ever, so things might be hackier than they really need to be. Especially the earlier code.
 
 Yet, I am very happy and proud of my little game, which I believe, feels pretty polished :)
 
