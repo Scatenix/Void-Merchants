@@ -1,22 +1,14 @@
-## Beta v0.9.6
+## Release Notes
 
 ### Balancing
 
-- Upgrades are a little bit less expensive
-
 ### Bugs
-
-- Fixed bug where he drone life could be shown to be less then 0 (e.g. -4) when the drone dies
 
 ### Misc
 
-- Improved and re-organized the stat banner in the bottom of the game screen 
-- Updated the manual to the new stat banner in the game
-- Aligned coloring of the manual to the actual ingame colors
-
 ## Files included
 
-- `void-merchants.p8` — PICO-8 standard cart in clear text format
+- `void-merchants.p8` — PICO-8 standard cart in clear text format (Source code)
 - `void-merchants.p8.png` — PICO-8 cart image
 - `void-merchants_linux.zip` — Linux binaries
 - `void-merchants_windows.zip` — Windows binaries
