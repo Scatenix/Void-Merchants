@@ -24,6 +24,7 @@ jobs:
         with:
           prerelease: true
           tag_name: ${{ env.TAG_NAME }}
+          name: Beta ${{ env.TAG_NAME }}
           files: |
             ./LICENSE.txt
             ./resources/manual/manual.pdf
