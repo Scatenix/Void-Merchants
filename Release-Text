@@ -2,13 +2,17 @@
 
 ### Balancing
 
-- Made ship tier upgrades less expensive
-- Reduced enemies per wave by about 1 on average
-- Reduced price of shield points
+- Upgrades are a little bit less expensive
+
+### Bugs
+
+- Fixed bug where he drone life could be shown to be less then 0 (e.g. -4) when the drone dies
 
 ### Misc
 
-- Changed spacing of some lines in the pdf manual
+- Improved and re-organized the stat banner in the bottom of the game screen 
+- Updated the manual to the new stat banner in the game
+- Aligned coloring of the manual to the actual ingame colors
 
 ## Files included
 

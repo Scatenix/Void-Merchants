@@ -587,42 +587,38 @@ function draw_battle_stats()
 	end
 
 	print("hp:", 4, 110, 7)
-	print(" " .. pl_ship_life, 15, 110, 8)
+	print(" " .. pl_ship_life, 12, 110, 8)
 
-	print("sh:", 41, 110, 7)
-	print(" " .. pl_ship_shields, 52, 110, 12)
-
-	print("dr:", 78, 110, 7)
-	print(" " .. drone_life, 89, 110, 8)
+	print("sh:", 38, 110, 7)
+	print(" " .. pl_ship_shields, 46, 110, 12)
 
 	local draw_drone_shield_offset_y
-	if drone_life < 4 then
-		draw_drone_shield_offset_y = 89 + drone_life * 8
-	elseif drone_life < 10 then
-		draw_drone_shield_offset_y = 97
+	if drone_life < 10 then
+		draw_drone_shield_offset_y = 84
 	else
-		draw_drone_shield_offset_y = 101
+		draw_drone_shield_offset_y = 88
 	end
 
-	if drone_shields > 0 then
-		print("+", draw_drone_shield_offset_y, 110, 12)
-		print(drone_shields, draw_drone_shield_offset_y + 4, 110, 12)
+	if drone_life > 0 then
+		print("dr:", 68, 110, 7)
+		print(" " .. drone_life, 76, 110, 8)
+		print("+" .. drone_shields, draw_drone_shield_offset_y, 110, 12)
 	end
 
-	print("stg:", 4, 119, 7)
-	print(get_free_storage(), 19, 119, 13)
+	print("stg:", 98, 110, 7)
+	print(get_free_storage(), 114, 110, 13)
 
-	print("dmg:", 28, 119, 7)
-	print(pl_ship_damage+drone_damage, 43, 119, 9)
+	print("dmg:", 4, 119, 7)
+	print(pl_ship_damage .. "+" .. drone_damage, 20, 119, 9)
+
+	print("wps:", 38, 119, 7)
+	print(pl_ship_weapons .. "+" .. drone_weapons, 54, 119, 5)
 	
-	print("wps:", 52, 119, 7)
-	print(pl_ship_weapons+drone_weapons, 67, 119, 5)
+	print("sp:", 68, 119, 7)
+	print(format_one_decimal(pl_ship_speed), 80, 119, 11)
 	
-	print("sp:", 76, 119, 7)
-	print(format_one_decimal(pl_ship_speed), 87, 119, 11)
-	
-	print("sts:", 100, 119, 7)
-	print(format_one_decimal(pl_ship_shot_speed), 115, 119, 14)
+	print("sts:", 98, 119, 7)
+	print(format_one_decimal(pl_ship_shot_speed), 114, 119, 14)
 end
 
 function format_one_decimal(n)
@@ -1309,7 +1305,7 @@ shield_up = {157, 50, "shield up"}
 -- stat increases {sprite, price, name}
 attack_damage_inc = {170, 100, "damage upgrade"}
 drone_inc = {159, 200, "drone upgrade"}
-weapons_inc = {158, 150, "weapon upgrade"}
+weapons_inc = {158, 125, "weapon upgrade"}
 
 -- trading items {sprite, price, name}
 credit = {171, 5, "credit"}
@@ -1872,12 +1868,12 @@ trade_cursor_pos = 0
 selling_upgrades_multiplier = 0.8
 price_per_ship_hull_point = 10
 price_per_drone_hull_point = 10
-price_increase_per_weapon = 150
+price_increase_per_weapon = 125
 price_increase_per_drone = 200
 price_increase_per_weapon_dmg = 100
 price_per_ship_shield = 20
 price_per_drone_shield = 20
-price_increase_per_ship_tier = 600
+price_increase_per_ship_tier = 500
 
 function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30
