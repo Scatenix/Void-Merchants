@@ -6,12 +6,12 @@ trade_cursor_pos = 0
 selling_upgrades_multiplier = 0.8
 price_per_ship_hull_point = 10
 price_per_drone_hull_point = 10
-price_increase_per_weapon = 150
+price_increase_per_weapon = 125
 price_increase_per_drone = 200
 price_increase_per_weapon_dmg = 100
 price_per_ship_shield = 20
 price_per_drone_shield = 20
-price_increase_per_ship_tier = 600
+price_increase_per_ship_tier = 500
 
 function trading_script()
 	if trading_phase == 5 and time() - tme >= 5 then -- 30

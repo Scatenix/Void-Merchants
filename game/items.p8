@@ -15,7 +15,7 @@ shield_up = {157, 50, "shield up"}
 -- stat increases {sprite, price, name}
 attack_damage_inc = {170, 100, "damage upgrade"}
 drone_inc = {159, 200, "drone upgrade"}
-weapons_inc = {158, 150, "weapon upgrade"}
+weapons_inc = {158, 125, "weapon upgrade"}
 
 -- trading items {sprite, price, name}
 credit = {171, 5, "credit"}
