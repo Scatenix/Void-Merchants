@@ -178,11 +178,11 @@ Yet, I am very happy and proud of my little game, which I believe, feels pretty 
 The following points will likely not be tackled anymore, but leaving them here to keep them in mind.
 - Minor: With the game save functionallity, Void Merchants is not a true rogue-like anymore.
     - I will leave it like this, to make it easier to play through and let the player decide
-    - Loading will deduct 100 points from the score in the end to have at least a small incentive to play it without loading to often
+    - Every time loading a save will deduct 100 points from the score in the end to have at least a small incentive to play it without loading to often
 - Minor: Down-scaled planets look terrible
     - I don't think this is possible easily, because there is no space for sprites left
-- Minor: Sounds or music sometimes isn't played
-    - Unavoidable at the moment because of only 4 sound channels, 2 of which are the game music. Game design would need to improve here
+- Minor: Sounds or music is often skipped
+    - Unavoidable at the moment because of only 4 sound channels. Sound design would need to change somehow
 
 ## License
 
