@@ -8,8 +8,12 @@
 
 - Improved money pickup animation
 - Added soundeffect when advancing a textbox
+- Small improvement to titlescreen
+- Changes to the music
 
 ### Bugs
+
+- Fixed bug where the enemy ship on the titlescreen was moving to far
 
 ## Files included
 
