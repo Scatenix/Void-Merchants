@@ -6,7 +6,7 @@ __lua__
 
 -- license: 
 -- all rights reserved.
--- copyright (c) 2025 scatenix (https://github.com/scatenix)
+-- copyright (c) 2026 scatenix (https://github.com/scatenix)
 
 -- this software, including the game and all assets, is provided for personal use only.
 -- you may download and play the game, but you may not copy, modify, distribute,
@@ -20,7 +20,7 @@ __lua__
 -- out of or in connection with the software or the use or other dealings in
 -- the software.
 
-GAME_VERSION = "v0.9.8"
+GAME_VERSION = "v0.9.9"
 
 -- This file is the main file
 

@@ -1,7 +1,7 @@
 # Void Merchants
 
 ![Made with PICO-8](https://img.shields.io/badge/made%20with-PICO--8-red)
-![Status: Beta](https://img.shields.io/badge/status-beta%20v0.9.8-yellow)
+![Status: Beta](https://img.shields.io/badge/status-beta%20v0.9.9-yellow)
 
 Void Merchants is a Space Invaders-inspired roguelike action game built in PICO-8. Blast enemies, collect resources and trade your way to upgrades as you progress through increasingly difficult space battles!
 
@@ -35,7 +35,7 @@ meaning that the X-button in-game is actually not the X-button on an Xbox contro
 
 The controls can be adjusted in the PICO-8 settings (pause button located next to the bottom-right corner).
 
-Make sure to check the [manual](https://github.com/Scatenix/Void-Merchants/releases/download/v0.9.8/manual.pdf) for more information about the game. Can be found on the release section!
+Make sure to check the [manual](https://github.com/Scatenix/Void-Merchants/releases/download/v0.9.9/manual.pdf) for more information about the game. Can be found on the release section!
 
 ## State of the Game
 
@@ -188,7 +188,7 @@ The following points will likely not be tackled anymore, but leaving them here t
 
 All rights reserved.
 
-Copyright (c) 2025 Scatenix (https://github.com/Scatenix)
+Copyright (c) 2026 Scatenix (https://github.com/Scatenix)
 
 This software, including the game and all assets, is provided for personal use only.
 You may download and play the game, but you may not copy, modify, distribute,

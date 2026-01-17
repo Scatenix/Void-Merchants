@@ -23,8 +23,13 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 				end
 				if flr(enemy[7]) <= 0 then
 					add(explosions, {enemy[1], enemy[2], 139})
-					sfx(0)
+					sfx(0, 0)
 					enemy_drop_item(enemy)
+
+					if not titlescreen_mode then
+						pickup_money(max(5,level))
+					end
+					
 					del(enemies, enemy)
 				end
 

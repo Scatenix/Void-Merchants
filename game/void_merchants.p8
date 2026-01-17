@@ -4,7 +4,7 @@ __lua__1
 
 -- license: 
 -- all rights reserved.
--- copyright (c) 2025 scatenix (https://github.com/scatenix)
+-- copyright (c) 2026 scatenix (https://github.com/scatenix)
 
 -- this software, including the game and all assets, is provided for personal use only.
 -- you may download and play the game, but you may not copy, modify, distribute,
@@ -18,7 +18,7 @@ __lua__1
 -- out of or in connection with the software or the use or other dealings in
 -- the software.
 
-GAME_VERSION = "v0.9.8"
+GAME_VERSION = "v0.9.9"
 
 -- This file is the main file
 
@@ -47,12 +47,15 @@ GAME_VERSION = "v0.9.8"
 -- 21 buy
 -- 22 spawn in enemies
 -- 23 cannot perform action (used at trading)
+-- 24 music part 3
+-- 25 music part 4
+-- 26 music alternative part 2
 
 -- needed to save and load the game (saving at trader, loading at titlescreen)
 cartdata("void-merchants_4e40baa22f0e407277e79304514550b9e952ccef")
 
 function _init()
-	music(0)
+	music(0, 500)
 
 	init_passing_stars()
 
@@ -136,11 +139,13 @@ function _update()
 			pl_ship_y = 90
 			
 			add_enemy(flr(rnd(7)) + 14)
-			-- set x, y, life, shield, speed, wobble_state
+			-- set x, y, life, shield, speed, wobble
 			enemies[1][1] = 100
 			enemies[1][2] = 89
 			enemies[1][7] = 1
 			enemies[1][8] = 0
+			enemies[1][13] = 1
+			enemies[1][11] = 1
 			prevent_enemy_moving_on_x = true
 		end
 		drone_ctrl()
@@ -169,6 +174,7 @@ function _update()
 		end
 	elseif battle_mode then
 		if init_battle then
+			music(1)
 			all_stars_speed_ctrl(1)
 			min_enemies_on_level = 10 + flr(level * 1.5)
 			initial_battle_draw = true

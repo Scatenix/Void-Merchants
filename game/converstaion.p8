@@ -5,6 +5,7 @@ conv_partner=1 -- 1: trader, 2 void-creature
 
 function advance_textbox()
 	if pause_on_text and btn(4) then
+		sfx(22)
 		pause_on_text = false
 	end
 end

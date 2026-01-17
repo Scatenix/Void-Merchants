@@ -13,10 +13,10 @@ function draw_titlescreen()
 	-- small planet
 	sspr(small_planets[current_small_planet][1], small_planets[current_small_planet][2], 16, 16, 96, 22, 16, 16)
 
-	print("check out", 3, 59, 1)
-	print("check out", 4, 60, 10)
-	print("the", 15, 67, 1)
-	print("the", 16, 68, 10)
+	print("check out", 2, 59, 1)
+	print("check out", 3, 60, 10)
+	print("the", 14, 67, 1)
+	print("the", 15, 68, 10)
 	print("pdf manual", 1, 75, 2)
 	print("pdf manual", 2, 76, 10)
 
@@ -29,7 +29,7 @@ function draw_titlescreen()
 	sspr(32, 112, 16, 16, 5, 4-p, 32, 32)
 	
 	if wait_after_titlescreen or #pl_ship_shots > 0 then
-		print("prepare!", 48, 103, 10)	
+		print("prepare!", 48, 103, 10)
 	else
 		print("press ❎ to play", 32, 103+p, 10)
 		if save_game_exists() then

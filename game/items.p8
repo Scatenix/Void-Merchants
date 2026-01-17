@@ -6,28 +6,28 @@ __lua__9
 -- credits are at 171 to 172
 -- trading goods are at 173 to 189
 
--- buff {sprite, price, name}
-speed_buff = {154, 0, "speed buff"}
-shot_speed_buff = {155, 0, "shot speed buff"}
-life_up = {156, 0, "life up"}
-shield_up = {157, 50, "shield up"}
+-- buff {sprite, price}
+speed_buff = {154, 0}
+shot_speed_buff = {155, 0}
+life_up = {156, 0}
+shield_up = {157, 50}
 
--- stat increases {sprite, price, name}
-attack_damage_inc = {170, 100, "damage upgrade"}
-drone_inc = {159, 200, "drone upgrade"}
-weapons_inc = {158, 125, "weapon upgrade"}
+-- stat increases {sprite, price}
+attack_damage_inc = {170, 100}
+drone_inc = {159, 200}
+weapons_inc = {158, 125}
 
--- trading items {sprite, price, name}
-credit = {171, 5, "credit"}
-scrap = {173, 10, "scrap"}
-copper = {174, 20, "copper"}
-gold = {184, 30, "gold"}
-parts_crate = {185, 50, "parts crate"}
-cobalt = {186, 75, "cobalt"}
-platinum = {187, 100, "platinum"}
-void_fragment = {188, 150, "void fragment"}
-super_credit = {172, 100, "super credit"}
-void_crystal = {189, 250, "void crystal"}
+-- trading items {sprite, price}
+credit = {171, 5}
+scrap = {173, 10}
+copper = {174, 20}
+gold = {184, 30}
+parts_crate = {185, 50}
+cobalt = {186, 75}
+platinum = {187, 100}
+void_fragment = {188, 150}
+super_credit = {172, 100}
+void_crystal = {189, 250}
 
 function add_floating_item(item_type, x, y, price)
 	if item_type > 0 then
@@ -108,18 +108,20 @@ function interpret_item(item)
 		end
 	elseif item[3] == credit[1] then
 		sfx(17)
-		add_credits(credit[2])
-		add_money_pickup(credit[2])
-		
+		pickup_money(credit[2])
 		del(floating_items, item)
 	elseif item[3] == super_credit[1] then
 		sfx(17)
-		add_credits(super_credit[2])
-		add_money_pickup(super_credit[2])
+		pickup_money(super_credit[2])
 		del(floating_items, item)
 	else
 		store_item(item, item[4])
 	end
+end
+
+function pickup_money(money)
+	add_credits(money)
+	add_money_pickup(money)
 end
 
 function add_money_pickup(money)
@@ -182,7 +184,7 @@ function drop_item()
 	elseif num > 100 then --34%
 		return credit
 	else --10%
-		return {-1, 0, "nothing"} -- no drop
+		return {-1, 0} -- no drop
 	end
 end
 

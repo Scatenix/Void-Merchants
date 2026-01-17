@@ -1,6 +1,6 @@
 All rights reserved.
 
-Copyright (c) 2025 Scatenix (https://github.com/Scatenix)
+Copyright (c) 2026 Scatenix (https://github.com/Scatenix)
 
 This software, including the game and all assets, is provided for personal use only.
 You may download and play the game, but you may not copy, modify, distribute,

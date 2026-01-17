@@ -72,6 +72,7 @@ function travel_from_battle_animation_script()
 		sfx(18)
 	elseif travel_after_battle_phase == 7 and time() - tme >= 16.5 then -- 16.5
 		-- jump out of hyperspace
+		music(0)
 		travel_after_battle_phase = 8
 		all_stars_speed_ctrl(5)
 	elseif travel_after_battle_phase == 6 and time() - tme >= 11.5 then -- 11.5
@@ -104,6 +105,7 @@ function travel_from_battle_animation_script()
 		travel_after_battle_phase = 5
 		stars_hyperspeed = true
 		all_stars_speed_ctrl(1)
+		-- music(2)
 	elseif travel_after_battle_phase == 3 and time() - tme >= 6 then -- 6
 		-- engaging thrusters
 		pl_ship_shot_speed_buff_time = 0
@@ -116,6 +118,7 @@ function travel_from_battle_animation_script()
 		pl_ship_speed *= 0.2
 		all_stars_speed_ctrl(0.2)
 		sfx(14)
+		music(2)
 	elseif travel_after_battle_phase == 2 and time() - tme >= 2 then -- 2
 		-- loading batteries
 		travel_after_battle_phase = 3
