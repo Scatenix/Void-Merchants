@@ -424,10 +424,10 @@ noise_dots = {}
 
 function draw_money_pickups()
 	for mp in all(money_pickups) do
-		x = mid(0, mp[2] - 5, 90)
-		y = max(flr(mp[3]) - 15, 3)
+		x = mid(0, mp[2] - 15, 90)
+		y = flr(mp[3]) + 3
 		spr(credit[1], x - 3, y - 2)
-		print(" " ..pl_credits.. " +" ..mp[1], x, y, 3)
+		print(" +" ..mp[1], x, y, 3)
 		if mp[4] <= 0 then
 			del(money_pickups, mp)
 		end
@@ -1192,6 +1192,11 @@ function friendly_shots_hit_enemy(shot_array, damage_from, ship1_drone2)
 					add(explosions, {enemy[1], enemy[2], 139})
 					sfx(0)
 					enemy_drop_item(enemy)
+
+					if not titlescreen_mode then
+						pickup_money(max(5,level))
+					end
+					
 					del(enemies, enemy)
 				end
 
@@ -1398,18 +1403,20 @@ function interpret_item(item)
 		end
 	elseif item[3] == credit[1] then
 		sfx(17)
-		add_credits(credit[2])
-		add_money_pickup(credit[2])
-		
+		pickup_money(credit[2])
 		del(floating_items, item)
 	elseif item[3] == super_credit[1] then
 		sfx(17)
-		add_credits(super_credit[2])
-		add_money_pickup(super_credit[2])
+		pickup_money(super_credit[2])
 		del(floating_items, item)
 	else
 		store_item(item, item[4])
 	end
+end
+
+function pickup_money(money)
+	add_credits(money)
+	add_money_pickup(money)
 end
 
 function add_money_pickup(money)
@@ -1794,6 +1801,7 @@ conv_partner=1 -- 1: trader, 2 void-creature
 
 function advance_textbox()
 	if pause_on_text and btn(4) then
+		sfx(21)
 		pause_on_text = false
 	end
 end
@@ -2293,7 +2301,7 @@ function draw_titlescreen()
 	sspr(32, 112, 16, 16, 5, 4-p, 32, 32)
 	
 	if wait_after_titlescreen or #pl_ship_shots > 0 then
-		print("prepare!", 48, 103, 10)	
+		print("prepare!", 48, 103, 10)
 	else
 		print("press ❎ to play", 32, 103+p, 10)
 		if save_game_exists() then
