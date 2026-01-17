@@ -173,6 +173,7 @@ Yet, I am very happy and proud of my little game, which I believe, feels pretty 
 
 - Major: Game balancing needs to be tested!
     - The difficullty spikes dramatically at around level 11-13
+- Minor: Add sound when pressing "O" at NPC dialogue
 
 The following points will likely not be tackled anymore, but leaving them here to keep them in mind.
 - Minor: With the game save functionallity, Void Merchants is not a true rogue-like anymore.
