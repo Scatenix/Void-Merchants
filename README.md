@@ -1,7 +1,7 @@
 # Void Merchants
 
 ![Made with PICO-8](https://img.shields.io/badge/made%20with-PICO--8-red)
-![Status](https://img.shields.io/badge/status-v0.9.9-green)
+![Status](https://img.shields.io/badge/status-v1.0.0-green)
 
 Void Merchants is a Space Invaders-inspired roguelike action game built in PICO-8. Blast enemies, collect resources and trade your way to upgrades as you progress through increasingly difficult space battles!
 
@@ -35,7 +35,7 @@ meaning that the X-button in-game is actually not the X-button on an Xbox contro
 
 The controls can be adjusted in the PICO-8 settings (pause button located next to the bottom-right corner).
 
-Make sure to check the [manual](https://github.com/Scatenix/Void-Merchants/releases/download/v0.9.9/manual.pdf) for more information about the game. Can be found on the release section!
+Make sure to check the [manual](https://github.com/Scatenix/Void-Merchants/releases/download/v1.0.0/manual.pdf) for more information about the game. Can be found on the release section!
 
 ## State of the Game
 
@@ -165,24 +165,20 @@ The script will then automatically push the new version tag and to main and trig
 ## Disclaimer for Developers
 
 Yes the code is messy. It got worse and worse throughout the commit history.
-This is because of the extreme Pico-8 limitations, which forced me to rewrite some logic to use as little code as possible, remove a lot of comments and even stuff like magic numbers to avoid a single line of initialization of a variable (yes, I am that much on the edge of the limitations, e.g. version 0.9.6 uses 8191 / 8192 tokens and a compressed capacity of 99.88%). All that while maintaining as much features as possible. Also, this is my first game ever, so things might be hackier than they really need to be. Especially the earlier code.
+This is because of the extreme Pico-8 limitations, which forced me to rewrite some logic to use as little code as possible, remove a lot of comments and even include stuff like magic numbers to avoid a single extra line of initialization of a variable (yes, I am that much on the edge of the limitations, e.g. version 0.9.6 uses 8191 / 8192 tokens and a compressed capacity of 99.88%). All that while maintaining as much features as possible. Also, this is my first game ever, so things might be hackier than they really need to be. Especially the earlier code.
 
 Yet, I am very happy and proud of my little game, which I believe, feels pretty polished :)
 
-## Known Bugs
-
-- Major: Game balancing needs to be tested!
-    - The difficullty spikes dramatically at around level 11-13
-    - Test money on defeating enemy. Maybe change to max(5, ceil(lvl/2))?
+## Known Bugs and Issues
 
 The following points will likely not be tackled anymore, but leaving them here to keep them in mind.
 - Minor: With the game save functionallity, Void Merchants is not a true rogue-like anymore.
     - I will leave it like this, to make it easier to play through and let the player decide
     - Every time loading a save will deduct 100 points from the score in the end to have at least a small incentive to play it without loading to often
 - Minor: Down-scaled planets look terrible
-    - I don't think this is possible easily, because there is no space for sprites left
+    - I don't think solving this is easy, because there is no space for sprites left
 - Minor: Sounds or music is often skipped
-    - Unavoidable at the moment because of only 4 sound channels. Sound design would need to change somehow
+    - Unavoidable at the moment because of only 4 sound channels. Sound design would need to change completely
 
 ## License
 

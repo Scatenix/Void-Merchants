@@ -3,7 +3,7 @@ __lua__15
 
 function draw_titlescreen()
 	-- version
-	print("beta " ..GAME_VERSION, 84, 1, 10)
+	print(GAME_VERSION, 104, 1, 10)
 	-- void merchants
 	sspr(88, 104, 40, 16, 24, 20, 80, 32)
 	-- hide enemy ship
