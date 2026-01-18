@@ -1,19 +1,12 @@
-## Release v0.9.9
+## Release Notes
 
 ### Balancing
 
-- Added money on defeating an enemy as incentive to actually defeat them
+- Conducted final pre-release play test
 
 ### Improvements
 
-- Rearanged music
-- Improved money pickup animation
-- Added soundeffect when advancing a textbox
-- Small improvement to the titlescreen
-
-### Bugs
-
-- Fixed bug where the enemy ship on the titlescreen was moving to far
+- Small changes to the music
 
 ## Files included
 

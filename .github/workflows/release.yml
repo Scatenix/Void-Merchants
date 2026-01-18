@@ -22,9 +22,9 @@ jobs:
       - name: Upload release assets
         uses: softprops/action-gh-release@v1
         with:
-          prerelease: true
+          prerelease: false
           tag_name: ${{ env.TAG_NAME }}
-          name: Beta ${{ env.TAG_NAME }}
+          name: ${{ env.TAG_NAME }}
           files: |
             ./LICENSE.txt
             ./resources/manual/manual.pdf
