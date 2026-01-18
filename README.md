@@ -21,9 +21,11 @@ Void Merchants is a Space Invaders-inspired roguelike action game built in PICO-
 
 Play the web version of [Void Merchants](https://scatenix.github.io/Void-Merchants/) now!
 
-Or download as an executable or PICO-8 cart here [Releases](https://github.com/Scatenix/Void-Merchants/releases)
+Download as a standalone executable for Windows, Mac and Linux, manual included! Or as a PICO-8 cart. [Releases](https://github.com/Scatenix/Void-Merchants/releases)
 
 ## Controls
+
+Can be played with keyboard, controller or on touch controls on your phone (web-version)!
 
 - ↑ ↓ ← → : Move your ship and cursor while trading
 - X, V : Shoot (Can be held down)
@@ -32,22 +34,19 @@ Or download as an executable or PICO-8 cart here [Releases](https://github.com/S
 - Load them again at the title screen by hitting Y or C
 - Enter : Open Pico-8s pause menu. E.g. to adjust the volume (Start button on a controller)
 
-Can also be played with a controller! Tested with an Xbox controller - others may work too.
-
 The buttons shown on screen are meant for the Playstation controller layout,
-meaning that the X-button in-game is actually not the X-button on an Xbox controller. 
+meaning that the X-button in-game is actually the A-button on an Xbox controller.
 
-The controls can be adjusted in the PICO-8 settings (pause button located next to the bottom-right corner).
+The controls can be adjusted in the PICO-8 settings (pause button located next to the bottom-right corner on the web-version).
 
-Make sure to check the [manual](https://github.com/Scatenix/Void-Merchants/releases/download/v1.0.0/manual.pdf) for more information about the game. Can be found on the release section!
+Make sure to check the [manual](https://github.com/Scatenix/Void-Merchants/releases/download/v1.0.0/manual.pdf) for more information about the game. Can be found at the [Releases](https://github.com/Scatenix/Void-Merchants/releases) section!
 
 ## State of the Game
 
-The game is currently in the balancing and testing phase, but already very playable.
-
-There are only a few minor bugs and a few small game design oversights left.
+The game was released with version 1.0.0.
 
 All planned features have been implemented, except for a final boss fight, which was not possible, due to a code length restriction from PICO-8.
+Instead, the player works towards a high score, based on his credits after the last level. Reloading the game lowers the end score.
 
 The game offers:
 - A title screen with the possibility to load the last save
