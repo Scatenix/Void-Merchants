@@ -6,7 +6,7 @@
 Void Merchants is a Space Invaders-inspired roguelike action game built in PICO-8. Blast enemies, collect resources and trade your way to upgrades as you progress through increasingly difficult space battles!
 
 <p align="center">
-    <img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README/void-merchants.png" alt="Void Merchants" width="40%" />
+    [<img src="https://github.com/Scatenix/Void-Merchants/blob/main/resources/README/void-merchants.png" alt="Void Merchants - Click to play on the web" width="40%" />](https://scatenix.github.io/Void-Merchants/)
 </p>
 
 ### Fight, Travel, Trade!
@@ -18,6 +18,7 @@ Void Merchants is a Space Invaders-inspired roguelike action game built in PICO-
 </p>
 
 Play the web version now! [Void Merchants](https://scatenix.github.io/Void-Merchants/)
+Or download as an executable or PICO-8 cart here [Releases](https://github.com/Scatenix/Void-Merchants/releases)
 
 ## Controls
 
