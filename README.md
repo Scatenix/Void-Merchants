@@ -1,7 +1,7 @@
 # Void Merchants
 
 ![Made with PICO-8](https://img.shields.io/badge/made%20with-PICO--8-red)
-![Status](https://img.shields.io/badge/status-v1.0.0-green)
+![Version](https://img.shields.io/badge/version-v1.0.0-green)
 
 Void Merchants is a Space Invaders-inspired roguelike action game built in PICO-8. Blast enemies, collect resources and trade your way to upgrades as you progress through increasingly difficult space battles!
 
